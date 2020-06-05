@@ -43,7 +43,7 @@ The first step in applying machine learning to a real problem is *finding* or *c
 
 What makes a good data set?
 
-*  **Size**: the more *samples* are in the data set, the more examples your machine learning model will be able to learn from. Often, a simple machine learning models trained on a large data set will outperform a "fancy" models on a small data set.
+*  **Size**: the more *samples* are in the data set, the more examples your machine learning model will be able to learn from. Often, a simple machine learning model trained on a large data set will outperform a "fancy" models on a small data set.
 *  **Quality**: Are there *predictive* features in the data? Are no values (or very few values) missing, noisy, or incorrect? Is the scenario in which the data collected similar to the scenario in which your model will be used? These are some examples that we might ask to evaluate the quality of a data set.
 
 :::
@@ -60,7 +60,7 @@ Once we have identified one or more candidate data sets for a particular problem
 * determine relationships between features
 * assess the direction and rough size of relationships between features and the target variable
 
-This is important for understanding whether this data set is appropriate for the machine learning task at hand, and if any extra cleaning or processing steps are required before we use the data.
+Exploratory data analysis is important for understanding whether this data set is appropriate for the machine learning task at hand, and if any extra cleaning or processing steps are required before we use the data.
 
 
 :::
@@ -635,7 +635,7 @@ In our live recitation section this week, we will review the Brooklyn Bridge ped
 
 ::: {.cell .markdown}
 
-In preparation for the live meeting, consider the following machine learning tasks, and candidate data sets. Do these data sets seem appropriate for the task? Without an in-depth analysis, can you identify any important limitations of the datasets, or problems that need addressing before we use them to train a machine learning model?  
+In preparation for the live meeting, consider the following machine learning tasks, and candidate data sets. Try applying the first step of our "recipe" - learn about the data - to these examples. Do these data sets seem appropriate for the task? Without an in-depth analysis, can you identify any important limitations of the datasets, or problems that need addressing before we use them to train a machine learning model?  
 
 #### Satirical headline classification: 
 You are hired by a major social media platform to develop a machine learning model that will be used to clearly mark *satirical news articles* when they are shared on social media. 
