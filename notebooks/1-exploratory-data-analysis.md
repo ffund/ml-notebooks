@@ -631,27 +631,49 @@ In our live recitation section this week, we will review the Brooklyn Bridge ped
 :::
 
 
-
-
 ::: {.cell .markdown}
 
 In preparation for the live meeting, consider the following machine learning tasks, and candidate data sets. Try applying the first step of our "recipe" - learn about the data - to these examples. Do these data sets seem appropriate for the task? Without an in-depth analysis, can you identify any important limitations of the datasets, or problems that need addressing before we use them to train a machine learning model?  
 
+:::
+
+
+::: {.cell .markdown}
+
 #### Satirical headline classification: 
 You are hired by a major social media platform to develop a machine learning model that will be used to clearly mark *satirical news articles* when they are shared on social media. 
 You consider using this dataset of 9,000 headlines from [The Onion](https://www.theonion.com/) and 15,000 headlines from [Not The Onion on Reddit](https://www.reddit.com/r/nottheonion/). [Link to OnionOrNot data](https://github.com/lukefeilberg/onion)
+
+:::
+
+
+::: {.cell .markdown}
 
 
 #### Chest X-ray classification:
 You are working for a large hospital system to develop a machine learning model that, given a chest X-ray, should identify those that likely have COVID-19 so that they can take proper precautions against the spread of infection within the hospital. 
 You consider using a two datasets together: one with several hundred images of chest X-rays of likely COVID-19 patients, and a pre-COVID dataset of chest X-ray images. [Link to COVID-19 chest X-ray data](https://github.com/ieee8023/covid-chestxray-dataset), [Link to pre-COVID chest X-ray data](https://www.kaggle.com/c/rsna-pneumonia-detection-challenge/overview)
 
+:::
+
+
+::: {.cell .markdown}
+
 #### Taxi tip prediction: 
 You are developing an app for NYC taxi drivers that will predict what the typical tip would be for a given fare. You consider using data collected by the NYC Taxi and Limousine Commission on taxi trips. The links are for 2019 data, but previous years are also available. [Data link for yellow (Manhattan) taxi trips](https://data.cityofnewyork.us/Transportation/2019-Yellow-Taxi-Trip-Data/2upf-qytp) and [data link for green (non-Manhattan) taxi trips](https://data.cityofnewyork.us/Transportation/2019-Green-Taxi-Trip-Data/q5mz-t52e)
+
+:::
+
+
+::: {.cell .markdown}
 
 #### Highway traffic prediction:
 You are working for the state of New York to develop a traffic prediction model for the NYS Thruway. The following Thruway data is available: Number and types of vehicles that entered from each entry point on the Thruway, along with their exit points, at 15 minute intervals. The link points to the most recent week's worth of available data, but this data is available through 2014. [Link to NYS Thruway data](https://data.ny.gov/Transportation/NYS-Thruway-Origin-and-Destination-Points-for-All-/4dbf-24u2) 
 
+:::
+
+
+::: {.cell .markdown}
 
 #### Offensive post classification:
 The social media platform was so impressed with your work on detection of satirical headlines, that they asked you to work on a model to identify posts using offensive language. 
