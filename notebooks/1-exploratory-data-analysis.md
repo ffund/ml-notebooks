@@ -23,8 +23,6 @@ In this notebook:
 
 :::
 
-:::
-
 ::: {.cell .markdown}
 ## Introduction
 
