@@ -8,7 +8,7 @@ title:  'Exploratory Data Analysis'
 
 _Fraida Fund_
 
-
+:::
 
 ::: {.cell .markdown}
 
@@ -43,7 +43,7 @@ The first step in applying machine learning to a real problem is *finding* or *c
 
 What makes a good data set?
 
-*  **Size**: the more *samples* are in the data set, the more examples your machine learning model will be able to learn from. Often, a simple machine learning model trained on a large data set will outperform a "fancy" models on a small data set.
+*  **Size**: the more *samples* are in the data set, the more examples your machine learning model will be able to learn from. Often, a simple machine learning model trained on a large data set will outperform a "fancy" model on a small data set.
 *  **Quality**: Are there *predictive* features in the data? Are no values (or very few values) missing, noisy, or incorrect? Is the scenario in which the data collected similar to the scenario in which your model will be used? These are some examples that we might ask to evaluate the quality of a data set.
 
 :::
@@ -85,6 +85,22 @@ Every exploratory data analysis is different, as specific characteristics of the
 ::: {.cell .markdown}
 
 ## Example: Brooklyn Bridge pedestrian data set 
+
+
+:::
+
+
+::: {.cell .markdown}
+
+
+The Brooklyn Bridge is a bridge that connects Brooklyn and Manhattan. It supports vehicles, pedestrians, and bikers.
+
+![](https://brooklyneagle.com/wp-content/uploads/2019/01/7-Brooklyn-Bridge-pedestrians-in-bike-lane-to-right-of-white-stripe-January-2019-photo-by-Lore-Croghan-600x397.jpg)
+
+:::
+
+
+::: {.cell .markdown}
 
 Support you are developing a machine learning model to predict the volume of pedestrian traffic on the Brooklyn Bridge. There is a dataset available that you think may be useful as training data: [Brooklyn Bridge Automated Pedestrian Counts dataset](https://www1.nyc.gov/html/dot/html/about/datafeeds.shtml#Pedestrians), from the NYC Department of Transportation.
 
@@ -652,7 +668,7 @@ You consider using this dataset of 9,000 headlines from [The Onion](https://www.
 
 #### Chest X-ray classification:
 You are working for a large hospital system to develop a machine learning model that, given a chest X-ray, should identify those that likely have COVID-19 so that they can take proper precautions against the spread of infection within the hospital. 
-You consider using a two datasets together: one with several hundred images of chest X-rays of likely COVID-19 patients, and a pre-COVID dataset of chest X-ray images. [Link to COVID-19 chest X-ray data](https://github.com/ieee8023/covid-chestxray-dataset), [Link to pre-COVID chest X-ray data](https://www.kaggle.com/c/rsna-pneumonia-detection-challenge/overview)
+You consider using two datasets together: one with several hundred images of chest X-rays of likely COVID-19 patients, and a pre-COVID dataset of chest X-ray images. [Link to COVID-19 chest X-ray data](https://github.com/ieee8023/covid-chestxray-dataset), [Link to pre-COVID chest X-ray data](https://www.kaggle.com/c/rsna-pneumonia-detection-challenge/overview)
 
 :::
 
