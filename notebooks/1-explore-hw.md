@@ -236,7 +236,7 @@ In the following cell, create a figure with six subplots, arranged vertically. (
 
 ::: {.cell .markdown}
 
-**TODO**: Answer the following question: Do the results seem to satisfy "common sense"?
+**TODO**: Answer the following question: Do the results seem to satisfy "common sense"? Explain, citing specific data from your plot to support your answer.
 
 **TODO**: In the [Calibrate Region](https://support.google.com/covid19-mobility/checklist/9834261?hl=en&ref_topic=9822927) checklist, Google suggests a number of reasons why the data might *not* be useful for understanding the effect of COVID-19-related lockdowns, or why the data might be misleading. For the location you have chosen, briefly answer all of the questions in that checklist. Based on your answers, do you think there are any serious problems associated with using this data for understanding user mobility changes due to COVID-19?
 
