@@ -68,7 +68,7 @@ import matplotlib.pyplot as plt
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q1
 # url = ...
 # df = ...
 ```
@@ -84,14 +84,14 @@ Use the `info()` and `head()` functions to show some basic information about the
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q2
 # use info()
 ```
 :::
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q3
 # use head()
 ```
 :::
@@ -113,7 +113,7 @@ Then, use `info()` again to make sure your change was applied. Note the differen
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q4
 # df['date'] = ...
 
 ```
@@ -156,7 +156,7 @@ In the following cell(s), fill in the code to create a data frame `df_subset` wi
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q5
 # df_subset =
 ```
 :::
@@ -170,7 +170,7 @@ Is the data complete, or is some data not available for the location you have ch
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q6
 # df_subset
 ```
 :::
@@ -178,7 +178,7 @@ Is the data complete, or is some data not available for the location you have ch
 
 ::: {.cell .markdown}
 
-**TODO**: Edit this cell to answer the following question: Is the data complete, or is some relevant data missing? Why would some locations only have partial data available (missing some `...percent_change_from_baseline` fields for some dates)? **Include a short quote from the material you read in the "Learn about the data" section to answer this question.**
+**TODO** Q7:  Edit this cell to answer the following question: Is the data complete, or is some relevant data missing? Why would some locations only have partial data available (missing some `...percent_change_from_baseline` fields for some dates)? **Include a short quote from the material you read in the "Learn about the data" section to answer this question.**
 
 :::
 
@@ -201,7 +201,7 @@ Compute "days since [some relevant COVID-19 date]" for your location. In a comme
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q8
 # days_since...
 ```
 :::
@@ -228,7 +228,7 @@ In the following cell, create a figure with six subplots, arranged vertically. (
 
 ::: {.cell .code}
 ```python
-# TODO
+# TODO Q9
 ```
 :::
 
@@ -236,9 +236,9 @@ In the following cell, create a figure with six subplots, arranged vertically. (
 
 ::: {.cell .markdown}
 
-**TODO**: Answer the following question: Do the results seem to satisfy "common sense"? Explain, citing specific data from your plot to support your answer.
+**TODO** Q10: Answer the following question: Do the results seem to satisfy "common sense"? Explain, citing specific data from your plot to support your answer.
 
-**TODO**: In the [Calibrate Region](https://support.google.com/covid19-mobility/checklist/9834261?hl=en&ref_topic=9822927) checklist, Google suggests a number of reasons why the data might *not* be useful for understanding the effect of COVID-19-related lockdowns, or why the data might be misleading. For the location you have chosen, briefly answer all of the questions in that checklist. Based on your answers, do you think there are any serious problems associated with using this data for understanding user mobility changes due to COVID-19?
+**TODO** Q11: In the [Calibrate Region](https://support.google.com/covid19-mobility/checklist/9834261?hl=en&ref_topic=9822927) checklist, Google suggests a number of reasons why the data might *not* be useful for understanding the effect of COVID-19-related lockdowns, or why the data might be misleading. For the location you have chosen, briefly answer all of the questions in that checklist. Based on your answers, do you think there are any serious problems associated with using this data for understanding user mobility changes due to COVID-19?
 
 
 
