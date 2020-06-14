@@ -190,7 +190,7 @@ For this data, the `date` field is important, but we don't necessarily care abou
 For example, in Brooklyn, New York, I might compute:
 
 ```
-days_since_lockdown = (df_ny_all['date'] - pd.to_datetime('2020-03-20 00:00:00')).dt.days.values
+days_since_lockdown = (df_subset['date'] - pd.to_datetime('2020-03-20 00:00:00')).dt.days.values
 # NYC lockdown March 20, 2020 https://www.nytimes.com/2020/03/20/us/coronavirus-today.html
 ```
 
