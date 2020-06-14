@@ -212,7 +212,7 @@ Compute "days since [some relevant COVID-19 date]" for your location. In a comme
 
 ## Visualize data
 
-Finally, we are going to visualize the changes in human mobility over this time. 
+Finally, we are going to visualize the changes in human mobility over this time, for the location you have chosen. 
 
 In the following cell, create a figure with six subplots, arranged vertically. (You can refer to the example in the "Python + numpy" notebook from this week's lesson.) On the horizontal axis, put the `days_since...` array you computed in the previous cell. On the vertical axes, show:
 
