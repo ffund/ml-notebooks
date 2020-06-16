@@ -307,7 +307,7 @@ $$
 
 and so
 
-$$ \beta = \left[ \frac{1597}{286}, \frac{1115}{1430}, \frac{-243}{143} \right] $$
+$$ \beta^* = \left[ \frac{1597}{286}, \frac{1115}{1430}, \frac{-243}{143} \right] $$
 
 :::
 
