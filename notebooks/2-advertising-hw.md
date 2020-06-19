@@ -36,4 +36,4 @@ e. Our multiple linear regression includes additive effects of all three types o
 - the product of the newspaper and TV columns
 - the product of the newspaper, TV, and radio columns
 
-Then, train a linear regression model on seven features: the three types of ad budgets, and the four interaction effects. Repeat the analysis of part (d) for the model including interaction effects. Comment on the results. Are the interaction effects helpful for explaining the effect of ads on product sales?
+Then, train a linear regression model on seven features: the three types of ad budgets, and the four interaction effects. Repeat the analysis of part (d) for the model including interaction effects. Comment on the results. Are the interaction effects helpful for explaining the effect of ads on product sales? Are there any patterns evident in the residual plots that suggest further opportunities for improving the model?
