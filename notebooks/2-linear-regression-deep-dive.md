@@ -1,5 +1,5 @@
 ---
-title:  'Exploring a candidate data set'
+title:  'Linear regression: deep dive'
 ---
 
 
