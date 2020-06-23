@@ -2,8 +2,6 @@
 title:  'Case Study: Linear Regression'
 ---
 
-::: {.cell .markdown}
-
 
 
 ::: {.cell .markdown}
