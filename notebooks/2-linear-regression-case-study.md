@@ -757,38 +757,21 @@ Another example of data leakage:
 
 You have been hired to develop a new spam classifier for NYU Tandon email. To collect a dataset for the spam classification task, you get 5,000 NYU Tandon students, faculty, and staff who agree to manually label every email they receive for the week of March 15-March 21 as "spam" (about 5\%) or "not spam" (about 95\%). They then share all the emails and labels with you. For example, here are a few of the emails you got from Volunteer 1, who is a member of the ECE department:
 
-+----------------------------+--------------------+-----------------------+------------+
-| Subject                    | From               | To                    | Label      |
-+============================+====================+=======================+============+
-| April Funding              | Office of          | All Tandon faculty    | Not spam   |
-| Opportunities              | Sponsored Programs |                       |            |
-+----------------------------+--------------------+-----------------------+------------+
-| ML TA meeting next week    | Prachi Gupta       | Fraida Fund           | Not spam   |
-|                            |                    |                       |            |
-+----------------------------+--------------------+-----------------------+------------+
-| Pass/fail option for       | Ivan Selesnick     | ECE faculty           | Not spam   |
-| students this semester     |                    |                       |            |
-+----------------------------+--------------------+-----------------------+------------+
-| A question about quiz1     | Student 19245      | Fraida Fund           | Not spam   |
-|                            | (name redacted)    |                       |            |
-+----------------------------+--------------------+-----------------------+------------+
-| Re: your account is locked | PayPall            | Fraida Fund           | Spam       |
-|                            |                    |                       |            |
-+----------------------------+--------------------+-----------------------+------------+
-| Fwd: Gradescope Webinar:   | Ivan Selesnick     | ECE faculty           | Not spam   |
-| Deliver your assessments   |                    |                       |            |
-| remotely                   |                    |                       |            |
-+----------------------------+--------------------+-----------------------+------------+
-| Memo to Faculty and Staff  | Provost Katherine  | Faculty, Researchers  | Not spam   |
-| on COVID-19 Protocols      | Fleming            | Administrators, Staff,|            |
-|                            |                    | Student Employees     |            |
-+----------------------------+--------------------+-----------------------+-------------+
+
+| Subject | From | To | Label |
+|--- | --- | --- | --- |
+| April Funding Opportunities | Office of Sponsored Programs | All Tandon Faculty | Not Spam |
+| ML TA meeting next week | Student 23451 (redacted) | Fraida Fund | Not Spam | 
+| Pass/fail option for students this semester | Ivan Selesnick | ECE Faculty | Not Spam | 
+| A question about quiz1 | Student 19245 (redacted) | Fraida Fund | Not Spam | 
+| Re: your account is locked | PayPall | Fraida Fund | Spam | 
+| Fwd: Gradescope Webinar | Ivan Selesnick | ECE Faculty | Not Spam | 
+| Memo to Faculty on COVID-19 Protocols | Provost Katherine Fleming |All Tandon Faculty | Not Spam | 
 
 
 You assign the emails from volunteers 1-2,500 to a training set and use it to fit a classifier, then compute the classifier accuracy on the emails from volunteers 2,501-5,000. 
 
- * Your classifier does really well on the emails from volunteers 2,501-5,000 - in fact, it is 99.9999\% accurate! But when you deploy it in production, it misses a lot of spam. Based on the description above, what mistake did you make that caused your performance estimate to be overly optimistic? How would you fix it?
- * After fixing your mistake, you achieve a 95\% accuracy on the test set. Then you realize that - oops! - you had an error in your code that caused your classifier to predict "not spam" for 100\% of samples. Why does your classifier seem to have such good performance, even though it is not very "smart"? What should you do to better understand model performance?
+Your classifier does really well on the emails from volunteers 2,501-5,000 - in fact, it is 99.9999\% accurate! But when you deploy it in production, it misses a lot of spam. Based on the description above, what mistake did you make that caused your performance estimate to be overly optimistic? How would you fix it?
 
 
 :::
