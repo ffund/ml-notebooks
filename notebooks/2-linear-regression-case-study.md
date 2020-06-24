@@ -23,7 +23,7 @@ In this lab, we will use this data to try and predict the average instructor rat
 
 ### Attribution
 
-Parts of this lab are based on a lab assignment from the OpenIntro textbook "Introductory Statistics with Randomization and Simulation" that is released under a Creative Commons Attribution-ShareAlike 3.0 Unported license. The book website is at [https://www.openintro.org/book/isrs/](https://www.openintro.org/book/isrs/). You can read a PDF copy of the book for free and watch video lectures associated with the book at that URL. You can also see the lab assignment that this one is based on.
+Parts of this lab are based on a lab assignment from the OpenIntro textbook "Introductory Statistics with Randomization and Simulation" that is released under a Creative Commons Attribution-ShareAlike 3.0 Unported license. The book website is at [https://www.openintro.org/book/isrs/](https://www.openintro.org/book/isrs/). You can read a PDF copy of the book for free and watch video lectures associated with the book at that URL. You can also see the lab assignment that this notebook is based on.
 
 
 :::
@@ -188,8 +188,6 @@ Is it a positive or a negative correlation?
 
 Are any of the apparent relationships you observed unexpected to you? Explain.
 
-Edit this cell and write your answer below the line.
-
 ----
 
 :::
@@ -294,7 +292,7 @@ In the following cell, write a _function_ to compute key performance metrics for
 
 ::: {.cell .code}
 ```python
-# TODO 2 by student - fill in the function -
+# TODO 2 fill in the function -
 
 def print_regression_performance(y_true_train, y_pred_train, y_true_test, y_pred_test):
 	# ...
@@ -358,7 +356,7 @@ df_coef
 
 ::: {.cell .code}
 ```python
-# TODO 3 by student
+# TODO 3 
 # reg_multi = ...
 
 ```
@@ -374,8 +372,6 @@ related to the attractiveness ratings.
 
 Are these results surprising, based on 
 the results of the simple linear regression? Explain your answer.
-
-Edit this cell and write your answer below the line.
 
 ----
 
@@ -402,7 +398,7 @@ In the following cell, write code to
 
 ::: {.cell .code}
 ```python
-# TODO 4 by student
+# TODO 4 
 # features = ...
 # reg_avgbty = ...
 
@@ -419,8 +415,6 @@ Given the model parameters you have found, rank the following features from "str
 * Instructor gender
 
 (Note that in general, we cannot use the coefficient to compare the effect of features that have a different range. Both ethnicity and gender are represented by binary one hot-encoded variables.)
-
-Edit this cell and write your answer below the line.
 
 ----
 
@@ -441,7 +435,7 @@ Evaluate the performance of your `reg_avgbty` model. In the next cell, write cod
 
 ::: {.cell .code}
 ```python
-# TODO 5 by student
+# TODO 5 
 # y_pred_train = ...
 # y_pred_test = ...
 
@@ -457,8 +451,6 @@ Based on the analysis above, what portion of the variation in instructor teachin
 can be explained by the factors unrelated to teaching performance, such as the 
 physical characteristics of the instructor?
 
-Edit this cell and write your answer below the line.
-
 ----
 
 
@@ -472,8 +464,6 @@ Edit this cell and write your answer below the line.
 
 Based on the analysis above, is your model better at predicting instructor teaching scores
 than a "dumb" model that just assigns the mean teaching score to every instructor? Explain.
-
-Edit this cell and write your answer below the line.
 
 ----
 
@@ -491,8 +481,6 @@ faculty, who will then be awarded prizes for their efforts.
 
 Based on the analysis above, do you think it would be fair to use
 scores on teaching evaluations as an input to your classifier? Explain your answer.
-
-Edit this cell and write your answer below the line.
 
 ----
 
@@ -533,7 +521,7 @@ training and test set
 
 ::: {.cell .code}
 ```python
-# TODO 6 by student
+# TODO 6 
 # features = ...
 # reg_nopic = ...
 
@@ -547,8 +535,6 @@ training and test set
 
 Is your model less predictive when features related to the instructor photograph are excluded? Explain.
 
-
-Edit this cell and write your answer below the line.
 
 ----
 
@@ -579,7 +565,7 @@ training and test set
 
 ::: {.cell .code}
 ```python
-# TODO 7 by student
+# TODO 7 
 # features = ...
 # reg_nocls = ...
 
@@ -676,7 +662,7 @@ for train_idx, test_idx in ss.split(df_enc):
     features = df_enc.columns.drop(['score', 'instructor_id'])
     print('----')
 
-    # TODO 8 by student: add code to train a multiple linear regression using 
+    # TODO 8: add code to train a multiple linear regression using 
     # the train dataset and the list of features created above
     # save the fitted model in reg_rndsplit
     # then use the model to create y_pred_train and y_pred_test, 
@@ -715,7 +701,7 @@ for train_idx, test_idx in gss.split(df_enc, groups=instructor_id):
         
     features = df_enc.columns.drop(['score', 'instructor_id'])
 
-    # TODO 9 by student: add code to train a multiple linear regression using 
+    # TODO 9: add code to train a multiple linear regression using 
     # the train dataset and the list of features created above
     # save the fitted model in reg_grpsplit
     # then use the model to create y_pred_train and y_pred_test
@@ -742,12 +728,88 @@ for train_idx, test_idx in gss.split(df_enc, groups=instructor_id):
 Based on your analysis above, do you think your model will be useful to 
 predict the teaching evaluation scores of a new faculty member at UT Austin, 
 based on his or her physical characteristics and the characteristics of the 
-course? Explain your answer.
-
-Edit this cell and write your answer below the line.
+course? 
 
 ----
 
 
+
+:::
+
+
+::: {.cell .markdown}
+
+
+### Data leakage
+
+In this case study, we saw evidence of data leakage: The identity of the instructor "leaked" into the data set, and then the model learned the instructor ID, not a true relationship between instructor characteristics and teaching evaluation scores. 
+
+As a result, the model had overly optimistic error on the test set. The model appeared to generalize to new, unseen, data, but in fact would not generalize to different instructors.
+
+
+:::
+
+::: {.cell .markdown}
+
+
+Another example of data leakage:
+
+
+You have been hired to develop a new spam classifier for NYU Tandon email. To collect a dataset for the spam classification task, you get 5,000 NYU Tandon students, faculty, and staff who agree to manually label every email they receive for the week of March 15-March 21 as "spam" (about 5\%) or "not spam" (about 95\%). They then share all the emails and labels with you. For example, here are a few of the emails you got from Volunteer 1, who is a member of the ECE department:
+
++----------------------------+--------------------+-----------------------+------------+
+| Subject                    | From               | To                    | Label      |
++============================+====================+=======================+============+
+| April Funding              | Office of          | All Tandon faculty    | Not spam   |
+| Opportunities              | Sponsored Programs |                       |            |
++----------------------------+--------------------+-----------------------+------------+
+| ML TA meeting next week    | Prachi Gupta       | Fraida Fund           | Not spam   |
+|                            |                    |                       |            |
++----------------------------+--------------------+-----------------------+------------+
+| Pass/fail option for       | Ivan Selesnick     | ECE faculty           | Not spam   |
+| students this semester     |                    |                       |            |
++----------------------------+--------------------+-----------------------+------------+
+| A question about quiz1     | Student 19245      | Fraida Fund           | Not spam   |
+|                            | (name redacted)    |                       |            |
++----------------------------+--------------------+-----------------------+------------+
+| Re: your account is locked | PayPall            | Fraida Fund           | Spam       |
+|                            |                    |                       |            |
++----------------------------+--------------------+-----------------------+------------+
+| Fwd: Gradescope Webinar:   | Ivan Selesnick     | ECE faculty           | Not spam   |
+| Deliver your assessments   |                    |                       |            |
+| remotely                   |                    |                       |            |
++----------------------------+--------------------+-----------------------+------------+
+| Memo to Faculty and Staff  | Provost Katherine  | Faculty, Researchers  | Not spam   |
+| on COVID-19 Protocols      | Fleming            | Administrators, Staff,|            |
+|                            |                    | Student Employees     |            |
++----------------------------+--------------------+-----------------------+-------------+
+
+
+You assign the emails from volunteers 1-2,500 to a training set and use it to fit a classifier, then compute the classifier accuracy on the emails from volunteers 2,501-5,000. 
+
+ * Your classifier does really well on the emails from volunteers 2,501-5,000 - in fact, it is 99.9999\% accurate! But when you deploy it in production, it misses a lot of spam. Based on the description above, what mistake did you make that caused your performance estimate to be overly optimistic? How would you fix it?
+ * After fixing your mistake, you achieve a 95\% accuracy on the test set. Then you realize that - oops! - you had an error in your code that caused your classifier to predict "not spam" for 100\% of samples. Why does your classifier seem to have such good performance, even though it is not very "smart"? What should you do to better understand model p
+
+
+:::
+
+::: {.cell .markdown}
+
+Also potential for data leakage when:
+
+* Learning from adjacent temporal data
+* Learning from data that includes duplicate
+* Learning from a feature that is a proxy for target variable
+
+:::
+
+::: {.cell .markdown}
+
+How can we detect data leakage?
+
+* Surprising patterns in data (via exploratory data analysis)
+* Performance is "too good to be true"
+* Features that shouldn't be important (based on common sense/domain knowledge) play a role in reducing error
+* Early testing in production
 
 :::
