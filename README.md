@@ -15,3 +15,7 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 * Deep dive: [Linear regression in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive)
 * Case study: [Linear regression on the "Beauty in the Classroom" data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-case-study.ipynb)
 * Homework: [Linear regression on the Advertising data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-advertising-hw.ipynb)
+
+### Gradient descent
+
+* Deep dive: [Gradient descent in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb)
