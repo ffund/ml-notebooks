@@ -99,9 +99,10 @@ print(X[:5])
 ::: {.cell .markdown}
 In each gradient descent step, we will compute
 
-\\begin{aligned} w\_{k+1} &= w\_k + \\alpha\_k X\^T (y - X w\_k) \\ &=
-w\_k + \\alpha\_k \\sum\_{i=1}\^n (y\_k - \\langle w\_k,x\_i \\rangle)
-x\_i. \\end{aligned}
+\begin{aligned} w_{k+1} &= w_k + \alpha_k X^T (y - X w_k) \\ 
+                        &= w_k + \alpha\_k \sum_{i=1}^n (y_k - \langle w_k,x_i \rangle) x_i
+\end{aligned}
+
 :::
 
 ::: {.cell .code}
@@ -433,6 +434,6 @@ sns.scatterplot(w_steps[:,2], w_steps[:,1], hue=np.arange(itr), edgecolor=None);
 
 -   Increase learning rate?
 -   Decrease learning rate?
--   Use decaying learning rate \$\\alpha\_k = C/k \$?
+-   Use decaying learning rate $\alpha_k = \frac{C}{k}$?
 -   Increase number of samples used in each iteration?
 :::
