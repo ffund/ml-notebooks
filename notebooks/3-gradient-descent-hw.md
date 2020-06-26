@@ -6,7 +6,7 @@ a. Re-run the "Descent path" section with three different learning rates: `lr = 
 
 * Show the plot of coeffient value vs. iteration, and the plot of the descent path on the MSE contour. 
 * What is the estimate of $w$ after 50 iterations?
-* Describe whether the gradient descent diverges, converges within 50 iterations, or starts to converge but does not get to the optimum value within 50 iterations.
+* Describe whether the gradient descent diverges, converges within 50 iterations, or starts to converge but does not get close enough to the optimum value within 50 iterations.
 
 b. Re-run the "Stochastic gradient descent" section with `lr=0.1` and `n=1`, then with `lr=0.01` and `n=10`, and finally with `lr = 0.001` and `n = 100` (and leave the other parameters at their default settings). For each, 
 
