@@ -437,3 +437,201 @@ sns.scatterplot(w_steps[:,2], w_steps[:,1], hue=np.arange(itr), edgecolor=None);
 -   Use decaying learning rate $\alpha_k = \frac{C}{k}$?
 -   Increase number of samples used in each iteration?
 :::
+
+
+
+::: {.cell .markdown}
+
+## Gradient descent with noise
+
+:::
+
+
+### Generate data
+
+This time, we will use the `sigma` argument in our `generate_linear_regression_data` function to generate data that does not 
+perfectly fit a linear model. 
+
+:::
+
+::: {.cell .code}
+```python
+w_true = [2, 6, 5]
+intercept = w_true[0]
+coef = w_true[1:]
+print(intercept, coef)
+```
+:::
+
+::: {.cell .code}
+```python
+n_samples = 1000
+```
+:::
+
+::: {.cell .code}
+```python
+x, y = generate_linear_regression_data(n=n_samples, d=2, coef=coef, intercept=intercept, sigma=1)
+```
+:::
+
+
+::: {.cell .markdown}
+### MSE contour
+:::
+
+::: {.cell .code}
+```python
+coefs = np.arange(2, 8, 0.05)
+mses_coefs = np.zeros((len(coefs), len(coefs)))
+
+for idx_1, c_1 in enumerate(coefs):
+  for idx_2, c_2 in enumerate(coefs):
+    y_coef = (intercept + np.dot(x,[c_1, c_2])).squeeze()
+    mses_coefs[idx_1,idx_2] =  1.0/(len(y_coef)) * np.sum((y - y_coef)**2)
+```
+:::
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(5,5));
+X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.contour(X1, X2, mses_coefs, levels=5);
+plt.clabel(p, inline=1, fontsize=10);
+plt.xlabel('w2');
+plt.ylabel('w1');
+```
+:::
+
+::: {.cell .markdown}
+### Perform gradient descent 
+
+This time, the gradient descent may not necessarily arrive at the "true" coefficient values. That's not because it does not find the coefficients with minimum MSE; it's because the coefficients with minimum MSE on the noisy training data are not necessarily the "true" coefficients.
+
+:::
+
+::: {.cell .code}
+```python
+X = np.hstack((np.ones((n_samples, 1)), x))
+X.shape
+```
+:::
+
+::: {.cell .code}
+```python
+itr = 500
+lr = 0.0002
+w_init = [intercept, 2, 8]
+```
+:::
+
+::: {.cell .code}
+```python
+w_steps = np.zeros((itr, len(w_init)))
+
+w_star = w_init
+for i in range(itr):
+  w_star, mse, gradient = gd_step(w_star, X, y, lr)
+  w_steps[i] = w_star
+```
+:::
+
+::: {.cell .markdown}
+### Visualize gradient descent
+:::
+
+::: {.cell .code}
+```python
+colors = sns.color_palette("hls", len(w_true))
+
+for n in range(len(w_true)):
+  plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
+  sns.lineplot(np.arange(itr), w_steps[:,n], color=colors[n]);
+
+plt.xlabel("Iteration");
+plt.ylabel("Coefficient Value");
+```
+:::
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(5,5));
+X1, X2 = np.meshgrid(coefs, coefs);
+p = plt.contour(X1, X2, mses_coefs, levels=5);
+plt.clabel(p, inline=1, fontsize=10);
+plt.xlabel('w2');
+plt.ylabel('w1');
+sns.lineplot(w_steps[:,2], w_steps[:,1], color='black', alpha=0.5);
+sns.scatterplot(w_steps[:,2], w_steps[:,1], hue=np.arange(itr), edgecolor=None);
+```
+:::
+
+::: {.cell .code}
+```python
+w_star
+```
+:::
+
+
+
+::: {.cell .markdown}
+### Perform stochastic gradient descent 
+
+With data that does not perfectly fit the linear model, the stochastic gradient descent converges to a "noise ball" around the optimal solution.
+
+:::
+
+::: {.cell .code}
+```python
+itr = 500
+lr = 0.2
+w_init = [intercept, 2, 8]
+```
+:::
+
+::: {.cell .code}
+```python
+w_steps = np.zeros((itr, len(w_init)))
+
+w_star = w_init
+for i in range(itr):
+  w_star = sgd_step(w_star, X, y, lr, n) 
+  w_steps[i] = w_star
+```
+:::
+
+::: {.cell .markdown}
+### Visualize gradient descent
+:::
+
+::: {.cell .code}
+```python
+colors = sns.color_palette("hls", len(w_true))
+
+for n in range(len(w_true)):
+  plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
+  sns.lineplot(np.arange(itr), w_steps[:,n], color=colors[n]);
+
+plt.xlabel("Iteration");
+plt.ylabel("Coefficient Value");
+```
+:::
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(5,5));
+X1, X2 = np.meshgrid(coefs, coefs);
+p = plt.contour(X1, X2, mses_coefs, levels=5);
+plt.clabel(p, inline=1, fontsize=10);
+plt.xlabel('w2');
+plt.ylabel('w1');
+sns.lineplot(w_steps[:,2], w_steps[:,1], color='black', alpha=0.5);
+sns.scatterplot(w_steps[:,2], w_steps[:,1], hue=np.arange(itr), edgecolor=None);
+```
+:::
+
+::: {.cell .code}
+```python
+w_star
+```
+:::
