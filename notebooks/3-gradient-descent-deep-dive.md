@@ -601,7 +601,7 @@ for i in range(itr):
 :::
 
 ::: {.cell .markdown}
-### Visualize gradient descent
+### Visualize stochastic gradient descent
 :::
 
 ::: {.cell .code}
