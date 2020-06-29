@@ -19,3 +19,8 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 ### Gradient descent
 
 * Deep dive: [Gradient descent in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb)
+* Homework: [Gradient descent](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-hw.ipynb)
+
+### Bias/variance tradeoff, model selection, regularizatoin
+
+
