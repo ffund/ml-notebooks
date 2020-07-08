@@ -23,4 +23,9 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 
 ### Bias/variance tradeoff, model selection, regularization
 
+* Deep dive: [Bias variance tradeoff and model selection in depth](https://colab.research.google.com/drive/1RrT-JDAouMyJWMMIpDs9rO--82cD0xdm?usp=sharing) (use NYU Google account to open)
+* Deep dive: [Regularization in depth](https://colab.research.google.com/drive/1RrT-JDAouMyJWMMIpDs9rO--82cD0xdm?usp=sharing)(use NYU Google account to open)
+* Homework: [Model selection on neural data](https://colab.research.google.com/drive/1bgVlPfNk-Qi98JlPTJktJQNjLcNTL-8R?usp=sharing) (use NYU Google account to open)
+
+### Logistic regression and classification
 
