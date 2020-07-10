@@ -29,3 +29,5 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 
 ### Logistic regression and classification
 
+* Demo: [Logistic regression for classification of handwritten digits](https://colab.research.google.com/drive/13g6dimfRTjgABan1UqCOaZf1QEkzUN_J?usp=sharing) (use NYU Google account to open)
+* Homework: [Classify your own handwritten digit](https://colab.research.google.com/drive/1qy_j8ma_Yzyj4LlwDPaBMb7gMayhk0dH?usp=sharing)
