@@ -29,5 +29,12 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 
 ### Logistic regression and classification
 
+* Deep dive: [Logistic regression in depth](https://colab.research.google.com/drive/19V8COW_A2Ny_cMtlalSlnBVrvO33huIs?usp=sharing) (use NYU Google account to open)
 * Demo: [Logistic regression for classification of handwritten digits](https://colab.research.google.com/drive/13g6dimfRTjgABan1UqCOaZf1QEkzUN_J?usp=sharing) (use NYU Google account to open)
+* Case study: [Classifier fairness case study on COMPAS data](https://colab.research.google.com/drive/1vWOoIlxsEdzZGsIiSgSUyZPRjZoKOABM?usp=sharing) (use NYU Google account to open)
 * Homework: [Classify your own handwritten digit](https://colab.research.google.com/drive/1qy_j8ma_Yzyj4LlwDPaBMb7gMayhk0dH?usp=sharing)
+
+### K nearest neighbors
+
+* Deep dive: [k nearest neighbors in depth](https://colab.research.google.com/drive/1gYjAAX51RY4jWcVV7-sEcFNx0PIbDDE-?usp=sharing) (use NYU Google account to open)
+* Homework: [Voter classification using exit poll data](https://colab.research.google.com/drive/1J6O6NGnQFhS_pj2LRx_C3LmRggVu46ah?usp=sharing) (use NYU Google account to open)
