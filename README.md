@@ -4,7 +4,7 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 
 ### Intro to ML
 
-* Pre-work: [Python + numpy tutorial](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-python-numpy-tutorial.ipynb) [PDF](notebooks/1-python-numpy-tutorial.pdf)
+* Pre-work: [Python + numpy tutorial](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-python-numpy-tutorial.ipynb) [[PDF](notebooks/1-python-numpy-tutorial.pdf)]
 * Case study: [Exploratory data analysis on the Brooklyn Bridge pedestrian data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-exploratory-data-analysis.ipynb)
 * Challenge: [Find the problem with these datasets](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-candidate-datasets.ipynb)
 * Homework: [Explore COVID-19 Community Mobility data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-hw.ipynb)
