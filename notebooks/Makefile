@@ -10,14 +10,14 @@ PANDOCFLAGS=--pdf-engine=xelatex\
          -V mainfont='Fira Sans' \
          -V geometry:margin=1in \
          --highlight-style pygments \
-	 --listings --variable urlcolor=Maroon --toc \
+	 --listings --variable urlcolor=Maroon \
 	 -H style/listings-setup.tex -H style/keystroke-setup.tex -H style/includes.tex
 
 %.ipynb: %.md
 	pandoc $^ -o $@
 
 %.nbconvert.ipynb: %.ipynb
-	jupyter nbconvert --to notebook --execute $^
+	jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_errors=True --ExecutePreprocessor.timeout=360 $^
 
 %.pdf: %.nbconvert.ipynb
 	pandoc $^ $(PANDOCFLAGS) -o $@
