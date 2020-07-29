@@ -9,7 +9,9 @@ title:  'Linear regression on the Advertising data'
 # Linear regression on the Advertising data
 
 For this programming assignment, you will extend the "Example with semi-realistic data" section at the end of the ["Linear regression: deep dive
-"](https://github.com/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb) notebook. Review that notebook, and go through the "Example with semi-realistic data" section, before you begin your answer to this question.
+"](https://github.com/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb) notebook. You will iteratively improve your linear regression model by examining the residuals at each stage, in order to identify problems with the model.
+
+Review that notebook, and go through the "Example with semi-realistic data" section, before you begin your answer to this question.
 
 Make sure to include your name and net ID in a text cell at the top of the notebook. Also, include text cells throughout the notebook in which you briefly explain each step, and note any important observations. Be as specific as you can in noting your observations.
 

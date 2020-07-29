@@ -5,16 +5,16 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 ### Intro to ML
 
 * Pre-work: [Python + numpy tutorial](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-python-numpy-tutorial.ipynb) [[PDF](notebooks/1-python-numpy-tutorial.pdf)]
-* Case study: [Exploratory data analysis on the Brooklyn Bridge pedestrian data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-exploratory-data-analysis.ipynb)
+* Case study: [Exploratory data analysis on the Brooklyn Bridge pedestrian data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-exploratory-data-analysis.ipynb) [[PDF](notesbook/1-exploratory-data-analysis.pdf)]
 * Challenge: [Find the problem with these datasets](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-candidate-datasets.ipynb)
-* Homework: [Explore COVID-19 Community Mobility data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-hw.ipynb)
+* Homework: [Explore COVID-19 Community Mobility data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-hw.ipynb) [[PDF](notesbook/1-explore-hw.pdf)]
 
 ### Linear regression
 
-* Pre-work: [Computing linear regression coefficients by hand](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-compute-by-hand.ipynb)
+* Pre-work: [Computing linear regression coefficients by hand](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-compute-by-hand.ipynb) [[PDF](notesbook/2-compute-by-hand.pdf)]
 * Deep dive: [Linear regression in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb)
-* Case study: [Linear regression on the "Beauty in the Classroom" data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-case-study.ipynb)
-* Homework: [Linear regression on the Advertising data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-advertising-hw.ipynb)
+* Case study: [Linear regression on the "Beauty in the Classroom" data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-case-study.ipynb) [[PDF](notebooks/2-linear-regression-case-study.pdf)]
+* Homework: [Linear regression on the Advertising data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-advertising-hw.ipynb) [[PDF](notebooks/2-advertising-hw.pdf)]
 
 ### Gradient descent
 
