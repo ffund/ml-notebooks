@@ -1,3 +1,11 @@
+::: {.cell .markdown}
+
+# Gradient descent
+
+_Fraida Fund_
+
+:::
+
 ::: {.cell .code}
 ```python
 import numpy as np
@@ -339,6 +347,10 @@ w_star
 
 ::: {.cell .markdown}
 ### Stochastic gradient descent
+
+For stochastic gradient descent, we will compute the gradient and update the weights using one sample (or a subset of the samples) in each step.
+
+**A note on sampling**: In practice, the samples are often sampled without replacement, but the statistical guarantee of convergence is for sampling with replacement. In this example, we sample with replacement. You can read more about different varieties of gradient descent and stochastic gradient descent in [How is stochastic gradient descent implemented in the context of machine learning and deep learning](https://sebastianraschka.com/faq/docs/sgd-methods.html).
 
 :::
 

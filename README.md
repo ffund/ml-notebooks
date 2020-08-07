@@ -11,15 +11,15 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 
 ### Linear regression
 
-* Pre-work: [Computing linear regression coefficients by hand](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-compute-by-hand.ipynb) [[PDF](notesbook/2-compute-by-hand.pdf)]
-* Deep dive: [Linear regression in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb)
+* Pre-work: [Computing linear regression coefficients by hand](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-compute-by-hand.ipynb) [[PDF](notebooks/2-compute-by-hand.pdf)]
+* Deep dive: [Linear regression in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb) [[PDF](notebooks/2-linear-regression-deep-dive.pdf)]
 * Case study: [Linear regression on the "Beauty in the Classroom" data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-case-study.ipynb) [[PDF](notebooks/2-linear-regression-case-study.pdf)]
 * Homework: [Linear regression on the Advertising data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-advertising-hw.ipynb) [[PDF](notebooks/2-advertising-hw.pdf)]
 
 ### Gradient descent
 
-* Deep dive: [Gradient descent in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb)
-* Homework: [Gradient descent](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-hw.ipynb)
+* Deep dive: [Gradient descent in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb) [[PDF](notebooks/3-gradient-descent-deep-dive.pdf)]
+* Homework: [Gradient descent](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-hw.ipynb) [[PDF](3-gradient-descent-hw.pdf)]
 
 ### Bias/variance tradeoff, model selection, regularization
 
