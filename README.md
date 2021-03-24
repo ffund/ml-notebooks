@@ -55,6 +55,8 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 ### Convolutional neural networks
 
 * Deep dive: [Convolutional neural networks](https://colab.research.google.com/drive/1gHQEEIDkmgExueDe_LtM24dN2PN8Wvs0?usp=sharing) (use NYU Google account to open)
+* [Transfer learning](https://colab.research.google.com/drive/1tm5ZxeN8uVqj6veLKarFizD0eW9cRd4e#scrollTo=_yz-QM1sLt0Cusp=sharing) (use NYU Google account to open)
+* Homework: [Transfer learning](https://colab.research.google.com/drive/16w-mLZ4tSxwH7bZof-1Baota-TIYv19B?usp=sharing)
 
 ### Project topics
 
