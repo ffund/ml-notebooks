@@ -12,14 +12,14 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 ### Linear regression
 
 * Pre-work: [Computing linear regression coefficients by hand](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-compute-by-hand.ipynb) [[PDF](notebooks/2-compute-by-hand.pdf)]
-* Deep dive: [Linear regression in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb) [[PDF](notebooks/2-linear-regression-deep-dive.pdf)]
+* Deep dive: [Linear regression in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb)
 * Case study: [Linear regression on the "Beauty in the Classroom" data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-case-study.ipynb) [[PDF](notebooks/2-linear-regression-case-study.pdf)]
 * Homework: [Linear regression on the Advertising data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-advertising-hw.ipynb) [[PDF](notebooks/2-advertising-hw.pdf)]
 
 ### Gradient descent
 
-* Deep dive: [Gradient descent in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb) [[PDF](notebooks/3-gradient-descent-deep-dive.pdf)]
-* Homework: [Gradient descent](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-hw.ipynb) [[PDF](3-gradient-descent-hw.pdf)]
+* Deep dive: [Gradient descent in depth](https://olab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb)
+* Homework: [Gradient descent](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-hw.ipynb)
 
 ### Bias/variance tradeoff, model selection, regularization
 
@@ -55,3 +55,9 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 ### Convolutional neural networks
 
 * Deep dive: [Convolutional neural networks](https://colab.research.google.com/drive/1gHQEEIDkmgExueDe_LtM24dN2PN8Wvs0?usp=sharing) (use NYU Google account to open)
+* [Transfer learning](https://colab.research.google.com/drive/1tm5ZxeN8uVqj6veLKarFizD0eW9cRd4e#scrollTo=_yz-QM1sLt0Cusp=sharing) (use NYU Google account to open)
+* Homework: [Transfer learning](https://colab.research.google.com/drive/16w-mLZ4tSxwH7bZof-1Baota-TIYv19B?usp=sharing)
+
+### Project topics
+
+For your project, you will replicate and then extend an existing ML project (typically a recent publication in a major ML conference). See [projects](projects) list for examples.
