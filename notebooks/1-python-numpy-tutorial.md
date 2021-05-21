@@ -13,20 +13,9 @@ _Fraida Fund_
 
 **Attribution**:
 
--   This notebook is adapted from a [tutorial from CS231N at Stanford
-    University](https://cs231n.github.io/python-numpy-tutorial/), which
-    is shared under the [MIT
-    license]((https://opensource.org/licenses/MIT)). It was originally
-    written by [Justin Johnson](https://web.eecs.umich.edu/~justincj/)
-    for cs231n. It was adapted as a Jupyter notebook for cs228 by
-    [Volodymyr Kuleshov](http://web.stanford.edu/~kuleshov/) and [Isaac
-    Caswell](https://symsys.stanford.edu/viewing/symsysaffiliate/21335).The
-    Colab version was adapted by Kevin Zakka for the Spring 2020 edition
-    of [cs231n](https://cs231n.github.io/).
--   The visualizations in this notebook are from [A Visual Intro to
-    NumPy](http://jalammar.github.io/visual-numpy/) by Jay Alammar,
-    which is licensed under a Creative Commons
-    Attribution-NonCommercial-ShareAlike 4.0 International License.
+- Parts of this notebook are adapted from a [tutorial from CS231N at Stanford University](https://cs231n.github.io/python-numpy-tutorial/), which is shared under the [MIT license]((https://opensource.org/licenses/MIT)). 
+- Parts of this notebook are adapted from Jake VanderPlas's [Whirlwind Tour of Python](https://colab.research.google.com/github/jakevdp/WhirlwindTourOfPython/blob/master/Index.ipynb), which is shared under the [Creative Commons CC0 Public Domain Dedication license](https://github.com/jakevdp/WhirlwindTourOfPython/blob/master/LICENSE).
+-   The visualizations in this notebook are from [A Visual Intro to NumPy](http://jalammar.github.io/visual-numpy/) by Jay Alammar, which is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 
 :::
 
@@ -36,23 +25,36 @@ _Fraida Fund_
 :::
 
 ::: {.cell .markdown}
+
 Python is a great general-purpose programming language on its own, but
-with the help of a few popular libraries (numpy, pandas, matplotlib) it
+with the help of a few popular *libraries* (`numpy`, `pandas`, `matplotlib`) it
 becomes a powerful environment for scientific computing.
 
-Some of you may have previous knowledge in Matlab, in which case we also
-recommend the numpy for Matlab users page
-(https://docs.scipy.org/doc/numpy-dev/user/numpy-for-matlab-users.html).
 
 :::
 
 ::: {.cell .markdown}
 
+This tutorial is an introduction to Python and the `numpy` library for those who are already familiar with programming in another language.
+
 In this tutorial, we will cover:
 
--   Basic Python: Basic data types (Containers, Lists, Dictionaries,
-    Sets, Tuples), Functions, Classes
--   Numpy: Arrays, Array indexing, Datatypes, Array math, Broadcasting
+-   Basic Python: Basic data types, Containers (Lists, Dictionaries,, Tuples), Control Flow Statements, Errors and Exceptions, Functions, Classes
+-   `numpy`: Arrays, Array indexing, Datatypes, Array math, Broadcasting
+-   `matplotlib`: Basic Visualization, Subplots, Image Visualization
+
+:::
+
+
+::: {.cell .markdown }
+
+This tutorial is designed to run as a Python notebook on Colab. We'll take a closer look at Colab and its features in a separate tutorial, but for now, here is what you need to know:
+
+* When you see a "cell" with Python code in it, move your mouse over the margin on the left side of the cell. A > button will appear - click on that button to execute the code in the cell.
+* The output of the code will appear underneath the cell.
+* You can edit the code in the cell and press the > button again to execute the modified code.
+
+As you work through this tutorial, look at the code in each cell, and try to predict its output before you run it! Then, run the cell and check your understanding. You can also try to modify the code and observe the effect of your changes.
 
 :::
 
@@ -61,17 +63,8 @@ In this tutorial, we will cover:
 ## A Brief Note on Python Versions
 
 
-As of Janurary 1, 2020, Python has [officially dropped
-support](https://www.python.org/doc/sunset-python-2/) for `python2`.
-We\'ll be using Python 3 for this course. You can check your Python
-version at the command line by running `python --version`.
+As of Janurary 1, 2020, Python has [officially dropped support](https://www.python.org/doc/sunset-python-2/) for `python2`. We'll be using Python 3 for this course.
 
-:::
-
-::: {.cell .code}
-``` {.python}
-!python --version
-```
 :::
 
 ::: {.cell .markdown}
@@ -120,6 +113,13 @@ print(x, type(x))
 ```
 :::
 
+::: {.cell .markdown}
+
+By the way: note that you did not have to declare the variable `x` or specify its type before you assigned a value to it. In Python, you can create a variable just by assigning something to it.
+
+:::
+
+
 ::: {.cell .code}
 ``` {.python}
 print(x + 1)   # Addition
@@ -128,6 +128,15 @@ print(x * 2)   # Multiplication
 print(x ** 2)  # Exponentiation
 ```
 :::
+
+::: {.cell .markdown}
+
+Notice that in the cell above, there is a comment at the end of each line. Comments in Python are indicated by a pound sign (``#``), and anything on the line following the pound sign is ignored.
+You can have inline comments that follow a statement on the same line, like the ones above, or a comment on its own line.
+
+:::
+
+
 
 ::: {.cell .code}
 ``` {.python}
@@ -172,7 +181,7 @@ print(type(t))
 :::
 
 ::: {.cell .markdown}
-Now we let\'s look at the operations:
+Now let\'s look at the operations:
 :::
 
 ::: {.cell .code}
@@ -183,6 +192,8 @@ print(not t)   # Logical NOT;
 print(t != f)  # Logical XOR;
 ```
 :::
+
+
 
 ::: {.cell .markdown}
 #### Strings
@@ -230,6 +241,7 @@ print('  world '.strip())  # Strip leading and trailing whitespace
 You can find a list of all string methods in the
 [documentation](https://docs.python.org/3.7/library/stdtypes.html#string-methods).
 :::
+
 
 ::: {.cell .markdown}
 ### Containers
@@ -307,81 +319,6 @@ print(nums)         # Prints "[0, 1, 8, 9, 4]"
 :::
 
 ::: {.cell .markdown}
-#### Loops
-:::
-
-::: {.cell .markdown}
-You can loop over the elements of a list like this. Note that
-indentation levels are used to organize code blocks - indented code is
-\"inside\" the `for` loop:
-:::
-
-::: {.cell .code}
-``` {.python}
-animals = ['cat', 'dog', 'monkey']
-for animal in animals:
-    print(animal)
-```
-:::
-
-::: {.cell .markdown}
-If you want access to the index of each element within the body of a
-loop, use the built-in `enumerate` function:
-:::
-
-::: {.cell .code }
-``` {.python}
-animals = ['cat', 'dog', 'monkey']
-for idx, animal in enumerate(animals):
-    print('#{}: {}'.format(idx + 1, animal))
-```
-:::
-
-::: {.cell .markdown}
-#### List comprehensions
-:::
-
-::: {.cell .markdown}
-When programming, frequently we want to transform one type of data into
-another. As a simple example, consider the following code that computes
-square numbers:
-:::
-
-::: {.cell .code}
-``` {.python}
-nums = [0, 1, 2, 3, 4]
-squares = []
-for x in nums:
-    squares.append(x ** 2)
-print(squares)
-```
-:::
-
-::: {.cell .markdown}
-You can make this code simpler using a list comprehension:
-:::
-
-::: {.cell .code}
-``` {.python}
-nums = [0, 1, 2, 3, 4]
-squares = [x ** 2 for x in nums]
-print(squares)
-```
-:::
-
-::: {.cell .markdown}
-List comprehensions can also contain conditions:
-:::
-
-::: {.cell .code}
-``` {.python}
-nums = [0, 1, 2, 3, 4]
-even_squares = [x ** 2 for x in nums if x % 2 == 0]
-print(even_squares)
-```
-:::
-
-::: {.cell .markdown}
 #### Dictionaries
 :::
 
@@ -432,91 +369,6 @@ You can find all you need to know about dictionaries in the
 :::
 
 ::: {.cell .markdown}
-It is easy to iterate over the keys in a dictionary:
-:::
-
-::: {.cell .code}
-``` {.python}
-d = {'person': 2, 'cat': 4, 'spider': 8}
-for animal, legs in d.items():
-    print('A {} has {} legs'.format(animal, legs))
-```
-:::
-
-::: {.cell .markdown}
-Dictionary comprehensions: These are similar to list comprehensions, but
-allow you to easily construct dictionaries. For example:
-:::
-
-::: {.cell .code}
-``` {.python}
-nums = [0, 1, 2, 3, 4]
-even_num_to_square = {x: x ** 2 for x in nums if x % 2 == 0}
-print(even_num_to_square)
-```
-:::
-
-::: {.cell .markdown}
-#### Sets
-:::
-
-::: {.cell .markdown}
-A set is an unordered collection of distinct elements. As a simple
-example, consider the following:
-:::
-
-::: {.cell .code}
-``` {.python}
-animals = {'cat', 'dog'}
-print('cat' in animals)   # Check if an element is in a set; prints "True"
-print('fish' in animals)  # prints "False"
-```
-:::
-
-::: {.cell .code}
-``` {.python}
-animals.add('fish')      # Add an element to a set
-print('fish' in animals)
-print(len(animals))       # Number of elements in a set;
-```
-:::
-
-::: {.cell .code}
-``` {.python}
-animals.add('cat')       # Adding an element that is already in the set does nothing
-print(len(animals))       
-animals.remove('cat')    # Remove an element from a set
-print(len(animals))       
-```
-:::
-
-::: {.cell .markdown}
-*Loops*: Iterating over a set has the same syntax as iterating over a
-list; however since sets are unordered, you cannot make assumptions
-about the order in which you visit the elements of the set:
-:::
-
-::: {.cell .code}
-``` {.python}
-animals = {'cat', 'dog', 'fish'}
-for idx, animal in enumerate(animals):
-    print('#{}: {}'.format(idx + 1, animal))
-```
-:::
-
-::: {.cell .markdown}
-Set comprehensions: Like lists and dictionaries, we can easily construct
-sets using set comprehensions:
-:::
-
-::: {.cell .code}
-``` {.python}
-from math import sqrt
-print({int(sqrt(x)) for x in range(30)})
-```
-:::
-
-::: {.cell .markdown}
 #### Tuples
 :::
 
@@ -551,6 +403,305 @@ t[0] = 1 # ...but not a value in the tuple
 # this cell raises an error! 'tuple' object does not support item assignment
 ```
 :::
+
+
+
+::: {.cell .markdown}
+### Control Flow Statements
+:::
+
+::: {.cell .markdown}
+
+#### If-Else
+
+Conditional statements, often referred to as *if-then* statements, allow the programmer to execute certain pieces of code depending on some Boolean condition.
+
+A basic example of a Python conditional statement is this:
+:::
+
+::: {.cell .code}
+``` {.python}
+
+x = -15
+
+if x == 0:
+    print(x, "is zero")
+elif x > 0:
+    print(x, "is positive")
+elif x < 0:
+    print(x, "is negative")
+else:
+    print(x, "is unlike anything I've ever seen...")
+```
+:::
+
+::: {.cell .markdown}
+
+Note especially the use of colons (``:``) and whitespace to denote separate blocks of code.
+
+A *block* of code is a set of statements that should be treated as a unit. In C, for example, code blocks are denoted by curly braces:
+``` C
+// C code
+for(int i=0; i<100; i++)
+   {
+      // curly braces indicate code block
+      total += i;
+   }
+```
+In Python, code blocks are denoted by *indentation*:
+``` python
+for i in range(100):
+    # indentation indicates code block
+    total += i
+```
+where all statements that should be evaluated within the "block" are at the same level of indentation.
+
+Indented code blocks are always preceded by a colon (``:``) on the previous line.
+
+:::
+
+
+::: {.cell .markdown}
+
+#### For 
+
+Loops in Python are a way to repeatedly execute some code statement.
+So, for example, if we'd like to print each of the items in a list, we can use a ``for`` loop:
+:::
+
+
+::: {.cell .code}
+``` {.python}
+for N in [2, 3, 5, 7]:
+    print(N, end=' ') # print all on same line
+```
+:::
+
+::: {.cell .markdown}
+Notice the simplicity of the ``for`` loop: we specify the variable we want to use, the sequence we want to loop over, and use the "``in``" operator to link them together in an intuitive and readable way.
+More precisely, the object to the right of the "``in``" can be any Python *iterator*.
+
+
+For example, one of the most commonly-used iterators in Python is the ``range`` object, which generates a sequence of numbers:
+:::
+
+::: {.cell .code}
+``` {.python}
+for i in range(10):
+    print(i, end=' ')
+```
+:::
+
+::: {.cell .markdown}
+Note that the range starts at zero by default, and that by convention the top of the range is not included in the output.
+:::
+
+::: {.cell .markdown}
+We can loop over any list, no matter what type of object is stored in it.
+:::
+
+
+::: {.cell .code}
+``` {.python}
+animals = ['cat', 'dog', 'monkey']
+for animal in animals:
+    print(animal)
+```
+:::
+
+::: {.cell .markdown}
+If you want access to the index of each element within the body of a
+loop, use the built-in `enumerate` function:
+:::
+
+::: {.cell .code }
+``` {.python}
+animals = ['cat', 'dog', 'monkey']
+for idx, animal in enumerate(animals):
+    print('#{}: {}'.format(idx + 1, animal))
+```
+:::
+
+::: {.cell .markdown}
+It is easy to iterate over the keys in a dictionary:
+:::
+
+::: {.cell .code}
+``` {.python}
+d = {'person': 2, 'cat': 4, 'spider': 8}
+for animal, legs in d.items():
+    print('A {} has {} legs'.format(animal, legs))
+```
+:::
+
+
+
+::: {.cell .markdown}
+
+#### While 
+
+The other type of loop in Python is a ``while`` loop, which iterates until some condition is met:
+:::
+
+
+
+::: {.cell .code}
+``` {.python}
+i = 0
+while i < 10:
+    print(i, end=' ')
+    i += 1
+```
+:::
+
+
+
+::: {.cell .markdown}
+#### List comprehensions
+:::
+
+::: {.cell .markdown}
+When programming, frequently we want to transform one type of data into
+another. As a simple example, consider the following code that computes
+square numbers:
+:::
+
+::: {.cell .code}
+``` {.python}
+nums = [0, 1, 2, 3, 4]
+squares = []
+for x in nums:
+    squares.append(x ** 2)
+print(squares)
+```
+:::
+
+::: {.cell .markdown}
+You can make this code simpler using a list comprehension:
+:::
+
+::: {.cell .code}
+``` {.python}
+nums = [0, 1, 2, 3, 4]
+squares = [x ** 2 for x in nums]
+print(squares)
+```
+:::
+
+::: {.cell .markdown}
+List comprehensions can also contain conditions:
+:::
+
+::: {.cell .code}
+``` {.python}
+nums = [0, 1, 2, 3, 4]
+even_squares = [x ** 2 for x in nums if x % 2 == 0]
+print(even_squares)
+```
+:::
+
+
+::: {.cell .markdown}
+
+Dictionary comprehensions are similar to list comprehensions, but
+allow you to easily construct dictionaries. For example:
+
+:::
+
+::: {.cell .code}
+``` {.python}
+nums = [0, 1, 2, 3, 4]
+even_num_to_square = {x: x ** 2 for x in nums if x % 2 == 0}
+print(even_num_to_square)
+```
+:::
+
+::: {.cell .markdown}
+### Errors and Exceptions
+:::
+
+::: {.cell .markdown}
+
+When you are working with Python, you are likely to come across errors. When an error occurs, Python tries to explain to you what went wrong, but it takes some experience to interpret the error messages. 
+
+:::
+
+::: {.cell .markdown}
+
+The code in the following cell will raise a `SyntaxError` because it tries to use a variable name that begins with a number, which is not allowed in Python.
+
+Run the code, and look for three key "ingredients" in the error message that is printed to the output:
+
+* the type of error. In this case, it will be a `SyntaxError`. This type of error is raised by the *parser*, which checks to see if the code is valid before passing it to the *runtime* to execute the code. 
+* an explanation of the error, if available. In this case, the explanation is "invalid syntax".
+* details about where the error was detected. At what line of code, and what point in the line, did the error occur?
+
+:::
+
+
+::: {.cell .code}
+``` {.python}
+1st_number = 1
+```
+:::
+
+
+::: {.cell .markdown}
+
+Here are some more examples. Run the following cells, one at a time. Each will trigger an error message. Try to parse the error message by looking for the three "ingredients". 
+
+Look up each error type in [the documentation](https://docs.python.org/3/library/exceptions.html). Under what conditions is this error raised?
+
+:::
+
+
+::: {.cell .code}
+``` {.python}
+x=0 
+x++
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+x=0
+ x=x+1
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+print('Hello'
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+1 + 'asdf'
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+import NoSuchLibrary
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+print(xyz)
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+x=0 
+5/x
+```
+:::
+
 
 ::: {.cell .markdown}
 ### Functions
@@ -635,8 +786,7 @@ useful to get started with Numpy.
 :::
 
 ::: {.cell .markdown}
-To use Numpy, we first need to import the `numpy` package. By
-convention, we import it using the alias `np`.
+To use Numpy, we first need to import the `numpy` package. By convention, we import it using the alias `np`. Then, when we want to use modules or functions in this library, we preface them with `np.`
 :::
 
 ::: {.cell .code}
@@ -984,9 +1134,7 @@ You can read all about numpy datatypes in the
 :::
 
 ::: {.cell .markdown}
-Basic mathematical functions operate elementwise on arrays, and are
-available both as operator overloads and as functions in the numpy
-module.
+Basic mathematical functions operate elementwise on arrays, and are available both as operator overloads and as functions in the numpy module.
 :::
 
 ::: {.cell .markdown}
@@ -1376,9 +1524,9 @@ more about numpy.
 :::
 
 ::: {.cell .markdown}
-Matplotlib is a plotting library. In this section we give a brief
-introduction to the `matplotlib.pyplot` module, which provides a
-plotting system similar to that of MATLAB.
+Matplotlib is a plotting library. In this section we give a brief introduction to the `matplotlib.pyplot` module, which provides a plotting system similar to that of MATLAB.
+
+By convention, we typically import this module using the `plt` alias:
 :::
 
 ::: {.cell .code}
@@ -1387,16 +1535,6 @@ import matplotlib.pyplot as plt
 ```
 :::
 
-::: {.cell .markdown}
-By running this special \"magic\" command, we tell the runtime to
-display the plots as images within the notebook:
-:::
-
-::: {.cell .code}
-``` {.python}
-%matplotlib inline
-```
-:::
 
 ::: {.cell .markdown}
 ### Plotting
@@ -1415,12 +1553,15 @@ y = np.sin(x)
 
 # Plot the points using matplotlib
 plt.plot(x, y)
+
+# Show the figure.
+plt.show()
 ```
 :::
 
+
 ::: {.cell .markdown}
-With just a little bit of extra work we can easily plot multiple lines
-at once, and add a title, legend, and axis labels:
+With just a little bit of extra work we can easily plot multiple lines at once, and add a title, legend, and axis labels:
 :::
 
 ::: {.cell .code}
@@ -1429,12 +1570,33 @@ y_sin = np.sin(x)
 y_cos = np.cos(x)
 
 # Plot the points using matplotlib
-plt.plot(x, y_sin)
-plt.plot(x, y_cos)
+plt.plot(x, y_sin, label='Sine')
+plt.plot(x, y_cos, label='Cosine')
+plt.legend() # uses the label arguments given above
+
 plt.xlabel('x axis label')
 plt.ylabel('y axis label')
 plt.title('Sine and Cosine')
-plt.legend(['Sine', 'Cosine'])
+
+# Show the figure.
+plt.show()
+```
+:::
+
+
+::: {.cell .markdown}
+Another useful, basic, plot is the `scatter` plot:
+:::
+
+::: {.cell .code}
+``` {.python}
+x = np.random.rand(50)
+y = np.random.rand(50)
+colors = np.random.randint(0, 2, 50)
+
+plt.scatter(x, y, c=colors)
+
+plt.show()
 ```
 :::
 
@@ -1467,6 +1629,9 @@ plt.subplot(2, 1, 2)
 plt.plot(x, y_cos)
 plt.title('Cosine')
 
+# Adjust spacing between subplots
+plt.subplots_adjust(hspace = 0.4)
+
 # Show the figure.
 plt.show()
 ```
@@ -1476,3 +1641,30 @@ plt.show()
 You can read much more about the `subplot` function in the
 [documentation](http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.subplot).
 :::
+
+::: {.cell .markdown}
+
+You can use the `imshow` function to display images from a file. Here is an example:
+
+:::
+
+::: {.cell .code}
+``` {.python}
+from matplotlib.cbook import get_sample_data
+
+img_file = get_sample_data('grace_hopper.jpg')
+
+img = plt.imread(img_file)
+plt.imshow(img)
+plt.show()
+```
+:::
+
+
+::: {.cell .markdown}
+
+The `matplotlib` library is very flexible, and you can create virtually any plot and modify its appearance in any way you might think of. If you don't like the way your plot looks, fix it! Use the [documentation](http://matplotlib.org/api/pyplot_api.html) to learn more.
+
+:::
+
+
