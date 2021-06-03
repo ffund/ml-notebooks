@@ -60,16 +60,16 @@ There are a few ways to create a new cell:
 
 You can click on the +Code or +Text buttons near the top left of the Colab interface:
 
-![Create a new Colab cell from the toolbar.](images/colab-tour-newcell-0.png)
+![Create a new Colab cell from the toolbar.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-newcell-0.png)
 
 You can move your mouse near the bottom of any existing cell to see +Code and +Text buttons appear, then click on one of those:
 
-![Create a new Colab cell from the bottom of existing cell.](images/colab-tour-newcell-1.png)
+![Create a new Colab cell from the bottom of existing cell.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-newcell-1.png)
 
 
 Or you can use Insert > Code cell or Insert > Text cell from the menu bar.
 
-![Create a new Colab cell from the menu bar.](images/colab-tour-newcell-2.png)
+![Create a new Colab cell from the menu bar.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-newcell-2.png)
 
 :::
 
@@ -79,11 +79,11 @@ Double-click on any cell to edit the cell.
 
 To delete a cell, click on the trash icon that appears in the top right when you click on the cell:
 
-![Delete a Colab cell.](images/colab-tour-delete-0.png)
+![Delete a Colab cell.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-delete-0.png)
 
 Or, you can right-click on a cell and choose "Delete cell".
 
-![Delete a Colab cell from the context menu.](images/colab-tour-delete-1.png)
+![Delete a Colab cell from the context menu.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-delete-1.png)
 
 :::
 
@@ -159,7 +159,7 @@ print(course_description)
 
 After you type the first few characters, you'll see a menu near your cursor that offers to auto-complete the name of the variable you used earlier. You can press Tab to accept the offer.
 
-![Auto-complete in Colab.](images/colab-tour-auto-0.png)
+![Auto-complete in Colab.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-auto-0.png)
 
 
 :::
@@ -168,7 +168,7 @@ After you type the first few characters, you'll see a menu near your cursor that
 
 You may also notice that Colab will show you documentation for a function immediately after you type the function name and open parentheses:
 
-![Colab shows documentation for a function.](images/colab-tour-auto-1.png)
+![Colab shows documentation for a function.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-auto-1.png)
 
 :::
 
@@ -198,7 +198,7 @@ You can run code cells one at a time, or run cells in groups.
 
 To run a single code cell, press the Play button that appears on the left side of the cell when you move your mouse over it:
 
-![Run a single code cell from the Play button](images/colab-tour-run-0.png)
+![Run a single code cell from the Play button](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-run-0.png)
 
 Try to run the following cell. The output of the code will appear below the cell when it runs.
 
@@ -215,7 +215,7 @@ print("Hello world")
 
 You can also click on a cell (to make it the "focused" cell), then choose Runtime > Run the focused cell from the menu:
 
-![Run a single code cell from the menu](images/colab-tour-run-1.png)
+![Run a single code cell from the menu](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-run-1.png)
 
 
 :::
@@ -271,7 +271,7 @@ print(prefix, message)
 
 If you run those three cells in order, you would expect to see consecutive execution numbers, like this:
 
-![Cells with consecutive execution numbers](images/colab-tour-cell-order-0.png)
+![Cells with consecutive execution numbers](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-cell-order-0.png)
 
 :::
 
@@ -345,7 +345,7 @@ There are two ways to connect to a runtime:
 * Run any code cell - this will automatically connect your session to a runtime, if you are not already connected. (If you have already run the code cells above, your session is connected to a runtime!)
 * Click the Connect button near the top right part of the Colab interface.
 
-![Click here to connect to a Colab runtime](images/colab-tour-connect-0.png)
+![Click here to connect to a Colab runtime](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-connect-0.png)
 
 
 :::
@@ -382,7 +382,7 @@ In addition to the limits mentioned above, each Colab VM has some disk space and
 
 Once you are connected to a runtime, you will see a bar graph in this space that shows you your current RAM and disk space usage. If you move your mouse over this bar graph, it will also show you your exact RAM and disk space usage, and the limits of your virtual machine.
 
-![Click here to connect to a Colab runtime](images/colab-tour-connect-1.png)
+![Click here to connect to a Colab runtime](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-connect-1.png)
 
 
 :::
