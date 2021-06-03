@@ -1,5 +1,7 @@
 # All markdown files are considered sources
 SOURCES := $(wildcard *.md)
+SOURCES := 1-python-numpy-tutorial.md
+SOURCES += 1-colab-tour.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files
@@ -14,7 +16,7 @@ PANDOCFLAGS=--pdf-engine=xelatex\
 	 -H style/listings-setup.tex -H style/keystroke-setup.tex -H style/includes.tex
 
 %.ipynb: %.md
-	pandoc $^ -o $@
+	pandoc  --self-contained  $^ -o $@
 
 %.nbconvert.ipynb: %.ipynb
 	jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_errors=True --ExecutePreprocessor.timeout=360 $^
