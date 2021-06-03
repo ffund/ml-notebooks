@@ -442,7 +442,7 @@ We're going to pull out a subset of the data that (1) is a chest X-ray, not CT, 
 
 ::: {.cell .code}
 ```python
-covid_xray_metadata = covid_metadata[(covid_metadata["modality"] == "X-ray") & (covid_metadata["finding"] == "COVID-19")]
+covid_xray_metadata = covid_metadata[(covid_metadata["modality"] == "X-ray") & (covid_metadata["finding"] == "Pneumonia/Viral/COVID-19")]
 covid_xray_metadata.info()
 ```
 :::

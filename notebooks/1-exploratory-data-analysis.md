@@ -42,7 +42,7 @@ The first step in applying machine learning to a real problem is *finding* or *c
 What makes a good data set?
 
 *  **Size**: the more *samples* are in the data set, the more examples your machine learning model will be able to learn from. Often, a simple machine learning model trained on a large data set will outperform a "fancy" model on a small data set.
-*  **Quality**: Are there *predictive* features in the data? Are no values (or very few values) missing, noisy, or incorrect? Is the scenario in which the data collected similar to the scenario in which your model will be used? These are some examples that we might ask to evaluate the quality of a data set.
+*  **Quality**: Are there *predictive* features in the data? Are no values (or very few values) missing, noisy, or incorrect? Is the scenario in which the data collected similar to the scenario in which your model will be used? These are examples of questions that we might ask to evaluate the quality of a data set.
 
 :::
 
@@ -55,7 +55,7 @@ Once we have identified one or more candidate data sets for a particular problem
 
 * detect and possibly correct mistakes in the data
 * check our assumptions about the data
-* determine relationships between features
+* identify potential relationships between features
 * assess the direction and rough size of relationships between features and the target variable
 
 Exploratory data analysis is important for understanding whether this data set is appropriate for the machine learning task at hand, and if any extra cleaning or processing steps are required before we use the data.
@@ -158,34 +158,12 @@ import seaborn as sns
 :::
 
 
-::: {.cell .markdown}
-
-We will also set up notebook to:
-
-* show plots "inline" - don't make me explicitly ask for them to be shown
-* show output of all commands in a cell, not just the last one
-
-(depending on whether you are running this on Colab or in your own Jupyter notebook installation, which have different default settings, these steps may not be strictly necessary.)
-
-:::
-
-::: {.cell .code}
-
-
-```
-%matplotlib inline
-from IPython.core.interactiveshell import InteractiveShell
-InteractiveShell.ast_node_interactivity = "all"
-```
-:::
-
-
 
 ::: {.cell .markdown}
 
-Now that we have set everything up, we are ready to read in our data!
+Now we are ready to read in our data!
 
-In most cases, we will use the `read_csv` function in `pandas` to read in our data.  Function documentation: [pandas reference](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html)
+Our data is in CSV format, so will use the `read_csv` function in `pandas` to read in our data.  Function documentation: [pandas reference](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html)
 
 ```python
 pandas.read_csv(filepath_or_buffer, 
@@ -194,7 +172,7 @@ pandas.read_csv(filepath_or_buffer,
 	...)
 ```
 
-`read_csv` is for "flat" files. Other pandas functions exist for loading other kinds of data (read from database, Excel file, etc.)
+`read_csv` is for "flat" text files, where each data point is on another row, and the fields in a row are separated by some delimiter (e.g. comma). Other pandas functions exist for loading other kinds of data (read from database, Excel file, etc.)
 
 
 :::
