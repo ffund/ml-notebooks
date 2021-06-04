@@ -102,20 +102,27 @@ drive.mount('/content/drive')
 
 ## Step 4: Select notebook and convert to PDF
 
-In the following cell, change the name of the notebook from "Untitled" to whatever your notebook is named. Then, run the cell.
+In *both* of the following cells, change the name "Untitled" to whatever your notebook is named. Then, run the cell.
 
 :::
 
 ::: {.cell .code}
 ``` {.python}
-!jupyter nbconvert --output-dir='/content' --to PDF  '/content/drive/My Drive/Colab Notebooks/Untitled.ipynb'
+!jupyter nbconvert --output-dir='/content' --to latex  '/content/drive/My Drive/Colab Notebooks/Untitled.ipynb'
 ```
 :::
+
+::: {.cell .code}
+``` {.python}
+!xelatex --interaction=nonstopmode Untitled.tex
+```
+:::
+
 
 ::: {.cell .markdown}
 
 ## Step 5: Download PDF
 
-Finally, open the Colab file browser, locate your new PDF, and download it.
+Finally, open the Colab file browser, locate your new PDF, and download it. Review the PDF and make sure it looks good before you submit!
 
 :::
