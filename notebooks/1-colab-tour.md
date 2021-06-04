@@ -327,6 +327,8 @@ If you are familiar with standard Linux commands for navigating a filesystem - `
 
 ::: {.cell .markdown}
 
+### Downloading a file
+
 One way to get data into the Colab filesystem is to download it from the Internet using the Linux command `wget`. Pass the URL of the file you want to download as an argument to `wget`. You can optionally specify the name of the output file using the `-O` argument. For example:
 
 :::
@@ -350,6 +352,8 @@ After a brief delay, you should see the `Advertising.csv` file in the file explo
 
 
 ::: {.cell .markdown}
+
+### Uploading a file
 
 Another way to get data files or other files into Colab is to upload them from your computer. The following cell is a "snippet" for uploading files - run it, click on Choose File in the output below the cell, upload a file, and then make sure you see it in the file browser after a few moments.
 
@@ -378,6 +382,8 @@ You can also use the file explorer directly to upload files by clicking on the U
 
 
 ::: {.cell .markdown}
+
+### Mounting a Google Drive
 
 Note that files downloaded from the Internet or uploaded from your computer are not *persistent* - they are deleted when your Colab session ends. 
 
