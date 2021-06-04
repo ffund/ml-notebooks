@@ -2,6 +2,7 @@
 SOURCES := $(wildcard *.md)
 SOURCES := 1-python-numpy-tutorial.md
 SOURCES += 1-colab-tour.md
+SOURCES += 1-print-colab.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files

@@ -40,6 +40,19 @@ This notebook is a "tour" of Colab. You won't necessarily use all the features d
 
 :::
 
+::: {.cell .markdown}
+
+## Saving a notebook
+
+:::
+
+::: {.cell .markdown}
+
+When you open a Colab notebook that has been shared with you on a read-only basis (like this one, and all of the others we'll use in this course!), you can run code and make changes to the notebook, but your code and output won't be saved.
+
+To save your work, when you first open the notebook, make sure you are logged in to your NYU Google account. Then, click File > Save a Copy in Drive. This will save a copy of the notebook in your Google Drive, in a folder called Colab Notebooks. Run and edit code in the copy, rather than the original notebook.
+
+:::
 
 ::: {.cell .markdown}
 
@@ -321,7 +334,7 @@ On the side of the Colab interface, you'll see a folder icon. You can click on t
 
 ::: {.cell .markdown}
 
-If you are familiar with standard Linux commands for navigating a filesystem - `ls`, `cd`, `mv`, `pwd` - you can also use those commands in code cells, prefaced with a `!` as shown above.
+If you are familiar with standard Linux commands for navigating a filesystem - `ls`, `cd`, `mv`, `pwd` - you can also use those commands in code cells, prefaced with a `!` as shown above. One special exception to note: when using `cd` in Colab, preface the command with a `%` instead of a `!`.
 
 :::
 
