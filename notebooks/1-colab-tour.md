@@ -296,8 +296,146 @@ print("Done Sleeping")
 
 ## Filesystems
 
+
+When using Colab for machine learning, we often need to get data into the Colab runtime's filesystem.  This section describes several ways to interact with the Colab filesystem, including three ways to get data into the filesystem:
+
+* downloading a file from the Internet
+* uploading a file from your computer
+* storing a file in your Google Drive, and connecting your Drive to your Colab session
+
 :::
 
+::: {.cell .markdown}
+
+When you run a Colab notebook, your "working directory" - the directory from which your code executes - is, by default, `/content`. This directory will contain a `sample_data` subdirectory.
+
+:::
+
+::: {.cell .markdown}
+
+On the side of the Colab interface, you'll see a folder icon. You can click on this icon to open a file explorer, where you can point and click to navigate the filesystem.
+
+![Point-and-click interface for navigating filesystem.](images/colab-tour-filexplore-0.png)
+
+:::
+
+::: {.cell .markdown}
+
+If you are familiar with standard Linux commands for navigating a filesystem - `ls`, `cd`, `mv`, `pwd` - you can also use those commands in code cells, prefaced with a `!` as shown above.
+
+:::
+
+::: {.cell .markdown}
+
+One way to get data into the Colab filesystem is to download it from the Internet using the Linux command `wget`. Pass the URL of the file you want to download as an argument to `wget`. You can optionally specify the name of the output file using the `-O` argument. For example:
+
+:::
+
+
+::: {.cell .code}
+``` {.python}
+!wget https://www.statlearning.com/s/Advertising.csv -O Advertising.csv
+```
+:::
+
+::: {.cell .markdown}
+
+After a brief delay, you should see the `Advertising.csv` file in the file explorer. (You can click the "Refresh" button, shown highlighted in red below, to update your view.) You can expand the file menu to interact with the file, to download it, rename it, or delete it.
+
+![View a downloaded file in the file explorer.](images/colab-tour-filexplore-1.png)
+
+
+:::
+
+
+
+::: {.cell .markdown}
+
+Another way to get data files or other files into Colab is to upload them from your computer. The following cell is a "snippet" for uploading files - run it, click on Choose File in the output below the cell, upload a file, and then make sure you see it in the file browser after a few moments.
+
+:::
+
+::: {.cell .code}
+``` {.python}
+from google.colab import files
+
+uploaded = files.upload()
+
+for fn in uploaded.keys():
+  print('User uploaded file "{name}" with length {length} bytes'.format(
+      name=fn, length=len(uploaded[fn])))
+```
+:::
+
+::: {.cell .markdown}
+
+You can also use the file explorer directly to upload files by clicking on the Upload button:
+
+![Upload a file directly from the file explorer.](images/colab-tour-filexplore-2.png)
+
+
+:::
+
+
+::: {.cell .markdown}
+
+Note that files downloaded from the Internet or uploaded from your computer are not *persistent* - they are deleted when your Colab session ends. 
+
+Sometimes, it is useful to have a persistent file in your Colab session. For example, if you are working with a very large dataset, you may not want to download it or upload it each time you start a Colab session - this can take a long time! For *persistent* storage, you can save the file in your Google Drive, then *mount* your Google Drive in your Colab session to access the file from Colab.
+
+:::
+
+
+::: {.cell .markdown}
+
+To mount your Google Drive in the Colab session, run the following cell:
+
+:::
+
+::: {.cell .code}
+``` {.python}
+from google.colab import drive
+drive.mount('/content/drive')
+```
+:::
+
+
+::: {.cell .markdown}
+
+Click on the link in the output:
+
+![Link to get authorization code to mount Google Drive.](images/colab-tour-gdrive-0.png)
+
+and sign in to the Google account that you want to connect.
+
+Then, click the button to copy the authorization code:
+
+![Copy the Google Drive authorization code.](images/colab-tour-gdrive-1.png)
+
+Paste the code into the text input box in the cell output:
+
+![Enter the Google Drive authorization code.](images/colab-tour-gdrive-2.png)
+
+Then, hit Enter to connect your Google Drive. You should then see a `drive` directory, containing all of your Google Drive files and folders, in the file explorer:
+
+![Google Drive is mounted in Colab.](images/colab-tour-gdrive-3.png)
+
+Any changes you make to files in that folder - including modifying, adding, or deleting files - will be reflected in your Google Drive. Similarly, any changes you make to files in other Google Drive clients will be reflected in this Colab session. 
+
+:::
+
+
+::: {.cell .markdown}
+
+To disconnect a Google Drive session from Colab, run the code in the following cell:
+
+:::
+
+::: {.cell .code}
+``` {.python}
+drive.flush_and_unmount()
+```
+:::
 
 ::: {.cell .markdown}
 
