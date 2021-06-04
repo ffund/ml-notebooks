@@ -328,7 +328,7 @@ When you run a Colab notebook, your "working directory" - the directory from whi
 
 On the side of the Colab interface, you'll see a folder icon. You can click on this icon to open a file explorer, where you can point and click to navigate the filesystem.
 
-![Point-and-click interface for navigating filesystem.](images/colab-tour-filexplore-0.png)
+![Point-and-click interface for navigating filesystem.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-filexplore-0.png)
 
 :::
 
@@ -357,7 +357,7 @@ One way to get data into the Colab filesystem is to download it from the Interne
 
 After a brief delay, you should see the `Advertising.csv` file in the file explorer. (You can click the "Refresh" button, shown highlighted in red below, to update your view.) You can expand the file menu to interact with the file, to download it, rename it, or delete it.
 
-![View a downloaded file in the file explorer.](images/colab-tour-filexplore-1.png)
+![View a downloaded file in the file explorer.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-filexplore-1.png)
 
 
 :::
@@ -388,7 +388,7 @@ for fn in uploaded.keys():
 
 You can also use the file explorer directly to upload files by clicking on the Upload button:
 
-![Upload a file directly from the file explorer.](images/colab-tour-filexplore-2.png)
+![Upload a file directly from the file explorer.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-filexplore-2.png)
 
 
 :::
@@ -423,21 +423,21 @@ drive.mount('/content/drive')
 
 Click on the link in the output:
 
-![Link to get authorization code to mount Google Drive.](images/colab-tour-gdrive-0.png)
+![Link to get authorization code to mount Google Drive.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-gdrive-0.png)
 
 and sign in to the Google account that you want to connect.
 
 Then, click the button to copy the authorization code:
 
-![Copy the Google Drive authorization code.](images/colab-tour-gdrive-1.png)
+![Copy the Google Drive authorization code.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-gdrive-1.png)
 
 Paste the code into the text input box in the cell output:
 
-![Enter the Google Drive authorization code.](images/colab-tour-gdrive-2.png)
+![Enter the Google Drive authorization code.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-gdrive-2.png)
 
 Then, hit Enter to connect your Google Drive. You should then see a `drive` directory, containing all of your Google Drive files and folders, in the file explorer:
 
-![Google Drive is mounted in Colab.](images/colab-tour-gdrive-3.png)
+![Google Drive is mounted in Colab.](https://raw.githubusercontent.com/ffund/ml-notebooks/master/notebooks/images/colab-tour-gdrive-3.png)
 
 Any changes you make to files in that folder - including modifying, adding, or deleting files - will be reflected in your Google Drive. Similarly, any changes you make to files in other Google Drive clients will be reflected in this Colab session. 
 
