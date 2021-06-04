@@ -114,7 +114,7 @@ In *both* of the following cells, change the name "Untitled" to whatever your no
 
 ::: {.cell .code}
 ``` {.python}
-!xelatex --interaction=nonstopmode Untitled.tex
+!xelatex --interaction=nonstopmode 'Untitled.tex'
 ```
 :::
 
