@@ -11,7 +11,9 @@ _Fraida Fund_
 
 ::: {.cell .markdown}
 
-Printing from Colab seems easy - there's a File > Print option in the menu! However, the built-in print option won't always work well for us, because if a plot or other output happens to come out near a page break, it can get cut off.
+To submit homework assignments, you will need to generate PDF versions of your completed Colab notebooks. 
+
+Printing to a PDF from Colab seems easy - there's a File > Print option in the menu! However, the built-in print option won't always work well for us, because if a plot or other output happens to come out near a page break, it can get cut off.
 
 For example, try running the following cell, which creates a large plot:
 
@@ -64,7 +66,7 @@ As an alternative to Colab's built-in print, you can use this notebook to genera
 
 Make sure the notebook that you want to print is ready:
 
-* you ran the cells in the notebook (in order! and their output is visible in the notebook
+* you ran the cells in the notebook (in order!) and their output is visible in the notebook
 * it is saved in your Google Drive
 
 :::
@@ -102,7 +104,7 @@ drive.mount('/content/drive')
 
 ## Step 4: Select notebook and convert to PDF
 
-In *both* of the following cells, change the name "Untitled" to whatever your notebook is named. Then, run the cell.
+In *both* of the following cells, change the name "Untitled" to whatever your notebook is named. Then, run the cells.
 
 :::
 
