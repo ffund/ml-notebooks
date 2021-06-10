@@ -126,6 +126,7 @@ The first step is to learn more about the data:
 * Read about *methodology* and *data codebook*
 * How many rows and columns are in the data?
 * What does each variable mean? What units are data recorded in?
+* What variables could be used as target variable? What variables could be used as features from which to learn?
 * How was data collected? Identify sampling issues, timeliness issues, fairness issues, etc.
 
 This is the step that is most often skipped, but it is by far the most essential!
