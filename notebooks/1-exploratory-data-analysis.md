@@ -1,5 +1,6 @@
 ---
 title:  'Exploratory Data Analysis'
+author: 'Fraida Fund'
 ---
 
 
@@ -41,11 +42,16 @@ The first step in applying machine learning to a real problem is *finding* or *c
 
 What makes a good data set?
 
-*  **Size**: the more *samples* are in the data set, the more examples your machine learning model will be able to learn from. Often, a simple machine learning model trained on a large data set will outperform a "fancy" model on a small data set.
+*  **Size**: the more *samples* are in the data set, the more examples your machine learning model will be able to learn from, and the better it will do. Often, a simple machine learning model trained on a large data set will outperform a "fancy" model on a small data set.
 *  **Quality**: Are there *predictive* features in the data? Are no values (or very few values) missing, noisy, or incorrect? Is the scenario in which the data collected similar to the scenario in which your model will be used? These are examples of questions that we might ask to evaluate the quality of a data set.
 
 :::
 
+::: {.cell .markdown}
+
+One of the most important principles in machine learning is: **garbage in, garbage out**. If the data you use to train a machine learning model is problematic, or not well suited for the purpose, then even the best model will produce useless predictions.
+
+:::
 ::: {.cell .markdown}
 
 ### Purpose of exploratory data analysis
@@ -122,6 +128,16 @@ The first step is to learn more about the data:
 * What does each variable mean? What units are data recorded in?
 * How was data collected? Identify sampling issues, timeliness issues, fairness issues, etc.
 
+This is the step that is most often skipped, but it is by far the most essential!
+
+
+:::
+
+
+::: {.cell .markdown}
+
+
+
 
 For the Brooklyn Bridge dataset, you can review the associated documentation on the NYC Data website:
 
@@ -133,7 +149,7 @@ For the Brooklyn Bridge dataset, you can review the associated documentation on 
 
 ::: {.cell .markdown}
 
-### Load data and check that it is loaded directly
+### Load data and check that it is loaded correctly
 
 The next step is to load the data in preparation for your exploratory data analysis.
 
@@ -154,6 +170,10 @@ First, we will import some useful libraries:
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+# set up notebook to show all outputs, not only last one
+from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity = "all"
 ```
 :::
 
@@ -163,7 +183,9 @@ import seaborn as sns
 
 Now we are ready to read in our data!
 
-Our data is in CSV format, so will use the `read_csv` function in `pandas` to read in our data.  Function documentation: [pandas reference](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html)
+Our data is in CSV format, so will use the `read_csv` function in `pandas` to read in our data.  
+
+Function documentation: [pandas reference](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html)
 
 ```python
 pandas.read_csv(filepath_or_buffer, 
@@ -384,6 +406,8 @@ df[df['temperature'].isnull()]
 ::: {.cell .markdown}
 
 pandas includes routines to fill in missing data using the `fillna` function ([reference](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.fillna.html)). We will fill these using the "forward fill" method, which caries the last valid observation forward to fill in NAs.
+
+(Note: this makes sense only because we already sorted by date, and it's reasonable to expect adjacent hours to have similar weather!)
 
 :::
 
@@ -607,3 +631,11 @@ We see that certain weather conditions (very high temperature, heavy precipitati
 
 :::
 
+
+::: {.cell .markdown}
+
+## Next steps
+
+What are some signals that something is wrong with your data?
+
+:::
