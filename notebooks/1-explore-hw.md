@@ -240,7 +240,7 @@ url_cases = 'https://github.com/nytimes/covid-19-data/raw/master/us-states.csv'
 
 Finally, we are going to visualize the changes in human mobility over this time, for the location you have chosen, alongside either vaccination trends or cases trends.
 
-In the following cell, create a figure with seven subplots, arranged vertically. (You can refer to the example in the "Python + numpy" notebook from this week's lesson.) On the horizontal axis, put the `days_since...` array you computed in the previous cell. On the vertical axes, show (as a line):
+In the following cell, create a figure with seven subplots, arranged vertically. (You can refer to the example in the "Python + numpy" notebook from this week's lesson.) On the horizontal axis, put the date. On the vertical axes, show (as a line):
 
 * `retail_and_recreation_percent_change_from_baseline` in the top subplot
 * `grocery_and_pharmacy_percent_change_from_baseline` in the next subplot
