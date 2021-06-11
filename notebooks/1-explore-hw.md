@@ -211,7 +211,7 @@ Then, use `pandas` functions to check your new data frame and look at the first 
 
 ::: {.cell .code}
 ``` {.python}
-# TODO 8 - Vaccinations option
+# TODO Q8 - Vaccinations option
 
 url_vax = 'https://github.com/owid/covid-19-data/raw/master/public/data/vaccinations/us_state_vaccinations.csv'
 # df_vax = ...
@@ -223,7 +223,7 @@ url_vax = 'https://github.com/owid/covid-19-data/raw/master/public/data/vaccinat
 
 ::: {.cell .code}
 ``` {.python}
-# TODO 8 - Cases option
+# TODO Q8 - Cases option
 
 url_cases = 'https://github.com/nytimes/covid-19-data/raw/master/us-states.csv'
 # df_cases = ...
