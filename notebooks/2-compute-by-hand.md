@@ -20,7 +20,6 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 
-%matplotlib inline
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 ```
@@ -80,7 +79,15 @@ g.map(sns.scatterplot, 'value', 'y');
 
 ::: {.cell .markdown}
 
-Next, we will create a matrix $A$ by horizontally “stacking” a vector
+Of course, we will assume a linear model. For a given sample:
+
+$$\hat{y} = w_0 + w_1 x_1 + w_2 x_2$$
+
+:::
+
+::: {.cell .markdown}
+
+Next, we will create an "augmented" matrix $A$ by horizontally “stacking” a vector
 of 1s and the matrix $X$:
 
 $$ A = 
@@ -92,10 +99,8 @@ $$ A =
 \end{bmatrix},
 $$
 
-
-This will enable us to also compute the intercept, $\beta_0$, using the same matrix calculation as we use to compute $\beta_1$ and $\beta_2$.
-
 :::
+
 
 
 ::: {.cell .code}
@@ -107,23 +112,36 @@ A
 
 ::: {.cell .markdown}
 
-The optimal least squares values for the vector $\beta$ are
+Now we can represent our linear model more easily using matrices:
 
-$$\beta^* = (A^T A)^{-1} A^{T} y$$
+
+$$\hat{\mathbf{y}} = A\mathbf{w}$$
+
+where $\hat{\mathbf{y}}$ and $\mathbf{w}$ are vectors.
+
+:::
+
+
+
+::: {.cell .markdown}
+
+The optimal least squares values for the vector $w$ are
+
+$$w^* = (A^T A)^{-1} A^{T} \mathbf{y}$$
 
 
 Note that the least-squares solutions are the solutions of the matrix equation
 
-$$ A^T A \beta = A^T y$$
+$$ A^T A \mathbf{w} = A^T \mathbf{y}$$
 
 A matrix equation is in the form $Ax=b$, where $A$ is an $m \times n$ matrix and $b$ is a column vector with $m$ entries. It can be solved for $x$ by forming the augmented matrix $(A | b)$ and then using elementary row operations to get it in row reduced form.
 
 
-Thus, to get $\beta$ we will:
+Thus, to get $w$ we will:
 
 * Compute the matrix $A^T A$ and the vector $A^T y$.
-* Form the augmented matrix for the matrix equation $A^T A \beta = A^T y$: $(A^T A | A^T y)$
-* Row reduce to find the estimate for $\beta$.
+* Form the augmented matrix for the matrix equation $A^T A w = A^T y$: $(A^T A | A^T y)$
+* Row reduce to find the estimate for $w$, $w^* $.
 
 :::
 
@@ -156,7 +174,7 @@ A.T
 
 To solve
 
-$$ A^T A \beta = A^T y$$
+$$ A^T A w = A^T y$$
 
 we'll need $A^T A$:
 
@@ -307,7 +325,7 @@ $$
 
 and so
 
-$$ \beta^* = \left[ \frac{1597}{286}, \frac{1115}{1430}, \frac{-243}{143} \right] $$
+$$ w^* = \left[ \frac{1597}{286}, \frac{1115}{1430}, \frac{-243}{143} \right] $$
 
 :::
 
