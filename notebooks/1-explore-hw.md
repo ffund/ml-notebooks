@@ -154,7 +154,7 @@ Suppose I want the overall trend from Brooklyn, New York (Kings County): I would
 df_subset = df[(df['country_region'].eq("United States")) & (df['sub_region_1'].eq("New York")) & (df['sub_region_2'].eq("Kings County"))]
 ```
 
-In the following cell(s), fill in the code to create a data frame `df_subset` with data from a single U.S. state.
+In the following cell(s), fill in the code to create a data frame `df_subset` with data from a single U.S. state (but *not* New York).
 
 
 :::
