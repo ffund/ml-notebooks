@@ -265,9 +265,15 @@ Make sure to clearly label each axis. Use `matplotlib` library documentation to 
 
 ::: {.cell .markdown}
 
-**TODO** Q10: Answer the following question: Do the results seem to satisfy "common sense"? Explain, citing specific data from your plot to support your answer. Make sure to explain any trends, patterns, or notable anomalies observed in your data. Which trends, patterns, or notable anomalies are likely related to COVID-19 cases, non-pharmaceutical interventions such as stay-at-home orders, or vaccinations? Which trends, patterns, or notable anomalies are likely related to other factors?
+**TODO** Q10: Answer the following questions: 
 
-**TODO** Q11: In the [Calibrate Region](https://support.google.com/covid19-mobility/checklist/9834261?hl=en&ref_topic=9822927) checklist, Google suggests a number of reasons why the data might *not* be useful for understanding the effect of COVID-19-related lockdowns, or why the data might be misleading. 
+* Do the results seem to satisfy "common sense"? 
+* Make sure to explain any trends, patterns, or notable anomalies observed in your mobility data. 
+* Which trends, patterns, or notable anomalies in the mobility data are likely related to COVID-19 cases, non-pharmaceutical interventions such as stay-at-home orders, or vaccinations? 
+* Which trends, patterns, or notable anomalies in the mobility data are likely related to other factors?
+* Cite specific evidence from your plot to support your answer. 
+
+**TODO** Q11: In the [Calibrate Region](https://support.google.com/covid19-mobility/checklist/9834261?hl=en&ref_topic=9822927) checklist, Google suggests a number of reasons why their mobility data might *not* be useful for understanding the effect of COVID-19-related interventions, or why the data might be misleading. 
 
 * For the U.S. state you have chosen, briefly answer *all* of the questions in that checklist, and explain how your answer affects the validity of the data. 
 
