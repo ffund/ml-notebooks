@@ -1,11 +1,13 @@
 ---
 title:  'Exploratory data analysis'
+author: 'Fraida Fund'
 ---
 
 
 ::: {.cell .markdown}
 
 # Assignment: Exploratory data analysis
+
 
 **TODO**: Edit this cell to fill in your NYU Net ID and your name:
 
@@ -24,7 +26,13 @@ In this assignment, we will practice using exploratory data analysis on Google's
 
 This data was collected from Google Maps users around the world over the last few months - including you, *if* you have Google Maps on your phone and have turned on the Location History setting. It combines location history from a large number of users to capture the overall increase or decrease in time spent in places such as: retail and recreation facilities, groceries and pharmacies, parks, transit stations, workplaces, and residences.
 
+The data shows how users' mobility patterns - what types of places they spend time in - varied over the course of the COVID-19 pandemic.
+
 As you work through this notebook, you will see that some text and code cells are marked with a "TODO" at the top. You'll have to edit these cells to fill in the code or answer the questions as indicated.
+
+When you are finished, make sure you have run all of the cells in the notebook (in order), and then create a PDF from it. Submit the PDF on Gradescope.
+
+**Important note**: You won't necessarily have learned or seen in advance how to use all the Python commands and library functions you need to complete this assignment. That's OK. Part of the learning objective here is to practice finding and applying that kind of new information as you go! Use the library documentation, search the Internet, or ask questions on Ed if you need any help.
 
 :::
 
@@ -123,7 +131,7 @@ Then, use `info()` again to make sure your change was applied. Note the differen
 
 ::: {.cell .markdown}
 
-Next, you are going to extract the subset of data for the location of your choice. You can choose any location *except* Brooklyn, New York. (You can't choose Brooklyn because the example code I'm about to show you is for Brooklyn.)
+Next, you are going to extract the subset of data for the U.S. state of your choice. You can choose any location *except* New York.
 
 
 The data is reported for different regions, with different levels of granularity available. This is best explained by example:
@@ -146,8 +154,7 @@ Suppose I want the overall trend from Brooklyn, New York (Kings County): I would
 df_subset = df[(df['country_region'].eq("United States")) & (df['sub_region_1'].eq("New York")) & (df['sub_region_2'].eq("Kings County"))]
 ```
 
-In the following cell(s), fill in the code to create a data frame `df_subset` with data from a single location. You can go down to the `sub_region_1` level or the `sub_region_2` level - depending on the location you chose, the finer level of granularity may not be available.
-
+In the following cell(s), fill in the code to create a data frame `df_subset` with data from a single U.S. state.
 
 
 :::
@@ -164,7 +171,9 @@ In the following cell(s), fill in the code to create a data frame `df_subset` wi
 
 ::: {.cell .markdown}
 
-Is the data complete, or is some data not available for the location you have chosen? In the following cell, write code to check for missing data in the `...percent_change_from_baseline` fields.
+Is the data complete, or is some data not available for the location you have chosen? In the following cell, write code to check for missing data in the `...percent_change_from_baseline` fields. 
+
+Also check whether there are any missing rows of data. What date range is represented in this data? Is every day within that range included in the data?
 
 :::
 
@@ -178,57 +187,77 @@ Is the data complete, or is some data not available for the location you have ch
 
 ::: {.cell .markdown}
 
-**TODO** Q7:  Edit this cell to answer the following question: Is the data complete, or is some relevant data missing? Why would some locations only have partial data available (missing some `...percent_change_from_baseline` fields for some dates)? **Include a short quote from the material you read in the "Learn about the data" section to answer this question.**
+**TODO** Q7:  Edit this cell to answer the following question: Is the data complete, or is some relevant data missing? Why would some locations only have partial data available (missing some `...percent_change_from_baseline` fields for some dates)? (Even if, for the U.S. state you have chosen, the data is complete, explain why some data may be missing for other regions.)
+
+**Include a short quote from the material you read in the "Learn about the data" section to answer this question. Indicate that it is a quote using quotation marks or a block quote, and cite the source, including a URL.**
 
 :::
 
 
 ::: {.cell .markdown}
 
-For this data, the `date` field is important, but we don't necessarily care about the absolute date. Instead, we care about how many days have elapsed since the first confirmed case of COVID-19 in this location, how many days have elapsed since a "stay at home" order or similar rule was established in this location (if there was one) and how many days have elapsed since it was lifted (if applicable). 
+To track trends in cases and vaccinations alongside mobility trends, we can also read in data from several other sources. For example,
 
-For example, in Brooklyn, New York, I might compute:
+* Our World in Data distributes data about COVID-19 vaccination status over time for U.S. states in their [Github repository](https://github.com/owid/covid-19-data).
+* The New York Times distributes data about COVID-19 cumulative cases over time for U.S. states in their [Github repository](https://github.com/nytimes/covid-19-data).
 
-```
-days_since_lockdown = (df_subset['date'] - pd.to_datetime('2020-03-20 00:00:00')).dt.days.values
-# NYC lockdown March 20, 2020 https://www.nytimes.com/2020/03/20/us/coronavirus-today.html
-```
 
-Compute "days since [some relevant COVID-19 date]" for your location. In a comment, explain the significance of the date you have chosen, and include a link to a news article or other reference supporting the significance of the date. (The news article does not have to be in English.)
+You can choose whether to look at vaccination trends or case trends for the U.S. state you have selected. Use one of the following cells to read in the data, convert the `date` field to a `datetime`, and get the subset of the data that applies to the specific U.S. state for which you are exploring mobility data. 
+
+Then, use `pandas` functions to check your new data frame and look at the first few rows of data.
 
 :::
 
 
 ::: {.cell .code}
-```python
-# TODO Q8
-# days_since...
+``` {.python}
+# TODO 8 - Vaccinations option
+
+url_vax = 'https://github.com/owid/covid-19-data/raw/master/public/data/vaccinations/us_state_vaccinations.csv'
+# df_vax = ...
+# df_vax['date'] = ...
+# df_vax_subset = ...
+# check the data frame and look at a few rows
 ```
 :::
 
+::: {.cell .code}
+``` {.python}
+# TODO 8 - Cases option
+
+url_cases = 'https://github.com/nytimes/covid-19-data/raw/master/us-states.csv'
+# df_cases = ...
+# df_cases['date'] = ...
+# df_cases_subset = ...
+# check the data frame and look at a few rows
+```
+:::
 
 
 ::: {.cell .markdown}
 
 ## Visualize data
 
-Finally, we are going to visualize the changes in human mobility over this time, for the location you have chosen. 
+Finally, we are going to visualize the changes in human mobility over this time, for the location you have chosen, alongside either vaccination trends or cases trends.
 
-In the following cell, create a figure with six subplots, arranged vertically. (You can refer to the example in the "Python + numpy" notebook from this week's lesson.) On the horizontal axis, put the `days_since...` array you computed in the previous cell. On the vertical axes, show:
+In the following cell, create a figure with seven subplots, arranged vertically. (You can refer to the example in the "Python + numpy" notebook from this week's lesson.) On the horizontal axis, put the `days_since...` array you computed in the previous cell. On the vertical axes, show (as a line):
 
 * `retail_and_recreation_percent_change_from_baseline` in the top subplot
 * `grocery_and_pharmacy_percent_change_from_baseline` in the next subplot
 * `parks_percent_change_from_baseline` in the next subplot
 * `transit_stations_percent_change_from_baseline` in the next subplot
 * `workplaces_percent_change_from_baseline` in the next subplot
-* `residential_percent_change_from_baseline` in the bottom subplot
+* `residential_percent_change_from_baseline` in the next subplot
+* either COVID-19 cases or vaccinations in the bottom subplot
 
+Make sure to clearly label each axis. Use `matplotlib` library documentation to adjust your figures and make your plot look nice!
 
 :::
 
 ::: {.cell .code}
 ```python
 # TODO Q9
+# create visualization
 ```
 :::
 
@@ -236,9 +265,13 @@ In the following cell, create a figure with six subplots, arranged vertically. (
 
 ::: {.cell .markdown}
 
-**TODO** Q10: Answer the following question: Do the results seem to satisfy "common sense"? Explain, citing specific data from your plot to support your answer.
+**TODO** Q10: Answer the following question: Do the results seem to satisfy "common sense"? Explain, citing specific data from your plot to support your answer. Make sure to explain any trends, patterns, or notable anomalies observed in your data. Which trends, patterns, or notable anomalies are likely related to COVID-19 cases, non-pharmaceutical interventions such as stay-at-home orders, or vaccinations? Which trends, patterns, or notable anomalies are likely related to other factors?
 
-**TODO** Q11: In the [Calibrate Region](https://support.google.com/covid19-mobility/checklist/9834261?hl=en&ref_topic=9822927) checklist, Google suggests a number of reasons why the data might *not* be useful for understanding the effect of COVID-19-related lockdowns, or why the data might be misleading. For the location you have chosen, briefly answer all of the questions in that checklist. Based on your answers, do you think there are any serious problems associated with using this data for understanding user mobility changes due to COVID-19?
+**TODO** Q11: In the [Calibrate Region](https://support.google.com/covid19-mobility/checklist/9834261?hl=en&ref_topic=9822927) checklist, Google suggests a number of reasons why the data might *not* be useful for understanding the effect of COVID-19-related lockdowns, or why the data might be misleading. 
+
+* For the U.S. state you have chosen, briefly answer *all* of the questions in that checklist, and explain how your answer affects the validity of the data. 
+
+* Based on your answers, do you think there are any serious problems associated with using this data for understanding user mobility changes due to COVID-19?
 
 
 
