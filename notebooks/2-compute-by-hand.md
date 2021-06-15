@@ -8,7 +8,7 @@ author: 'Fraida Fund'
 
 ## Computing regression coefficients
 
-This notebook walks through the steps involved in manual (pen and paper) computation of the optimal least squares regression coefficients.
+This notebook walks through the steps involved in manual (pen and paper) computation of the optimal least squares regression coefficients, using the normal equations.
 
 We'll also show how to do each of these steps in Python, so that you can try other values for $X$ and $y$ and then check your work.
 
@@ -29,7 +29,7 @@ InteractiveShell.ast_node_interactivity = "all"
 
 ::: {.cell .markdown}
 
-We will start with the labeled data. Our training data includes four samples, with two features:
+We will start with the labeled data. Our data includes four samples, with two features:
 
 $$ X = 
 \begin{bmatrix}
@@ -87,7 +87,7 @@ $$\hat{y} = w_0 + w_1 x_1 + w_2 x_2$$
 
 ::: {.cell .markdown}
 
-Next, we will create an "augmented" matrix $A$ by horizontally “stacking” a vector
+Next, we will create a design matrix $A$ by horizontally “stacking” a vector
 of 1s and the matrix $X$:
 
 $$ A = 
@@ -115,9 +115,9 @@ A
 Now we can represent our linear model more easily using matrices:
 
 
-$$\hat{\mathbf{y}} = A\mathbf{w}$$
+$$\hat{\mathbf{\hat{y}}} = A\mathbf{w}$$
 
-where $\hat{\mathbf{y}}$ and $\mathbf{w}$ are vectors.
+where $\hat{\mathbf{\hat{y}}}$ and $\mathbf{w}$ are vectors.
 
 :::
 
@@ -141,7 +141,7 @@ Thus, to get $w$ we will:
 
 * Compute the matrix $A^T A$ and the vector $A^T y$.
 * Form the augmented matrix for the matrix equation $A^T A w = A^T y$: $(A^T A | A^T y)$
-* Row reduce to find the estimate for $w$, $w^* $.
+* Row reduce to find the optimal value for $w$, $w^* $.
 
 :::
 
