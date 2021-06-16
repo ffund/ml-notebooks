@@ -155,7 +155,7 @@ x_line = [np.min(x_train), np.max(x_train)]
 y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
 
 sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
-sns.lineplot(x_line, y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color='red');
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -603,7 +603,7 @@ mse_perfect_coef
 
 ::: {.cell .markdown}
 
-Important: I thought we selected the coefficients that minimize MSE! But sometimes our linear regression doesn't select the "right" coefficients, even if they give us lower MSE?
+Important: I thought we selected the coefficients that minimize MSE! But sometimes our linear regression doesn't select the "true" coefficients?
 
 :::
 
