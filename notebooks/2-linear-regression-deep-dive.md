@@ -102,7 +102,7 @@ intercept = 1
 
 ::: {.cell .markdown}
 
-## Simple linear regression (univariate)
+## Simple linear regression 
 
 :::
 
@@ -118,6 +118,7 @@ intercept = 1
 ::: {.cell .code}
 ```python
 x_train, y_train = generate_linear_regression_data(n=n_samples, d=1, coef=coef, intercept=intercept)
+x_test,  y_test  = generate_linear_regression_data(n=50, d=1, coef=coef, intercept=intercept)
 ```
 :::
 
@@ -164,15 +165,21 @@ plt.ylabel('y');
 ::: {.cell .code}
 ```python
 # Note: other ways to do the same thing...
+# first, add a ones column to design matrix
 x_tilde = np.hstack((np.ones((n_samples, 1)), x_train))
 
-# using matrix operations to find (X^T X)^{-1} X^T y
+# using matrix operations to find w = (X^T X)^{-1} X^T y
 print( (np.linalg.inv((x_tilde.T.dot(x_tilde))).dot(x_tilde.T)).dot(y_train) )
-# using the lstsq solver, which solves ax = b 
-# a may be under-, well-, or over-determined
-print( np.linalg.lstsq(x_tilde,y_train,rcond=0)[0] ) 
-# using solve: only works on matrix that is square and of full-rank
+
+# using solve on normal equations: X^T X w = X^T y
+# solve only works on matrix that is square and of full-rank
+# see https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html
 print( np.linalg.solve(x_tilde.T.dot(x_tilde), x_tilde.T.dot(y_train)) )
+
+# using the lstsq solver 
+# problem may be under-, well-, or over-determined
+# see https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html
+print( np.linalg.lstsq(x_tilde,y_train,rcond=0)[0] ) 
 ```
 :::
 
@@ -194,13 +201,15 @@ Quick digression - what if we don't want to bother with intercept?
 x_train_mr = x_train - np.mean(x_train)
 y_train_mr = y_train - np.mean(y_train)
 sns.scatterplot(x=x_train_mr.squeeze(), y=y_train_mr, s=50);
+plt.xlabel('x');
+plt.ylabel('y');
 ```
 :::
 
 
 ::: {.cell .markdown}
 
-Note that now the data is mean removed - zero mean in every dimension. 
+Note that now the data is mean removed - zero mean in every dimension. (Removing the mean is also called *centering* the data.)
 
 This time, the fitted linear regression has 0 intercept:
 
@@ -217,7 +226,6 @@ print("Coefficient list: ", reg_mr.coef_)
 
 
 
-
 ::: {.cell .markdown}
 
 ### Predict some new points
@@ -229,7 +237,6 @@ OK, now we can predict some new points:
 
 ::: {.cell .code}
 ```python
-x_test, y_test = generate_linear_regression_data(n=50)
 y_test_hat = reg_simple.intercept_ + np.dot(x_test,reg_simple.coef_)
 ```
 :::
@@ -245,8 +252,10 @@ y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
 
 ::: {.cell .code}
 ```python
-sns.lineplot(x_line, y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color='red');
 sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, s=50, color='purple');
+plt.xlabel('x');
+plt.ylabel('y');
 ```
 :::
 
@@ -313,13 +322,13 @@ p = plt.ylabel('y')
 
 coefs = np.arange(2, 8, 0.5)
 mses = np.zeros(len(coefs))
+
 for idx, c in enumerate(coefs):
-  y_test_coef = (reg_simple.intercept_ + np.dot(x_test,c)).squeeze()
-  mses[idx] =  1.0/(len(y_test_coef)) * np.sum((y_test - y_test_coef)**2)
+  y_test_hat_c = (reg_simple.intercept_ + np.dot(x_test,c)).squeeze()
+  mses[idx] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
   x_line = [np.min(x_train), np.max(x_train)]
   y_line = [x_line[0]*c + reg_simple.intercept_, x_line[1]*c + intercept]
-  p = sns.lineplot(x_line, y_line, color='red', alpha=0.2);
-
+  p = sns.lineplot(x=x_line, y=y_line, color='red', alpha=0.2);
 ```
 :::
 
@@ -333,7 +342,6 @@ sns.scatterplot(x=coefs, y=mses, s=50);
 sns.scatterplot(x=reg_simple.coef_, y=mse_simple, color='red', s=100);
 p = plt.xlabel('w1');
 p = plt.ylabel('Test MSE');
-
 ```
 :::
 
@@ -402,8 +410,8 @@ The variance of $y$ is the mean sum of the squares of the distances from each $y
 
 ::: {.cell .code}
 ```python
-plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
-plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='magenta');
+plt.hlines(y=mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
+plt.vlines(x_test, ymin=mean_y, ymax=y_test, alpha=0.5, color='magenta');
 sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 plt.xlabel('x');
 plt.ylabel('y');
@@ -475,6 +483,7 @@ MSE for this example is 0, R2 is 1.
 ::: {.cell .code}
 ```python
 x_train, y_train = generate_linear_regression_data(n=n_samples, d=1, coef=coef, intercept=intercept, sigma=2)
+x_test,  y_test =  generate_linear_regression_data(n=50, d=1, coef=coef, intercept=intercept, sigma=2)
 ```
 :::
 
@@ -524,13 +533,11 @@ plt.ylabel('y');
 
 ### Predict some new points
 
-
 :::
 
 
 ::: {.cell .code}
 ```python
-x_test, y_test = generate_linear_regression_data(n=50, d=1, coef=coef, intercept=intercept, sigma=2)
 y_test_hat = reg_noisy.intercept_ + np.dot(x_test,reg_noisy.coef_)
 ```
 :::
@@ -548,7 +555,6 @@ y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
 ::: {.cell .code}
 ```python
-#sns.scatterplot(x=x_train.squeeze(), y=y_train);
 sns.lineplot(x=x_line, y=y_line, color='red');
 sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, color='red', s=50);
 sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
@@ -576,7 +582,9 @@ mse_noisy
 
 ::: {.cell .markdown}
 
-The MSE is higher than before! Does this mean our estimate of $w_0$ and $w_1$ is not optimal?
+The MSE is higher than before! 
+
+Does this mean our estimate of $w_0$ and $w_1$ is not optimal?
 
 Since we generated the data, we know the "true" coefficient value and we can see how much the MSE would be with the true coefficient values.
 
@@ -592,17 +600,6 @@ mse_perfect_coef
 :::
 
 
-::: {.cell .markdown}
-
-That's still a higher MSE than we had before, even with a "perfect" estimate of the coefficients.
-
-:::
-
-::: {.cell .code}
-```python
-mse_simple
-```
-:::
 
 ::: {.cell .markdown}
 
@@ -633,20 +630,20 @@ mse_train_perfect
 
 ::: {.cell .markdown}
 
-The "correct" coefficients actually had slightly higher MSE on the training set. We fit parameters so that they are optimal on the *training* set, then we use the test set to understand how the model will generalize to new, unseen data.
+The "correct" coefficients had slightly higher MSE on the training set than the fitted coefficients. We fit parameters so that they are optimal on the *training* set, then we use the test set to understand how the model will generalize to new, unseen data.
 
 :::
 
 
 ::: {.cell .markdown}
 
-We saw some error due to noise in the data, and some due to error in the parameter estimates. 
+We saw that part of the MSE is due to noise in the data, and part is due to error in the parameter estimates. 
 
-In a couple of weeks - we will formalize this discussion of different sources of error:
+Soon - we will formalize this discussion of different sources of error:
 
 * Error in parameter estimates
 * "Noise" - any variation in data that is not a function of the $X$ that we use as input to the model
-* Other error - wrong hypothesis class, for example
+* Other error - model (hypothesis class) not a good choice for the data, for example
 
 :::
 
@@ -667,10 +664,10 @@ mses_test = np.zeros(len(coefs))
 mses_train = np.zeros(len(coefs))
 
 for idx, c in enumerate(coefs):
-  y_test_coef = (reg_noisy.intercept_ + np.dot(x_test,c)).squeeze()
-  mses_test[idx] =  1.0/(len(y_test_coef)) * np.sum((y_test - y_test_coef)**2)
-  y_train_coef = (reg_noisy.intercept_ + np.dot(x_train,c)).squeeze()
-  mses_train[idx] =  1.0/(len(y_train_coef)) * np.sum((y_train - y_train_coef)**2)
+  y_test_hat_c = (reg_noisy.intercept_ + np.dot(x_test,c)).squeeze()
+  mses_test[idx] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
+  y_train_hat_c = (reg_noisy.intercept_ + np.dot(x_train,c)).squeeze()
+  mses_train[idx] =  1.0/(len(y_train_hat_c)) * np.sum((y_train - y_train_hat_c)**2)
 ```
 :::
 
@@ -690,7 +687,7 @@ plt.subplot(1,2,2)
 sns.lineplot(x=coefs, y=mses_test)
 sns.scatterplot(x=coefs, y=mses_test, s=50);
 sns.scatterplot(x=reg_noisy.coef_, y=mse_noisy, color='red', s=100);
-plt.title("Testing MSE vs. coefficient");
+plt.title("Test MSE vs. coefficient");
 plt.xlabel('w1');
 plt.ylabel('MSE');
 ```
@@ -702,7 +699,9 @@ plt.ylabel('MSE');
 
 In the plot on the left (for training MSE), the red dot (our coefficient estimate) should always have minimum MSE, because we select parameters to minimize MSE on the training set.
 
-In the plot on the right (for test MSE), the red dot might not have the minimum MSE, because there is variance in the data. The best coefficient on the training set might not be the best coefficient on the test set. This gives us some idea of how our model will generalize to new, unseen data. We may suspect that if the coefficient estimate is not perfect for *this* test data, it might have some error on other new, unseen data, too.
+In the plot on the right (for test MSE), the red dot might not have the minimum MSE, because the best coefficient on the training set might not be the best coefficient on the test set. This gives us some idea of how our model will generalize to new, unseen data. We may suspect that if the coefficient estimate is not perfect for *this* test data, it might have some error on other new, unseen data, too.
+
+If you re-run this notebook many times, you'll get a new random sample of training and test data each time. Sometimes, the "true" coefficients may have smaller MSE on the test set than the estimated coefficients. On other runs, the estimated coefficients might have smaller MSE on the test set.
 
 :::
 
@@ -733,7 +732,7 @@ mean_y
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
-plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='magenta');
+plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='magenta', alpha=0.5);
 sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 plt.xlabel('x');
 plt.ylabel('y');
@@ -743,7 +742,7 @@ plt.ylabel('y');
 
 ::: {.cell .code}
 ```python
-plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='red');
+plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='red', alpha=0.5);
 sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
@@ -841,7 +840,7 @@ What does a negative R2 mean, in terms of a comparison to "prediction by mean"?
 
 ::: {.cell .markdown}
 
-## It's not just noise
+## Residual analysis
 
 :::
 
@@ -897,13 +896,55 @@ sns.lmplot(x="x", y="y", col="dataset", hue="dataset",
 :::
 
 ::: {.cell .markdown}
+
+Does the linear model fit well?
+
+* the linear model is a good fit for Dataset I
+* Dataset II is clearly non-linear
+* Dataset III has an outlier
+* Dataset IV has a high leverage point
+
+:::
+::: {.cell .markdown}
+
 Easy to identify problems in 1D - what about in higher D?
 
--   Plot $y$ against $\hat{y}$
--   Plot residuals against $y$
--   Plot residuals against each $x$
--   Plot residuals against time
+-   Plot $\hat{y}$ against $y$
+-   Plot residuals against $\hat{y}$
+-   Plot residuals against each $x$ (including any $x$ not in the model)
+-   Plot residuals against time (for time series data)
+
+What should each of these plots look like if the regression is "good"?
+
 :::
+
+
+::: {.cell .code}
+``` {.python}
+data_i   = data_i.assign(   yhat = reg_i.predict(  data_i[['x']]) )
+data_ii  = data_ii.assign(  yhat = reg_ii.predict( data_ii[['x']]) )
+data_iii = data_iii.assign( yhat = reg_iii.predict( data_iii[['x']]) )
+data_iv  = data_iv.assign(  yhat = reg_iv.predict(  data_iv[['x']]) )
+
+data_i   = data_i.assign(   residual = data_i['y'] - data_i['yhat'] )
+data_ii  = data_ii.assign(  residual = data_ii['y'] - data_ii['yhat'] )
+data_iii = data_iii.assign( residual = data_iii['y'] - data_iii['yhat'] )
+data_iv  = data_iv.assign(  residual = data_iv['y'] - data_iv['yhat'] )
+
+data_all = pd.concat([data_i, data_ii, data_iii, data_iv])
+data_all.head()
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+sns.lmplot(x="x", y="residual", col="dataset", hue="dataset", 
+           data=data_all, col_wrap=2, ci=None, palette="muted", height=4, 
+           scatter_kws={"s": 50, "alpha": 1}, fit_reg=False);
+```
+:::
+
 
 ::: {.cell .markdown}
 
@@ -918,6 +959,8 @@ Easy to identify problems in 1D - what about in higher D?
 ::: {.cell .code}
 ```python
 x_train, y_train = generate_linear_regression_data(n=n_samples, d=2, coef=[5,5], intercept=intercept)
+x_test,  y_test  = generate_linear_regression_data(n=50, d=2, coef=[5,5], intercept=intercept)
+
 ```
 :::
 
@@ -945,6 +988,12 @@ plt.scatter(x_train[:,1],  y_train);
 plt.xlabel("x2");
 plt.ylabel("y");
 ```
+:::
+
+::: {.cell .markdown}
+
+Recall that there is no stochastic noise in this data - so it fits a linear model perfectly. But it's more difficult to see that linear relationship in higher dimensions.
+
 :::
 
 ::: {.cell .markdown}
@@ -996,13 +1045,13 @@ interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
 
 ::: {.cell .code}
 ```python
-coefs = np.arange(4.5, 5.5, 0.05)
+coefs = np.arange(3.0, 7.0, 0.05)
 mses_train = np.zeros((len(coefs), len(coefs)))
 
 for idx_1, c_1 in enumerate(coefs):
   for idx_2, c_2 in enumerate(coefs):
-    y_train_coef = (reg_multi.intercept_ + np.dot(x_train,[c_1, c_2])).squeeze()
-    mses_train[idx_1,idx_2] =  1.0/(len(y_train_coef)) * np.sum((y_train - y_train_coef)**2)
+    y_train_hat_c = (reg_multi.intercept_ + np.dot(x_train,[c_1, c_2])).squeeze()
+    mses_train[idx_1,idx_2] =  1.0/(len(y_train_hat_c)) * np.sum((y_train - y_train_hat_c)**2)
 ```
 :::
 
@@ -1010,12 +1059,39 @@ for idx_1, c_1 in enumerate(coefs):
 ```python
 plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c='red')
 p = plt.contour(X1, X2, mses_train, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w2');
 plt.ylabel('w1');
 ```
 :::
+
+
+::: {.cell .code}
+```python
+coefs = np.arange(3.0, 7.0, 0.05)
+mses_test = np.zeros((len(coefs), len(coefs)))
+
+for idx_1, c_1 in enumerate(coefs):
+  for idx_2, c_2 in enumerate(coefs):
+    y_test_hat_c = (reg_multi.intercept_ + np.dot(x_test,[c_1, c_2])).squeeze()
+    mses_test[idx_1,idx_2] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
+```
+:::
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(5,5));
+X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c='red')
+p = plt.contour(X1, X2, mses_test, levels=5);
+plt.clabel(p, inline=1, fontsize=10);
+plt.xlabel('w2');
+plt.ylabel('w1');
+```
+:::
+
 
 ::: {.cell .markdown}
 
@@ -1030,6 +1106,7 @@ plt.ylabel('w1');
 ::: {.cell .code}
 ```python
 x_train, y_train = generate_linear_regression_data(n=n_samples, d=2, coef=[5,5], intercept=intercept, sigma=5)
+x_test,  y_test  = generate_linear_regression_data(n=50, d=2, coef=[5,5], intercept=intercept, sigma=5)
 ```
 :::
 
@@ -1096,13 +1173,13 @@ interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
 
 ::: {.cell .code}
 ```python
-coefs = np.arange(3, 7, 0.05)
+coefs = np.arange(3.0, 7.0, 0.05)
 mses_train = np.zeros((len(coefs), len(coefs)))
 
 for idx_1, c_1 in enumerate(coefs):
   for idx_2, c_2 in enumerate(coefs):
-    y_train_coef = (reg_multi_noisy.intercept_ + np.dot(x_train,[c_1, c_2])).squeeze()
-    mses_train[idx_1,idx_2] =  1.0/(len(y_train_coef)) * np.sum((y_train - y_train_coef)**2)
+    y_train_hat_c = (reg_multi_noisy.intercept_ + np.dot(x_train,[c_1, c_2])).squeeze()
+    mses_train[idx_1,idx_2] =  1.0/(len(y_train_hat_c)) * np.sum((y_train - y_train_hat_c)**2)
 ```
 :::
 
@@ -1110,6 +1187,7 @@ for idx_1, c_1 in enumerate(coefs):
 ```python
 plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.scatter(x=reg_multi_noisy.coef_[1], y=reg_multi_noisy.coef_[0], c='red')
 p = plt.contour(X1, X2, mses_train, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w2');
@@ -1117,268 +1195,293 @@ plt.ylabel('w1');
 ```
 :::
 
-::: {.cell .markdown}
 
-## Example with semi-realistic data
-
-:::
-
-::: {.cell .markdown}
-To illustrate principles of linear regression, we are going to use some
-data from the textbook \"An Introduction to Statistical Learning with
-Applications in R\" (Gareth James, Daniela Witten, Trevor Hastie, Robert
-Tibshirani) ([PDF
-link](https://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf)).
-
-The dataset is described as follows:
-
-> Suppose that we are statistical consultants hired by a client to
-> provide advice on how to improve sales of a particular product. The
-> `Advertising` data set consists of the sales of that product in 200
-> different markets, along with advertising budgets for the product in
-> each of those markets for three different media: TV, radio, and
-> newspaper. \... It is not possible for our client to directly increase
-> sales of the product. On the other hand, they can control the
-> advertising expenditure in each of the three media. Therefore, if we
-> determine that there is an association between advertising and sales,
-> then we can instruct our client to adjust advertising budgets, thereby
-> indirectly increasing sales. In other words, our goal is to develop an
-> accurate model that can be used to predict sales on the basis of the
-> three media budgets.
-
-Sales are reported in thousands of units, and TV, radio, and newspaper
-budgets, are reported in thousands of dollars.
-
-The data is available online at the [textbook\'s
-website](https://www.statlearning.com/s/Advertising.csv). We
-can get the URL for the actual data file by right-clicking on the
-`Advertising.csv` link and choosing \"Copy link address\" in Google
-Chrome (or equivalent in other browsers).
-:::
-
-::: {.cell .markdown}
-### Read in data
-:::
 
 ::: {.cell .code}
 ```python
-url = 'https://www.statlearning.com/s/Advertising.csv'
-df = pd.read_csv(url, index_col=0)
-df.head()
-```
-:::
+coefs = np.arange(3.0, 7.0, 0.05)
+mses_test = np.zeros((len(coefs), len(coefs)))
 
-::: {.cell .markdown colab_type="text" id="7GMJO4xj_7Eg"}
-Note that in this dataset, the first column in the data file is the row
-label; that\'s why we use `index_col=0` in the `read_csv` command. If we
-would omit that argument, then we would have an additional (unnamed)
-column in the dataset, containing the row number.
-
-You can try removing the `index_col` argument and re-running the cell
-above, to see the effect.
-:::
-
-::: {.cell .code}
-```python
-sns.pairplot(df);
-```
-:::
-
-::: {.cell .markdown}
-The most important panels here are on the bottom row, where `sales` is
-on the vertical axis and the advertising budgets are on the horizontal
-axes.
-
-It appears, at least from a quick inspection, that each type of
-advertising - TV, radio, and newspaper - potentially has a positive
-effect on sales, although the strength of the effect differs by
-advertising medium.
-:::
-
-::: {.cell .markdown}
-### Split up data
-
-Next, we will split up data into \"training\" and \"testing\" sets; we
-are interested in evaluating model performance by its predictions on new
-data, not by how well it fits the data used to estimate the model
-parameters.
-
-(In a later lecture, we will discuss better ways to divide the data, but
-for now, this will suffice.)
-
-We will use 70% of the data for training and the remaining 30% to test
-the regression model.
-:::
-
-::: {.cell .code}
-```python
-train, test = train_test_split(df, test_size=0.3)
+for idx_1, c_1 in enumerate(coefs):
+  for idx_2, c_2 in enumerate(coefs):
+    y_test_hat_c = (reg_multi_noisy.intercept_ + np.dot(x_test,[c_1, c_2])).squeeze()
+    mses_test[idx_1,idx_2] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
 ```
 :::
 
 ::: {.cell .code}
 ```python
-train.info()
+plt.figure(figsize=(5,5));
+X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.scatter(x=reg_multi_noisy.coef_[1], y=reg_multi_noisy.coef_[0], c='red')
+p = plt.contour(X1, X2, mses_test, levels=5);
+plt.clabel(p, inline=1, fontsize=10);
+plt.xlabel('w2');
+plt.ylabel('w1');
 ```
 :::
 
-::: {.cell .code}
-```python
-test.info()
-```
-:::
+
+
 
 ::: {.cell .markdown}
-### Fit a simple linear regression
-:::
 
-::: {.cell .code}
-```python
-reg_tv = LinearRegression().fit(train[['TV']], train['sales'])
-reg_radio = LinearRegression().fit(train[['radio']], train['sales'])
-reg_news = LinearRegression().fit(train[['newspaper']], train['sales'])
-```
+## Linear basis function regression
+
 :::
 
 ::: {.cell .markdown}
 
-### Interpreting the regression coefficients
+The assumptions of the linear model (that the target variable can be predicted as a linear combination of the features) can be restrictive. We can capture more complicated relationships using linear basis function regression.
 
-One of the benefits of linear regression is its interpretability - from
-the regression coefficient, we can get a sense of how the target
-variable varies with changes in the feature variable.
 
-For example, if $w_1 = 0.0475$ for the TV regression, we can say that an
-additional \$1,000 spend on TV advertising is, on average, associated
-with selling approximately 47.5 units of the product. Note that:
-
--   we can show a correlation, but can\'t say that the relationship is
-    causative.
--   the value for $w_1$ is only an *estimate* of the true relationship
-    between TV ad dollars and sales. We know that the estimate may have
-    some error.
-:::
-
-::: {.cell .code}
-```python
-print("TV: ", reg_tv.coef_[0], reg_tv.intercept_)
-print("Radio: ", reg_radio.coef_[0], reg_radio.intercept_)
-print("Newspaper: ", reg_news.coef_[0], reg_news.intercept_)
-```
-:::
-
-::: {.cell .markdown}
-In this example, radio appears to be most effective at driving sales of
-the product.
-
-In general, we have to be careful about directly comparing regression
-coefficients - if columns have different scales, we can\'t compare the
-magnitude of the coefficients directly. However, we can infer something
-about the relationship between the feature and target variable from the
-sign of the coefficient.
-:::
-
-::: {.cell .markdown}
-### Plot data and regression line
-:::
-
-::: {.cell .code}
-```python
-fig = plt.figure(figsize=(12,3))
-
-plt.subplot(1,3,1)
-sns.scatterplot(data=train, x="TV", y="sales");
-sns.lineplot(data=train, x="TV", y=reg_tv.predict(train[['TV']]), color='red');
-
-plt.subplot(1,3,2)
-sns.scatterplot(data=train, x="radio", y="sales");
-sns.lineplot(data=train, x="radio", y=reg_radio.predict(train[['radio']]), color='red');
-
-plt.subplot(1,3,3)
-sns.scatterplot(data=train, x="newspaper", y="sales");
-sns.lineplot(data=train, x="newspaper", y=reg_news.predict(train[['newspaper']]), color='red');
-```
 :::
 
 ::: {.cell .markdown}
 
-### Compute R2 for simple regression
+### Generate some data
 
 :::
 
 
 ::: {.cell .code}
-```python
-y_pred_tv = reg_tv.predict(test[['TV']])
-y_pred_radio = reg_radio.predict(test[['radio']])
-y_pred_news = reg_news.predict(test[['newspaper']])
+``` {.python}
+#@title Data generating function
+
+import itertools
+
+def generate_linear_basis_data(n=100, d=2, coef=[1,1,0.5,0.5,1], intercept=1, sigma=0):
+  x = np.random.randn(n,d)
+  x = np.column_stack((x, x**2 ))
+  for pair in list(itertools.combinations(range(d), 2)):
+    x = np.column_stack((x, x[:,pair[0]]*x[:,pair[1]]))
+  y = (np.dot(x, coef) + intercept).squeeze() + sigma * np.random.randn(n)
+  return x[:,:d], y
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+x_train, y_train = generate_linear_basis_data(sigma=0.2)
+x_test,  y_test  = generate_linear_basis_data(n=50, sigma=0.2)
 ```
 :::
 
 ::: {.cell .code}
-```python
-r2_tv = 1-np.mean( (y_pred_tv - test['sales'])**2 / np.std(test['sales'])**2 )
-r2_radio = 1-np.mean( (y_pred_radio - test['sales'])**2 / np.std(test['sales'])**2 )
-r2_news = 1-np.mean( (y_pred_news - test['sales'])**2 / np.std(test['sales'])**2 )
-print("TV: ", r2_tv)
-print("Radio: ", r2_radio)
-print("Newspaper: ", r2_news)
+``` {.python}
+print(x_train.shape)
+print(y_train.shape)
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+plt.figure(figsize=(10,5));
+plt.subplot(1,2,1);
+plt.scatter(x_train[:,0],  y_train);
+plt.xlabel("x1");
+plt.ylabel("y");
+plt.subplot(1,2,2);
+plt.scatter(x_train[:,1],  y_train);
+plt.xlabel("x2");
+plt.ylabel("y");
+```
+:::
+
+
+
+::: {.cell .markdown}
+
+### Fit a linear regression
+
+:::
+
+::: {.cell .code}
+``` {.python}
+reg_lbf = LinearRegression().fit(x_train, y_train)
+print("Intercept: " , reg_lbf.intercept_)
+print("Coefficient list: ", reg_lbf.coef_)
+```
+:::
+
+
+::: {.cell .markdown}
+
+### Evaluate model
+
+:::
+
+
+::: {.cell .code}
+``` {.python}
+y_train_hat = reg_lbf.predict(x_train)
+print("Training MSE: ", metrics.mean_squared_error(y_train, y_train_hat))
+print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+y_test_hat = reg_lbf.predict(x_test)
+print("Test MSE: ", metrics.mean_squared_error(y_test, y_test_hat))
+print("Test R2:  ", metrics.r2_score(y_test, y_test_hat))
+```
+:::
+
+
+::: {.cell .markdown}
+
+### Residual analysis
+
+:::
+
+
+::: {.cell .code}
+``` {.python}
+residual_train = y_train - y_train_hat
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+_ = sns.scatterplot(x=y_train, y=y_train_hat)
+_ = plt.xlabel('y')
+_ = plt.ylabel('y_hat')
 ```
 :::
 
 ::: {.cell .markdown}
-Although radio ads have a larger effect on sales than TV ads, the effect
-of TV ads is better *explained* by our model than the effect of radio
-ads.
-:::
 
-::: {.cell .markdown}
-### Fit a multiple linear regression
+Is the error random? Or does it look systematic?
+
 :::
 
 ::: {.cell .code}
-```python
-reg_multi_ad = LinearRegression().fit(train[['TV', 'radio', 'newspaper']], train['sales'])
-print("Coefficients (TV, radio, newspaper):", reg_multi_ad.coef_)
-print("Intercept: ", reg_multi_ad.intercept_)
+``` {.python}
+_ = sns.scatterplot(x=y_train_hat, y=residual_train)
+_ = plt.xlabel('y_hat')
+_ = plt.ylabel('Residual')
 ```
 :::
 
-::: {.cell .markdown colab_type="text" id="3DkMkW5QHz_o"}
-We notice that the coefficients for TV, radio, and newspaper ads are
-different than they had been in the single regression case. In
-particular, we previously estimated that newspaper ads had a positive
-effect on sales, similar in magnitude to TV ads. Now, the newspaper ads
-are estimated as having an effect much closer to zero.
 
-This is because:
+::: {.cell .markdown}
 
--   In the simple regression case, the coefficent for newspaper ads
-    represents the effect of an increase in newspaper advertising.
--   In the multiple regression case, the coefficient for newspaper ads
-    represents the effect of an increase in newspaper advertising *while
-    holding TV and radio advertising* constant.
+Since there is clearly some non-linearity, we can try to fit a model to a non-linear transformation of the features.
 
-In the simple regression case, the observed \"association\" between
-newspaper advertising and sales was actually due to a relationship
-between newspaper spending and spending on other kinds of advertising.
-There is a correlation between newspaper spending and radio spending (as
-can be observed in the pairplot); in markets where we spent more on
-newspaper advertising, we also spent more on radio advertising. In the
-simple linear regression, newspaper ads got \"credit\" for the effect of
-radio advertising on sales, even though the newspaper advertising itself
-did not improve sales.
-:::
-
-::: {.cell .markdown }
-### Compute R2 for multiple regression
 :::
 
 ::: {.cell .code}
-```python
-y_pred_multi_ad = reg_multi_ad.predict(test[['TV', 'radio', 'newspaper']])
+``` {.python}
+x_train_trans = np.column_stack((x_train, x_train**2))
 
-r2_multi_ad = 1-np.mean( (y_pred_multi_ad - test['sales'])**2 / np.std(test['sales'])**2 )
-print("Multiple regression: ", r2_multi_ad)
+reg_lbf_trans = LinearRegression().fit(x_train_trans, y_train)
+print("Intercept: " , reg_lbf_trans.intercept_)
+print("Coefficient list: ", reg_lbf_trans.coef_)
+
+y_train_trans_hat = reg_lbf_trans.predict(x_train_trans)
+print("Training MSE: ", metrics.mean_squared_error(y_train, y_train_trans_hat))
+print("Training R2:  ", metrics.r2_score(y_train, y_train_trans_hat))
+
+residual_train_trans = y_train - y_train_trans_hat
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+_ = sns.scatterplot(x=y_train, y=y_train_trans_hat)
+_ = plt.xlabel('y')
+_ = plt.ylabel('y_hat')
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+_ = sns.scatterplot(x=y_train, y=residual_train_trans)
+_ = plt.xlabel('y')
+_ = plt.ylabel('Residual')
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+plt.figure(figsize=(10,5));
+plt.subplot(1,2,1);
+plt.scatter(x_train[:,0],  residual_train_trans);
+plt.xlabel("x1");
+plt.ylabel("Residual");
+plt.subplot(1,2,2);
+plt.scatter(x_train[:,1],  residual_train_trans);
+plt.xlabel("x2");
+plt.ylabel("Residual");
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+x_train_inter = np.column_stack((x_train_trans, x_train[:,0]*x_train[:,1]))
+
+reg_lbf_inter = LinearRegression().fit(x_train_inter, y_train)
+print("Intercept: " , reg_lbf_inter.intercept_)
+print("Coefficient list: ", reg_lbf_inter.coef_)
+
+y_train_inter_hat = reg_lbf_inter.predict(x_train_inter)
+print("Training MSE: ", metrics.mean_squared_error(y_train, y_train_inter_hat))
+print("Training R2:  ", metrics.r2_score(y_train, y_train_inter_hat))
+
+residual_train_inter = y_train - y_train_inter_hat
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+_ = sns.scatterplot(x=y_train, y=y_train_inter_hat)
+_ = plt.xlabel('y')
+_ = plt.ylabel('y_hat')
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+_ = sns.scatterplot(x=y_train, y=residual_train_inter)
+_ = plt.xlabel('y')
+_ = plt.ylabel('Residual')
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+plt.figure(figsize=(10,5));
+plt.subplot(1,2,1);
+plt.scatter(x_train[:,0],  residual_train_inter);
+plt.xlabel("x1");
+plt.ylabel("Residual");
+plt.subplot(1,2,2);
+plt.scatter(x_train[:,1],  residual_train_inter);
+plt.xlabel("x2");
+plt.ylabel("Residual");
+```
+:::
+
+::: {.cell .markdown}
+
+### Evaluate on test set again
+
+:::
+
+::: {.cell .code}
+``` {.python}
+x_test_inter = np.column_stack((x_test, x_test**2))
+x_test_inter = np.column_stack((x_test_inter, x_test[:,0]*x_test[:,1]))
+
+y_test_hat = reg_lbf_inter.predict(x_test_inter)
+print("Test MSE: ", metrics.mean_squared_error(y_test, y_test_hat))
+print("Test R2:  ", metrics.r2_score(y_test, y_test_hat))
 ```
 :::
