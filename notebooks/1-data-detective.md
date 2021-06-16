@@ -141,6 +141,7 @@ The link points to the most recent week's worth of available data, but this data
 ```python
 url = 'https://data.ny.gov/api/views/4dbf-24u2/rows.csv?accessType=DOWNLOAD&sorting=true'
 df_thruway = pd.read_csv(url)
+df_thruway.head()
 ```
 :::
 
@@ -197,6 +198,7 @@ This time, we'll retrieve the data from Github.
 ::: {.cell .code}
 ```python
 df_headline = pd.read_csv("onion/OnionOrNot.csv")
+df_headline.head()
 ```
 :::
 

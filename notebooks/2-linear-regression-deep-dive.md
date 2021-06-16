@@ -32,8 +32,6 @@ sns.set()
 from ipywidgets import interact, fixed
 from mpl_toolkits import mplot3d
 
-
-%matplotlib inline
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 ```
@@ -50,14 +48,20 @@ InteractiveShell.ast_node_interactivity = "all"
 
 ::: {.cell .markdown}
 
-Suppose each sample of data is generated as
+Suppose we have a process that generates data as 
 
 $$y_i = w_0 + w_1 x_{i,1} + \ldots + w_d x_{i,d} + \epsilon_i $$
 
-
 where $\epsilon_i \sim N(0, \sigma^2)$.
 
-(If we use a linear regression, the assumed hypothesis class is a good match for the problem.)
+:::
+
+::: {.cell .markdown}
+
+Note: in this example, we use a "stochastic error" term. This is not to be confused with a residual term which can include systematic, non-random error.
+
+* stochastic error: difference between observed value and "true" value. These random errors are independent, not systematic, and cannot be "learned" by any machine learning model.
+* residual: difference between observed value and estimated value. These errors are typical *not* independent, and they can be systematic.
 
 :::
 
@@ -120,7 +124,7 @@ x_train, y_train = generate_linear_regression_data(n=n_samples, d=1, coef=coef, 
 
 ::: {.cell .code}
 ```python
-sns.scatterplot(x_train.squeeze(), y_train, s=50);
+sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -149,7 +153,7 @@ print("Coefficient list: ", reg_simple.coef_)
 x_line = [np.min(x_train), np.max(x_train)]
 y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
 
-sns.scatterplot(x_train.squeeze(), y_train, s=50);
+sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
 sns.lineplot(x_line, y_line, color='red');
 plt.xlabel('x');
 plt.ylabel('y');
@@ -189,7 +193,7 @@ Quick digression - what if we don't want to bother with intercept?
 ```python
 x_train_mr = x_train - np.mean(x_train)
 y_train_mr = y_train - np.mean(y_train)
-sns.scatterplot(x_train_mr.squeeze(), y_train_mr, s=50);
+sns.scatterplot(x=x_train_mr.squeeze(), y=y_train_mr, s=50);
 ```
 :::
 
@@ -242,7 +246,7 @@ y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
 ::: {.cell .code}
 ```python
 sns.lineplot(x_line, y_line, color='red');
-sns.scatterplot(x_test.squeeze(), y_test_hat, s=50, color='purple');
+sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, s=50, color='purple');
 ```
 :::
 
@@ -303,7 +307,7 @@ metrics.mean_squared_error(y_test, y_test_hat)
 
 ::: {.cell .code}
 ```python
-p = sns.scatterplot(x_test.squeeze(), y_test_hat, s=50);
+p = sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, s=50);
 p = plt.xlabel('x')
 p = plt.ylabel('y')
 
@@ -398,9 +402,9 @@ The variance of $y$ is the mean sum of the squares of the distances from each $y
 
 ::: {.cell .code}
 ```python
-plt.hlines(y=mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
+plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
 plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='magenta');
-sns.scatterplot(x_test.squeeze(), y_test, color='purple', s=50);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -422,10 +426,10 @@ Now let's look at a similar kind of plot, but with distances to the regression l
 ```python
 plt.plot(x_test, y_test_hat);
 plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='magenta', alpha=0.5);
-sns.scatterplot(x_test.squeeze(), y_test, color='purple', s=50);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
-sns.lineplot(x_line, y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color='red');
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -477,7 +481,7 @@ x_train, y_train = generate_linear_regression_data(n=n_samples, d=1, coef=coef, 
 
 ::: {.cell .code}
 ```python
-sns.scatterplot(x_train.squeeze(), y_train, s=50);
+sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -507,8 +511,8 @@ print("Intercept: " , reg_noisy.intercept_)
 x_line = [np.min(x_train), np.max(x_train)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
-sns.scatterplot(x_train.squeeze(), y_train, s=50);
-sns.lineplot(x_line, y_line, color='red');
+sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
+sns.lineplot(x=x_line, y=y_line, color='red');
 plt.xlabel('x');
 plt.ylabel('y');
 
@@ -544,10 +548,10 @@ y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
 ::: {.cell .code}
 ```python
-#sns.scatterplot(x_train.squeeze(), y_train);
-sns.lineplot(x_line, y_line, color='red');
-sns.scatterplot(x_test.squeeze(), y_test_hat, color='red', s=50);
-sns.scatterplot(x_test.squeeze(), y_test, color='purple', s=50);
+#sns.scatterplot(x=x_train.squeeze(), y=y_train);
+sns.lineplot(x=x_line, y=y_line, color='red');
+sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, color='red', s=50);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 
@@ -728,9 +732,9 @@ mean_y
 ```python
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
-plt.hlines(y=mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
+plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
 plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='magenta');
-sns.scatterplot(x_test.squeeze(), y_test, color='purple', s=50);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -740,10 +744,10 @@ plt.ylabel('y');
 ::: {.cell .code}
 ```python
 plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='red');
-sns.scatterplot(x_test.squeeze(), y_test, color='purple', s=50);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
-sns.lineplot(x_line, y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color='red');
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -770,11 +774,11 @@ In the next plot, we'll combine them to get some intuition regarding the *fracti
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
-plt.hlines(y=mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
+plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
 plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='red');
 plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='maroon');
-sns.scatterplot(x_test.squeeze(), y_test, color='purple', s=50);
-sns.lineplot(x_line, y_line, color='red');
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
+sns.lineplot(x=x_line, y=y_line, color='red');
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -1145,8 +1149,8 @@ The dataset is described as follows:
 Sales are reported in thousands of units, and TV, radio, and newspaper
 budgets, are reported in thousands of dollars.
 
-The data is available online at the [author\'s
-website](http://faculty.marshall.usc.edu/gareth-james/ISL/data.html). We
+The data is available online at the [textbook\'s
+website](https://www.statlearning.com/s/Advertising.csv). We
 can get the URL for the actual data file by right-clicking on the
 `Advertising.csv` link and choosing \"Copy link address\" in Google
 Chrome (or equivalent in other browsers).
@@ -1158,7 +1162,7 @@ Chrome (or equivalent in other browsers).
 
 ::: {.cell .code}
 ```python
-url = 'http://faculty.marshall.usc.edu/gareth-james/ISL/Advertising.csv'
+url = 'https://www.statlearning.com/s/Advertising.csv'
 df = pd.read_csv(url, index_col=0)
 df.head()
 ```
