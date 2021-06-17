@@ -1,5 +1,6 @@
 ---
 title:  'Case Study: Linear Regression'
+author: 'Fraida Fund'
 ---
 
 
@@ -14,7 +15,7 @@ authors Daniel Hamermesh and Amy M. Parker suggest (based on a data set of teach
 evaluation scores collected at UT Austin) that student evaluation scores can 
 partially be predicted by features unrelated to teaching, such as the physical attractiveness of the instructor.
 
-In this lab, we will use this data to try and predict the average instructor rating with a multiple linear regression.
+In this notebook, we will use this data to try and predict a course- and instructor-specific "baseline" score (excluding the effect of teaching quality), against which to measure instructor performance.
 
 :::
 
@@ -23,7 +24,7 @@ In this lab, we will use this data to try and predict the average instructor rat
 
 ### Attribution
 
-Parts of this lab are based on a lab assignment from the OpenIntro textbook "Introductory Statistics with Randomization and Simulation" that is released under a Creative Commons Attribution-ShareAlike 3.0 Unported license. The book website is at [https://www.openintro.org/book/isrs/](https://www.openintro.org/book/isrs/). You can read a PDF copy of the book for free and watch video lectures associated with the book at that URL. You can also see the lab assignment that this notebook is based on.
+Parts of this lab are based on a lab assignment from the OpenIntro textbook "Introductory Statistics with Randomization and Simulation" that is released under a Creative Commons Attribution-ShareAlike 3.0 Unported license. The book website is at [https://www.openintro.org/book/isrs/](https://www.openintro.org/book/isrs/).
 
 
 :::
@@ -67,10 +68,8 @@ from sklearn import metrics
 from sklearn import model_selection
 from sklearn.linear_model import LinearRegression
 
-
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
-%matplotlib inline
 ```
 :::
 
@@ -87,7 +86,7 @@ df.shape
 ::: {.cell .markdown}
 
 
-Each row in the data frame represents a different course, and columns represent variables about the courses and professors. The data dictionary is reproduced here from the OpenIntro lab:
+Each row in the data frame represents a different course, and columns represent features of the courses and professors. Here's the data dictionary:
 
 variable         | description
 ---------------- | -----------
@@ -112,6 +111,19 @@ variable         | description
 `bty_avg`        | average beauty rating of professor.
 `pic_outfit`     | outfit of professor in picture: not formal, formal.
 `pic_color`      | color of professor's picture: color, black & white.
+
+Source: [OpenIntro book](https://www.openintro.org/book/isrs/).
+
+:::
+
+::: {.cell .markdown}
+
+Note that:
+
+* `score` is the target variable - this is what we want our model to predict. We expect that the score is a function of the teaching quality, characteristics of the course, and non-teaching related characteristics of the instructor. However, the "true" teaching quality for each course is not known.
+* the variables that begin with a `cls_` prefix are features that relate to the course. These features could potentially affect student evaluations: for example, students may rank one-credit lab courses more highly than multi-credit lecture courses.
+* variables such as `rank`, `ethnicity`, `gender`, `language`, `age`, and the variables with a `bty_` prefix are features that relate to the instructor. They do not necessarily to the quality of instruction! These features may also affect student evaluations: for example, students may rate instructors more highly if they are physically attractive.
+* variables with the `pic_` prefix describe the photograph that was shown to the students who provided the `bty_` scores. This should have no effect on the student evaluations, since those were evaluations by students who were enrolled in the course (not the students who were shown the photograph and asked to provide an attractiveness score.) (For your reference: on the bottom of page 7 of the paper, the authors describe why they include this variable and how they used it )
 
 :::
 
@@ -171,7 +183,7 @@ for feature in ['rank', 'ethnicity', 'gender', 'language', 'cls_level', 'cls_pro
 
 ::: {.cell .markdown}
 
-#### Question 1
+#### Discussion Question 1
 
 Describe the relationship between `score` and the overall 
 attractiveness rating `bty_avg`. Is there an 
@@ -196,9 +208,18 @@ Are any of the apparent relationships you observed unexpected to you? Explain.
 
 ### Encoding categorical variables
 
-For _one hot encoding_ of categorical variables, we can use the `get_dummies` function in 
-`pandas`. Create a copy of the dataframe with all categorical variables transformed 
+To represent a categorical variable (with no inherent ordering) in a regression, we can use _one hot encoding_.  It works as follows:
+
+* For a categorical variable $x$ with values $1,\cdots,M$
+* Represent with $M$ binary  features: $\phi_1, \phi_2, \cdots , \phi_M$
+* Model in regression $w1_1 \phi_1 + \cdots + w_M \phi_M$
+
+
+We can use the `get_dummies` function in 
+`pandas` for one hot encoding. Create a copy of the dataframe with all categorical variables transformed 
 into indicator ("dummy") variables, and save it in a new data frame called `df_enc`. 
+
+
 Compare the columns of the `df` data frame versus the `df_enc` data frame.
 
 :::
@@ -260,11 +281,12 @@ Then run the cell after that one, which will show you the training data, the tes
 
 ::: {.cell .code}
 ```python
-# TODO 1
-# reg_simple = ...
-# y_pred_train = ...
-# y_pred_test = ...
+reg_simple = LinearRegression().fit(train[['bty_avg']], train['score'])
+reg_simple.coef_
+reg_simple.intercept_
 
+y_pred_train = reg_simple.predict(train[['bty_avg']])
+y_pred_test = reg_simple.predict(test[['bty_avg']])
 ```
 :::
 
@@ -280,23 +302,32 @@ sns.lineplot(data=train, x="bty_avg", y=y_pred_train, color='red');
 
 ### Evaluate simple linear regression performance
 
-Now we will evaluate our model performance. 
+Next, we will evaluate our model performance. 
 
 In the following cell, write a _function_ to compute key performance metrics for your model:
 
-* compute the R2 score on your training data, and print it
-* compute the RSS per sample on your training data, and print it
-* compute the RSS per sample, divided by the sample variance of `score`, on your training data, and print it. Recall that this metric tells us the ratio of average error of your model to average error of prediction by mean.
+* compute the R2 score on your training data
+* compute the MSE on your training data
+* compute the MSE, divided by the sample variance of `score`, on your training data. Recall that this metric tells us the ratio of average error of your model to average error of prediction by mean.
 * and compute the same three metrics for your test set
 :::
 
 ::: {.cell .code}
 ```python
-# TODO 2 fill in the function -
+def regression_performance(y_true_train, y_pred_train, y_true_test, y_pred_test):
 
-def print_regression_performance(y_true_train, y_pred_train, y_true_test, y_pred_test):
-	# ...
+    r2_train = metrics.r2_score(y_true_train, y_pred_train)
+    mse_train = metrics.mean_squared_error(y_true_train, y_pred_train)
+    norm_mse_train = metrics.mean_squared_error(y_true_train, y_pred_train)/(np.std(y_true_train)**2)
 
+    r2_test = metrics.r2_score(y_true_test, y_pred_test)
+    mse_test = metrics.mean_squared_error(y_true_test, y_pred_test)
+    norm_mse_test = metrics.mean_squared_error(y_true_test, y_pred_test)/(np.std(y_true_test)**2)
+
+    #print("Training:   %f %f %f" % (r2_train, mse_train, norm_mse_train))
+    #print("Test:       %f %f %f" % (r2_test, mse_test, norm_mse_test))
+
+    return [r2_train, mse_train, norm_mse_train, r2_test, mse_test, norm_mse_test]
 ```
 :::
 
@@ -310,7 +341,7 @@ than a "dumb" model that predicts the mean value of `score` for all samples?
 
 ::: {.cell .code}
 ```python
-print_regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
+vals = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
 ```
 :::
 
@@ -356,16 +387,18 @@ df_coef
 
 ::: {.cell .code}
 ```python
-# TODO 3 
-# reg_multi = ...
-
+reg_multi = LinearRegression().fit(train[features], train['score'])
+df_coef = pd.DataFrame(data = 
+                        {'feature': features, 
+                         'coefficient': reg_multi.coef_})
+df_coef
 ```
 :::
 
 
 ::: {.cell .markdown}
 
-#### Question 2
+#### Discussion Question 2
 
 Look at the list of features and coefficients, especially those
 related to the attractiveness ratings.
@@ -398,23 +431,28 @@ In the following cell, write code to
 
 ::: {.cell .code}
 ```python
-# TODO 4 
-# features = ...
-# reg_avgbty = ...
+features = df_enc.columns.drop(['score', 
+    'bty_f1lower', 'bty_f1upper', 'bty_f2upper', 
+    'bty_m1lower', 'bty_m1upper', 'bty_m2upper'])
+reg_avgbty = LinearRegression().fit(train[features], train['score'])
 
+df_coef = pd.DataFrame(data = 
+                        {'feature': features, 
+                         'coefficient': reg_avgbty.coef_})
+df_coef
 ```
 :::
 
 ::: {.cell .markdown}
 
-#### Question 3
+#### Discussion Question 3
 
-Given the model parameters you have found, rank the following features from "strongest effect" to "weakest effect" in terms of their effect (on average) on the evaluation score:
+Given the model parameters you have found, which is associated with the strongest effect (on average) on the evaluation score:
 
 * Instructor ethnicity
 * Instructor gender
 
-(Note that in general, we cannot use the coefficient to compare the effect of features that have a different range. Both ethnicity and gender are represented by binary one hot-encoded variables.)
+(Note that in general, we cannot use the coefficient to compare the effect of features that have a different range. But both ethnicity and gender are represented by binary one hot-encoded variables.)
 
 ----
 
@@ -429,27 +467,25 @@ Evaluate the performance of your `reg_avgbty` model. In the next cell, write cod
 
 * use the `predict` function on your fitted regression to find $\hat{y}$ for all samples in the _training_ set, and save this in an array called `y_pred_train`
 * use the `predict` function on your fitted regression to find $\hat{y}$ for all samples in the _test_ set, and save this in an array called `y_pred_test`
-* call the `print_regression_performance` function you wrote in a previous cell, and print the performance metrics on the training and test set.
+* call the `regression_performance` function you wrote in a previous cell, and print the performance metrics on the training and test set.
 
 :::
 
 ::: {.cell .code}
 ```python
-# TODO 5 
-# y_pred_train = ...
-# y_pred_test = ...
+y_pred_train = reg_avgbty.predict(train[features])
+y_pred_test = reg_avgbty.predict(test[features])
 
+vals = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
 ```
 :::
 
 
 ::: {.cell .markdown}
 
-#### Question 4 
+#### Discussion Question 4 
 
-Based on the analysis above, what portion of the variation in instructor teaching evaluation
-can be explained by the factors unrelated to teaching performance, such as the 
-physical characteristics of the instructor?
+Based on the analysis above, what portion of the variation in instructor teaching evaluation can be explained by the factors unrelated to teaching performance, such as the physical characteristics of the instructor?
 
 ----
 
@@ -460,7 +496,7 @@ physical characteristics of the instructor?
 
 ::: {.cell .markdown}
 
-#### Question 5
+#### Discussion Question 5
 
 Based on the analysis above, is your model better at predicting instructor teaching scores
 than a "dumb" model that just assigns the mean teaching score to every instructor? Explain.
@@ -474,13 +510,12 @@ than a "dumb" model that just assigns the mean teaching score to every instructo
 
 ::: {.cell .markdown}
 
-#### Question 6 
+#### Discussion Question 6 
 
 Suppose you are hired by the ECE department to develop a classifer that will identify high-performing
 faculty, who will then be awarded prizes for their efforts.
 
-Based on the analysis above, do you think it would be fair to use
-scores on teaching evaluations as an input to your classifier? Explain your answer.
+Based on the analysis above, do you think it would be fair to use scores on teaching evaluations as an input to your classifier? Explain your answer.
 
 ----
 
@@ -503,7 +538,7 @@ who rated the instructor's attractiveness.
 There is no reason that characteristics of an instructor's photograph - whether 
 it was in black and white or color, how the instructor was dressed in the 
 photograph - should influence the ratings of students in the instructor's class.
-These students most likely did not even see the photograph.
+(These students did not even see the photograph.)
 
 
 In the next cell, write code to
@@ -521,17 +556,26 @@ training and test set
 
 ::: {.cell .code}
 ```python
-# TODO 6 
-# features = ...
-# reg_nopic = ...
+features = df_enc.columns.drop(['score', 
+    'bty_f1lower', 'bty_f1upper', 'bty_f2upper', 
+    'bty_m1lower', 'bty_m1upper', 'bty_m2upper', 
+    'pic_outfit_formal', 'pic_outfit_not formal',
+    'pic_color_black&white', 'pic_color_color'])
 
+reg_nopic = LinearRegression().fit(train[features], train['score'])
+
+
+y_pred_train = reg_nopic.predict(train[features])
+y_pred_test = reg_nopic.predict(test[features])
+
+vals = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
 
 ```
 :::
 
 ::: {.cell .markdown}
 
-#### Question 7 
+#### Discussion Question 7 
 
 Is your model less predictive when features related to the instructor photograph are excluded? Explain.
 
@@ -565,10 +609,22 @@ training and test set
 
 ::: {.cell .code}
 ```python
-# TODO 7 
-# features = ...
-# reg_nocls = ...
+features = df_enc.columns.drop(['score', 
+    'bty_f1lower', 'bty_f1upper', 'bty_f2upper', 
+    'bty_m1lower', 'bty_m1upper', 'bty_m2upper', 
+    'pic_outfit_formal', 'pic_outfit_not formal',
+    'pic_color_black&white', 'pic_color_color',
+    'cls_credits_multi credit', 'cls_credits_one credit',
+    'cls_profs_multiple', 'cls_profs_single',
+    'cls_perc_eval', 'cls_did_eval', 'cls_students',
+    'cls_level_lower', 'cls_level_upper'])
 
+reg_nocls = LinearRegression().fit(train[features], train['score'])
+
+y_pred_train = reg_nocls.predict(train[features])
+y_pred_test = reg_nocls.predict(test[features])
+
+vals = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
 ```
 :::
 
@@ -584,7 +640,9 @@ the training and test set.
 In this dataset, each row represents a single course. However, 
 some instructors teach more than one course, and an instructor
 might get similar evaluation scores on all of the courses he or she
-teaches. (According to the paper for which this dataset was collected,
+teaches. 
+
+(According to the paper for which this dataset was collected,
 94 faculty members taught the 463 courses represented in the dataset, 
 with some faculty members teaching as many as 13 courses.)
 
@@ -601,17 +659,24 @@ df.loc[df['cls_credits']=='one credit']
 
 ::: {.cell .markdown}
 
-We observe that 10 out of 27 one-credit courses are taught by what seems to be the same instructor - 
-an individual who is a teaching-track professor, minority ethnicity, 
+We observe that 10 out of 27 one-credit courses are taught by what seems to be the same instructor - we don't know his name, but let's call him John. John is 
+a teaching-track professor, minority ethnicity, 
 male, English-language trained, 50 years old, average attractiveness 3.333, 
 and whose photograph is in color and not formal. 
 
 This provides a clue regarding the apparent importance of the `cls_credits` 
 variable and other "unexpected" variables in predicting the teaching score.
+
 Certain variables may be used by the model to identify the instructor and then 
-learn a relationship between the individual instructor and his or her 
+learn a relationship between the _individual instructor_ and his or her 
 typical evaluation score, instead of learning a true relationship between 
-the variable and the evaluation score.
+the _variable_ and the evaluation score.
+
+:::
+
+
+::: {.cell .markdown}
+
 
 To explore this issue further, we will repeat our analysis using 
 two different ways of splitting the dataset:
@@ -619,7 +684,7 @@ two different ways of splitting the dataset:
 1. random split 
 2. random split that ensures that each individual _instructor_ is represented in the training data or the test data, but not both. 
 
-In the latter case, if the regression model is effectively identifying individual instructors, rather than learning true relationships between instructor/course characteristics and teaching ratings, then the model will perform much worse on the test set for this type of split. This is because the instructors it has "learned" are not present in the test set.
+In the latter case, if the regression model is "memorizing" individual instructors, rather than learning true relationships between instructor/course characteristics and teaching ratings, then the model will perform much worse on the test set for this type of split. This is because the instructors it has "learned" are not present in the test set.
 
 
 First, we will assign an "instructor ID" to each row in our data frame:
@@ -646,67 +711,77 @@ Now we will perform our splits, train a model, and print performance metrics
 according to the first scheme, in which an instructor may be present in 
 both the training set and the test set.
 
-In the following cell, add code as indicated:
 :::
 
 
 ::: {.cell .code}
 ```python
+metrics_ss = np.zeros((10, 6))
 
 ss = model_selection.ShuffleSplit(n_splits=10, test_size=0.3, random_state=9)
 
-for train_idx, test_idx in ss.split(df_enc):
+for i, split in enumerate( ss.split(df_enc) ):
+
+	train_idx, test_idx = split
+
     train = df_enc.iloc[train_idx]
     test = df_enc.iloc[test_idx]
         
     features = df_enc.columns.drop(['score', 'instructor_id'])
-    print('----')
 
-    # TODO 8: add code to train a multiple linear regression using 
+    # train a multiple linear regression using 
     # the train dataset and the list of features created above
     # save the fitted model in reg_rndsplit
     # then use the model to create y_pred_train and y_pred_test, 
     # the model predictions on the training set and test set.
-    # Finally, use print_regression_performance to see the 
+    # Finally, use regression_performance to see the 
     # model performance
-    #
-    # reg_rndsplit = ...
-    # y_pred_train = ...
-    # y_pred_test = ...
+    reg_rndsplit = LinearRegression().fit(train[features], train['score'])
 
+    y_pred_train = reg_rndsplit.predict(train[features])
+    y_pred_test = reg_rndsplit.predict(test[features])
 
-	print_regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
+    metrics_ss[i] = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
+	print(metrics_ss[i])
+
 
 ```
 :::
 
+::: {.cell .code}
+``` {.python}
+np.mean(metrics_ss, axis=0)
+```
+:::
 
 ::: {.cell .markdown}
 
-Then, we will perform our splits, train a model, and print performance metrics
+Then, we will perform our splits, train a model, and get performance metrics
 according to the second scheme, in which an instructor may be present in 
 either the training set or the test set, but not both.
 
-In the following cell, add code as indicated:
 :::
 
 
 ::: {.cell .code}
 ```python
+metrics_gss = np.zeros((10, 6))
 
 gss = model_selection.GroupShuffleSplit(n_splits=10, test_size=0.3, random_state=9)
-for train_idx, test_idx in gss.split(df_enc, groups=instructor_id):
+
+for i, split in enumerate( gss.split(df_enc, groups=instructor_id) ):
+	train_idx, test_idx = split
     train = df_enc.iloc[train_idx]
     test = df_enc.iloc[test_idx]
         
     features = df_enc.columns.drop(['score', 'instructor_id'])
 
-    # TODO 9: add code to train a multiple linear regression using 
+    # train a multiple linear regression using 
     # the train dataset and the list of features created above
     # save the fitted model in reg_grpsplit
     # then use the model to create y_pred_train and y_pred_test
     # the model predictions on the training set and test set.
-    # Finally, use print_regression_performance to see the 
+    # Finally, use regression_performance to see the 
     # model performance
     #
     # reg_grpsplit = ...
@@ -714,16 +789,25 @@ for train_idx, test_idx in gss.split(df_enc, groups=instructor_id):
     # y_pred_test  = ...
 
 
-	print_regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
+    reg_grpsplit = LinearRegression().fit(train[features], train['score'])
 
+    y_pred_train = reg_grpsplit.predict(train[features])
+    y_pred_test = reg_grpsplit.predict(test[features])
+
+    metrics_gss[i] = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
+    print(metrics_gss[i])
 ```
 :::
 
-
+::: {.cell .code}
+``` {.python}
+np.mean(metrics_gss, axis=0)
+```
+:::
 
 ::: {.cell .markdown}
 
-#### Question 8 
+#### Discussion Question 8 
 
 Based on your analysis above, do you think your model will be useful to 
 predict the teaching evaluation scores of a new faculty member at UT Austin, 
@@ -746,53 +830,5 @@ In this case study, we saw evidence of data leakage: The identity of the instruc
 
 As a result, the model had overly optimistic error on the test set. The model appeared to generalize to new, unseen, data, but in fact would not generalize to different instructors.
 
-
-:::
-
-::: {.cell .markdown}
-
-
-Another example of data leakage:
-
-
-You have been hired to develop a new spam classifier for NYU Tandon email. To collect a dataset for the spam classification task, you get 5,000 NYU Tandon students, faculty, and staff who agree to manually label every email they receive for the week of March 15-March 21 as "spam" (about 5\%) or "not spam" (about 95\%). They then share all the emails and labels with you. For example, here are a few of the emails you got from Volunteer 1, who is a member of the ECE department:
-
-
-| Subject | From | To | Label |
-|--- | --- | --- | --- |
-| April Funding Opportunities | Office of Sponsored Programs | All Tandon Faculty | Not Spam |
-| ML TA meeting next week | Student 23451 (redacted) | Fraida Fund | Not Spam | 
-| Pass/fail option for students this semester | Ivan Selesnick | ECE Faculty | Not Spam | 
-| A question about quiz1 | Student 19245 (redacted) | Fraida Fund | Not Spam | 
-| Re: your account is locked | PayPall | Fraida Fund | Spam | 
-| Fwd: Gradescope Webinar | Ivan Selesnick | ECE Faculty | Not Spam | 
-| Memo to Faculty on COVID-19 Protocols | Provost Katherine Fleming |All Tandon Faculty | Not Spam | 
-
-
-You assign the emails from volunteers 1-2,500 to a training set and use it to fit a classifier, then compute the classifier accuracy on the emails from volunteers 2,501-5,000. 
-
-Your classifier does really well on the emails from volunteers 2,501-5,000 - in fact, it is 99.9999\% accurate! But when you deploy it in production, it misses a lot of spam. Based on the description above, what mistake did you make that caused your performance estimate to be overly optimistic? How would you fix it?
-
-
-:::
-
-::: {.cell .markdown}
-
-Also potential for data leakage when:
-
-* Learning from adjacent temporal data
-* Learning from data that includes duplicate
-* Learning from a feature that is a proxy for target variable
-
-:::
-
-::: {.cell .markdown}
-
-How can we detect data leakage?
-
-* Surprising patterns in data (via exploratory data analysis)
-* Performance is "too good to be true"
-* Features that shouldn't be important (based on common sense/domain knowledge) play a role in reducing error
-* Early testing in production
 
 :::
