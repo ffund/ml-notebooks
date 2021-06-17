@@ -1309,7 +1309,7 @@ print("Coefficient list: ", reg_lbf.coef_)
 
 ::: {.cell .markdown}
 
-### Evaluate model
+### Compute MSE and R2
 
 :::
 
@@ -1322,14 +1322,6 @@ print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
 ```
 :::
 
-
-::: {.cell .code}
-``` {.python}
-y_test_hat = reg_lbf.predict(x_test)
-print("Test MSE: ", metrics.mean_squared_error(y_test, y_test_hat))
-print("Test R2:  ", metrics.r2_score(y_test, y_test_hat))
-```
-:::
 
 
 ::: {.cell .markdown}
@@ -1472,9 +1464,19 @@ plt.ylabel("Residual");
 
 ::: {.cell .markdown}
 
-### Evaluate on test set again
+### Evaluate on test set
 
 :::
+
+
+::: {.cell .code}
+``` {.python}
+y_train_hat = reg_lbf.predict(x_train)
+print("Training MSE: ", metrics.mean_squared_error(y_train, y_train_hat))
+print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
+```
+:::
+
 
 ::: {.cell .code}
 ``` {.python}

@@ -113,11 +113,31 @@ print(X[:5])
 :::
 
 ::: {.cell .markdown}
+
 In each gradient descent step, we will compute
 
-\begin{aligned} w^{t+1} &= w^t + \alpha^t X^T (y - X w^t) \\ 
-                        &= w^t + \alpha\^t \sum_{i=1}^n (y^t - \langle w^t,x_i \rangle) x_i
+$$ 
+w_{^t} = w^t - \alpha^t \nabla L(w^t)  
+$$
+
+With a mean squared error loss function
+
+$$ 
+\begin{aligned}
+L(w) &= \frac{1}{2} \sum_{i=1}^n (y_i - \langle w,x_i \rangle)^2 \\
+     &= \frac{1}{2} \|y - Xw\|^2 
 \end{aligned}
+$$
+
+we will compute the weights at each step as
+
+$$
+\begin{aligned} 
+w^{t+1} &= w^t + \alpha^t \sum_{i=1}^n (y_i - \langle w^t,x_i \rangle) x_i \\
+        &= w^t + \alpha^t X^T (y - X w^t)                  
+\end{aligned}
+$$
+
 
 :::
 
@@ -549,7 +569,7 @@ X.shape
 
 ::: {.cell .code}
 ```python
-itr = 500
+itr = 50
 lr = 0.0002
 w_init = [intercept, 2, 8]
 ```
@@ -643,7 +663,7 @@ With data that does not perfectly fit the linear model, the stochastic gradient 
 
 ::: {.cell .code}
 ```python
-itr = 500
+itr = 200
 lr = 0.05
 w_init = [intercept, 2, 8]
 ```
@@ -806,9 +826,9 @@ plt.ylabel('w1');
 ::: {.cell .code}
 ``` {.python}
 itr = 50
-lr = 0.001
+lr = 0.002
 n = 1
-w_init = [intercept, 4, 7]
+w_init = [intercept, 3, 7]
 ```
 :::
 
