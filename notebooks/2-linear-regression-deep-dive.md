@@ -154,7 +154,7 @@ print("Coefficient list: ", reg_simple.coef_)
 ```python
 x_line = [np.min(x_train), np.max(x_train)]
 y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
-
+sns.scatterplot(x=x_test.squeeze(), y=y_test, s=50, color='green');
 sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
 sns.lineplot(x=x_line, y=y_line, color='red');
 plt.xlabel('x');
@@ -1247,8 +1247,6 @@ The assumptions of the linear model (that the target variable can be predicted a
 
 ::: {.cell .code}
 ``` {.python}
-#@title Data generating function
-
 import itertools
 
 def generate_linear_basis_data(n=100, d=2, coef=[1,1,0.5,0.5,1], intercept=1, sigma=0):
@@ -1471,7 +1469,7 @@ plt.ylabel("Residual");
 
 ::: {.cell .code}
 ``` {.python}
-y_train_hat = reg_lbf.predict(x_train)
+y_train_hat = reg_lbf_inter.predict(x_train_inter)
 print("Training MSE: ", metrics.mean_squared_error(y_train, y_train_hat))
 print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
 ```

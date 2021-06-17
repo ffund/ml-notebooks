@@ -117,7 +117,7 @@ print(X[:5])
 In each gradient descent step, we will compute
 
 $$ 
-w_{^t} = w^t - \alpha^t \nabla L(w^t)  
+w^{t+1} = w^t - \alpha^t \nabla L(w^t)  
 $$
 
 With a mean squared error loss function
@@ -481,7 +481,7 @@ sns.scatterplot(x=w_steps[:,2], y=w_steps[:,1], hue=np.arange(itr), edgecolor=No
 
 -   Increase learning rate?
 -   Decrease learning rate?
--   Use decaying learning rate $\alpha_k = \frac{C}{k}$?
+-   Use decaying learning rate $\alpha^t = \frac{C}{t}$?
 -   Increase number of samples used in each iteration?
 :::
 
