@@ -1,11 +1,12 @@
 ---
-title:  'Linear regression: deep dive'
+title:  'Linear regression in depth'
+author: 'Fraida Fund'
 ---
 
 
 ::: {.cell .markdown}
 
-# Linear regression: deep dive
+# Linear regression in depth
 
 _Fraida Fund_
 

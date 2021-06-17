@@ -9,6 +9,7 @@ SOURCES += 1-explore-hw.md
 SOURCES += 2-compute-by-hand.md
 SOURCES += 2-regression-r2.md
 SOURCES += 2-linear-regression-deep-dive.md
+SOURCES += 3-gradient-descent-deep-dive.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files
@@ -21,6 +22,7 @@ EXECS += 1-data-detective.md
 EXECS += 2-compute-by-hand.md
 EXECS += 2-regression-r2.md
 EXECS += 2-linear-regression-deep-dive.md
+EXECS += 3-gradient-descent-deep-dive.md
 
 NBSEXEC := $(patsubst %.md,%.nbconvert.ipynb,$(EXECS))
 PDFS := $(patsubst %.md,%.pdf,$(EXECS))
