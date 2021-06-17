@@ -585,49 +585,7 @@ Is your model less predictive when features related to the instructor photograph
 
 :::
 
-::: {.cell .markdown}
-
-Finally, we will observe the effect of excluding class-related variables
-(whether it is an upper-division or lower-division class, number of credits, etc.)
-
-In the next cell, write code to:
-
-* create a new `features` array that
-drops the `score` variable, all of the individual attractiveness 
-rankings, the variables related to the photograph used for 
-attractiveness rankings, _and_ all of the variables that 
-begin with the `cls` prefix.
-* use it to fit a model (saved in `reg_nocls`).
-* use `reg_nocls` to predict the evaluation scores on both the 
-training and test set
-* compute the same set of metrics as above.
-
-
-:::
-
-
-
-::: {.cell .code}
-```python
-features = df_enc.columns.drop(['score', 
-    'bty_f1lower', 'bty_f1upper', 'bty_f2upper', 
-    'bty_m1lower', 'bty_m1upper', 'bty_m2upper', 
-    'pic_outfit_formal', 'pic_outfit_not formal',
-    'pic_color_black&white', 'pic_color_color',
-    'cls_credits_multi credit', 'cls_credits_one credit',
-    'cls_profs_multiple', 'cls_profs_single',
-    'cls_perc_eval', 'cls_did_eval', 'cls_students',
-    'cls_level_lower', 'cls_level_upper'])
-
-reg_nocls = LinearRegression().fit(train[features], train['score'])
-
-y_pred_train = reg_nocls.predict(train[features])
-y_pred_test = reg_nocls.predict(test[features])
-
-vals = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
-```
-:::
-
+<!-- Write your comments here 
 
 ::: {.cell .markdown}
 
@@ -736,6 +694,7 @@ for i, split in enumerate( ss.split(df_enc) ):
     # the model predictions on the training set and test set.
     # Finally, use regression_performance to see the 
     # model performance
+
     reg_rndsplit = LinearRegression().fit(train[features], train['score'])
 
     y_pred_train = reg_rndsplit.predict(train[features])
@@ -783,10 +742,6 @@ for i, split in enumerate( gss.split(df_enc, groups=instructor_id) ):
     # the model predictions on the training set and test set.
     # Finally, use regression_performance to see the 
     # model performance
-    #
-    # reg_grpsplit = ...
-    # y_pred_train = ...
-    # y_pred_test  = ...
 
 
     reg_grpsplit = LinearRegression().fit(train[features], train['score'])
@@ -832,3 +787,5 @@ As a result, the model had overly optimistic error on the test set. The model ap
 
 
 :::
+
+-->
