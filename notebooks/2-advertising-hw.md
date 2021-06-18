@@ -67,7 +67,7 @@ InteractiveShell.ast_node_interactivity = "all"
 
 ::: {.cell .markdown}
 
-## 1. Read in and pre-process data
+### 1. Read in and pre-process data
 
 In this section, you will read in the "Advertising" data, and make sure it is loaded correctly. Visually inspect the data using a pairplot, and note any meaningful observations. In particular, comment on which features appear to be correlated with product sales, and which features appear to be correlated with one another. Then, split the data into training data (70%) and test data (30%).
 
@@ -77,7 +77,7 @@ In this section, you will read in the "Advertising" data, and make sure it is lo
 
 
 ::: {.cell .markdown}
-### Read in data
+#### Read in data
 :::
 
 ::: {.cell .code}
@@ -100,7 +100,7 @@ above, to see the effect and to understand why we used this argument.)
 
 ::: {.cell .markdown}
 
-### Visually inspect the data
+#### Visually inspect the data
 
 :::
 
@@ -120,7 +120,7 @@ axes.
 :::
 
 ::: {.cell .markdown}
-### Split up data
+#### Split up data
 
 
 We will use 70% of the data for training and the remaining 30% to test
@@ -150,7 +150,7 @@ test.info()
 ::: {.cell .markdown}
 
 
-## 2. Fit simple linear regression models
+### 2. Fit simple linear regression models
 
 Use the training data to fit a simple linear regression to predict product sales, for each of three features: TV ad budget, radio ad budget, and newspaper ad budget. In other words, you will fit *three* regression models, with each model being trained on one feature. For each of the three regression models, create a plot of the training data and the regression line, with product sales ($y$) on the vertical axis and the feature on which the model was trained ($x$) on the horizontal axis. 
 
@@ -164,7 +164,7 @@ Comment on the results. Which type of ads seems to have the greatest association
 :::
 
 ::: {.cell .markdown}
-### Fit a simple linear regression
+#### Fit a simple linear regression
 :::
 
 ::: {.cell .code}
@@ -177,7 +177,7 @@ reg_news  = LinearRegression().fit(train[['newspaper']], train['sales'])
 
 ::: {.cell .markdown}
 
-### Look at coefficients
+#### Look at coefficients
 
 :::
 
@@ -191,7 +191,7 @@ print("Newspaper: ", reg_news.coef_[0], reg_news.intercept_)
 
 
 ::: {.cell .markdown}
-### Plot data and regression line
+#### Plot data and regression line
 :::
 
 ::: {.cell .code}
@@ -214,7 +214,7 @@ sns.lineplot(data=train, x="newspaper", y=reg_news.predict(train[['newspaper']])
 
 ::: {.cell .markdown}
 
-### Compute R2, MSE for simple regression
+#### Compute R2, MSE for simple regression
 
 :::
 
@@ -284,7 +284,7 @@ print("Newspaper: ", mse_ts_news)
 
 ::: {.cell .markdown}
 
-## 3. Explore the residuals for the single linear regression models
+### 3. Explore the residuals for the single linear regression models
 
 
 We know that computing MSE or R2 is not sufficient to diagnose a problem with a linear regression. 
@@ -303,7 +303,7 @@ Create some additional plots as described below to help you identify any problem
 
 ::: {.cell .markdown}
 
-## 4. Try a multiple linear regression
+### 4. Try a multiple linear regression
 
 Next, fit a multiple linear regression to predict product sales, using all three features to train a single model: TV ad budget, radio ad budget, and newspaper ad budget. 
 
@@ -324,7 +324,7 @@ Also repeat the analysis of part (3) for this regression model. Use training dat
 :::
 
 ::: {.cell .markdown}
-### Fit a multiple linear regression
+#### Fit a multiple linear regression
 :::
 
 ::: {.cell .code}
@@ -335,7 +335,7 @@ reg_multi = LinearRegression().fit(train[['TV', 'radio', 'newspaper']], train['s
 
 
 ::: {.cell .markdown}
-### Look at coefficients
+#### Look at coefficients
 :::
 
 ::: {.cell .code}
@@ -346,7 +346,7 @@ print("Intercept: ", reg_multi.intercept_)
 :::
 
 ::: {.cell .markdown }
-### Compute R2, MSE for multiple regression
+#### Compute R2, MSE for multiple regression
 :::
 
 ::: {.cell .code}
@@ -379,7 +379,7 @@ print("Multiple regression MSE: ", mse_ts_multi)
 
 ::: {.cell .markdown}
 
-## 5. Linear regression with interaction terms
+### 5. Linear regression with interaction terms
 
 Our multiple linear regression includes additive effects of all three types of advertising media. However, it does not include *interaction* effects, in which combining different types of advertising media together results in a bigger boost in sales than just the additive effect of the individual media.  The pattern in the residuals plots from parts (1) through (4) suggest that a model including an interaction effect may explain sales data better than a model including additive effects. Add four columns to your data frame: 
 
