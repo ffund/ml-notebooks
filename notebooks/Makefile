@@ -12,6 +12,7 @@ SOURCES += 2-linear-regression-deep-dive.md
 SOURCES += 2-linear-regression-case-study.md
 SOURCES += 3-gradient-descent-deep-dive.md
 SOURCES += 2-advertising-hw.md
+SOURCES += 3-bias-variance-model-selection-deep-dive.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files
@@ -27,6 +28,7 @@ EXECS += 2-linear-regression-deep-dive.md
 EXECS += 2-linear-regression-case-study.md
 EXECS += 3-gradient-descent-deep-dive.md
 EXECS += 2-advertising-hw.md
+EXECS += 3-bias-variance-model-selection-deep-dive.md
 
 NBSEXEC := $(patsubst %.md,%.nbconvert.ipynb,$(EXECS))
 PDFS := $(patsubst %.md,%.pdf,$(EXECS))
