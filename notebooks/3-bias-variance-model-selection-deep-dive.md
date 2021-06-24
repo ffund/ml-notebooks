@@ -594,9 +594,9 @@ plt.xticks(np.arange(0, d, 1.0), rotation=90);
 ::: {.cell .markdown}
 We observe that the informative features don't necessarily have
 coefficients with the largest magnitudes. The random "relationship"
-between an uninformative feature $x_i$ and $y$ appears, in some cases,
-as strong or stronger than the true relationship between $x_1$ and $y$
-and $x_2$ and $y$.
+between an uninformative feature $x$ and $y$ appears, in some cases,
+as strong or stronger than the true relationship between an informative $x$ and $y$.
+
 :::
 
 ::: {.cell .markdown}
@@ -690,7 +690,7 @@ plt.ylabel('R2');
 ::: {.cell .markdown}
 As in the previous example, where the model performed better on the
 training set with higher $d$, we see again that adding complexity
-reduces the training error and increases R2.
+reduces the training error and increases R2 on the training data - but not on the test data.
 :::
 
 ::: {.cell .markdown}
