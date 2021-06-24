@@ -585,8 +585,6 @@ Is your model less predictive when features related to the instructor photograph
 
 :::
 
-<!-- Write your comments here 
-
 ::: {.cell .markdown}
 
 When a machine learning model seems to use a feature that is not
@@ -625,30 +623,19 @@ and whose photograph is in color and not formal.
 This provides a clue regarding the apparent importance of the `cls_credits` 
 variable and other "unexpected" variables in predicting the teaching score.
 
-Certain variables may be used by the model to identify the instructor and then 
+Certain variables may be used by the model to identify the instructor, and then 
 learn a relationship between the _individual instructor_ and his or her 
 typical evaluation score, instead of learning a true relationship between 
-the _variable_ and the evaluation score.
+the _variable_ and the evaluation score. 
 
 :::
-
 
 ::: {.cell .markdown}
 
-
-To explore this issue further, we will repeat our analysis using 
-two different ways of splitting the dataset:
-
-1. random split 
-2. random split that ensures that each individual _instructor_ is represented in the training data or the test data, but not both. 
-
-In the latter case, if the regression model is "memorizing" individual instructors, rather than learning true relationships between instructor/course characteristics and teaching ratings, then the model will perform much worse on the test set for this type of split. This is because the instructors it has "learned" are not present in the test set.
+To see if this is plausible, let's add an "instructor ID" to each row in our data frame. The data set doesn't include an instructor ID column, but we can still uniquely identify every instructor by looking at the combination of rank, ethnicity, gender, language of training, age, attractiveness score, and characteristics of the photo (formal or not, black and white or color).
 
 
-First, we will assign an "instructor ID" to each row in our data frame:
 :::
-
-
 
 ::: {.cell .code}
 ```python
@@ -665,23 +652,71 @@ df_enc['instructor_id'].head()
 
 ::: {.cell .markdown}
 
-Now we will perform our splits, train a model, and print performance metrics
-according to the first scheme, in which an instructor may be present in 
-both the training set and the test set.
+Let's plot the frequency with which each "instructor ID" appears in the data:
+
+:::
+
+::: {.cell .code}
+```python
+_  = plt.figure(figsize=(12,6))
+ax = sns.countplot(x="instructor_id", data=df_enc, 
+    order=df_enc['instructor_id'].value_counts().index)
+_  = ax.set(xticklabels=[])
+```
+:::
+
+::: {.cell .markdown}
+
+There are 95 unique instructor IDs. According to the paper, the data set includes 94 instructors. We are working with a slightly modified version of the data from the paper. It seems we've been able to uniquely identify every instructor. 
+
+Some instructors are represented as many as 13 times in the dataset. Only a handful of instructors appear only once in the data.
+
+:::
+
+::: {.cell .markdown}
+
+Furthermore, we can see that most instructors get similar scores for all of the courses they teach, with a few exceptions:
+
+:::
+
+::: {.cell .code}
+```python
+score_order = df_enc.groupby('instructor_id')['score'].agg('mean').sort_values(ascending=False).index
+
+_  = plt.figure(figsize=(12,6))
+ax = sns.boxplot(x=df_enc['instructor_id'], y=df_enc['score'], 
+                 order=score_order,
+                 color='white', width=0.4)
+ax = sns.stripplot(x=df_enc['instructor_id'], y=df_enc['score'], 
+                   order=score_order)
+_  = ax.set(xticklabels=[])
+```
+:::
+
+
+::: {.cell .markdown}
+
+To explore this issue further, we will repeat our analysis using 
+two different ways of splitting the dataset:
+
+1. **Random split**: shuffle data and split it into training and test sets. Train the model using the training data, then evaluate its performance on the test set. (This is what we have done so far.) 
+2. **Group split**: split data into training and test sets in a way that ensures that each individual _instructor_ is represented in either the training data or the test data, but not both. Train the model using the training data, then evaluate its performance on the test set. If the model is "memorizing" individual instructors, rather than learning a general relationship between features and teaching evaluation score, it will have much worse performance on the test set, because it has to predict scores for instructors it hasn't "seen" yet. 
+
+Because the dataset is small, the performance evaluation may be influenced by the random sample of rows that happen to end up in the training vs. test set. (If a few rows more rows than usual that are very "easy" to predict are placed in the test set, we might see better performance than we would with a different test set.) So, we will also repeat the splitting procedure several times, and look at the *average* performance across different train-test splits.
 
 :::
 
 
+
+
 ::: {.cell .code}
 ```python
-metrics_ss = np.zeros((10, 6))
+n_splits = 10
+metrics_rs = np.zeros((n_splits, 6))
+rs = model_selection.KFold(n_splits=n_splits, shuffle=True)
 
-ss = model_selection.ShuffleSplit(n_splits=10, test_size=0.3, random_state=9)
-
-for i, split in enumerate( ss.split(df_enc) ):
-
-	train_idx, test_idx = split
-
+for i, split in enumerate(rs.split(df_enc)):
+    train_idx, test_idx = split
     train = df_enc.iloc[train_idx]
     test = df_enc.iloc[test_idx]
         
@@ -692,30 +727,38 @@ for i, split in enumerate( ss.split(df_enc) ):
     # save the fitted model in reg_rndsplit
     # then use the model to create y_pred_train and y_pred_test, 
     # the model predictions on the training set and test set.
-    # Finally, use regression_performance to see the 
-    # model performance
+    # Finally, return the array of model performance metrics
 
     reg_rndsplit = LinearRegression().fit(train[features], train['score'])
 
     y_pred_train = reg_rndsplit.predict(train[features])
     y_pred_test = reg_rndsplit.predict(test[features])
 
-    metrics_ss[i] = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
-	print(metrics_ss[i])
+    metrics_rs[i] = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
 
 
-```
-:::
+np.mean(metrics_rs, axis=0)
 
-::: {.cell .code}
-``` {.python}
-np.mean(metrics_ss, axis=0)
 ```
 :::
 
 ::: {.cell .markdown}
 
-Then, we will perform our splits, train a model, and get performance metrics
+With this approach to splitting the data, the model appears to have some predictive value on the test set (which is supposed to represent performance on "new" data.)
+
+:::
+
+::: {.cell .code}
+``` python
+_ = plt.bar(x=['Train', 'Test'], height=np.mean(metrics_rs, axis=0)[[0,3]])
+_ = plt.ylabel("R2")
+_ = plt.ylim(0, 1)
+```
+:::
+
+::: {.cell .markdown}
+
+Next, we will perform our splits, train a model, and get performance metrics
 according to the second scheme, in which an instructor may be present in 
 either the training set or the test set, but not both.
 
@@ -724,12 +767,16 @@ either the training set or the test set, but not both.
 
 ::: {.cell .code}
 ```python
-metrics_gss = np.zeros((10, 6))
+n_splits = 10
+metrics_gs = np.zeros((n_splits, 6))
+gs = model_selection.GroupKFold(n_splits=n_splits)
 
-gss = model_selection.GroupShuffleSplit(n_splits=10, test_size=0.3, random_state=9)
+for i, split in enumerate(gs.split(df_enc, 
+                                   df_enc['score'], 
+                                   df_enc['instructor_id'])):
 
-for i, split in enumerate( gss.split(df_enc, groups=instructor_id) ):
-	train_idx, test_idx = split
+    train_idx, test_idx = split
+
     train = df_enc.iloc[train_idx]
     test = df_enc.iloc[test_idx]
         
@@ -738,28 +785,36 @@ for i, split in enumerate( gss.split(df_enc, groups=instructor_id) ):
     # train a multiple linear regression using 
     # the train dataset and the list of features created above
     # save the fitted model in reg_grpsplit
-    # then use the model to create y_pred_train and y_pred_test
+    # then use the model to create y_pred_train and y_pred_test, 
     # the model predictions on the training set and test set.
-    # Finally, use regression_performance to see the 
-    # model performance
-
+    # Finally, return the array of model performance metrics
 
     reg_grpsplit = LinearRegression().fit(train[features], train['score'])
 
     y_pred_train = reg_grpsplit.predict(train[features])
     y_pred_test = reg_grpsplit.predict(test[features])
 
-    metrics_gss[i] = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
-    print(metrics_gss[i])
+    metrics_gs[i] = regression_performance(train['score'], y_pred_train, test['score'], y_pred_test)
+
+np.mean(metrics_gs, axis=0)
+
 ```
+:::
+
+
+::: {.cell .markdown}
+
+With the second approach to splitting the data, the model has no predictive value on the test set.
+
 :::
 
 ::: {.cell .code}
-``` {.python}
-np.mean(metrics_gss, axis=0)
+``` python
+_ = plt.bar(x=['Train', 'Test'], height=np.mean(metrics_gs, axis=0)[[0,3]])
+_ = plt.ylabel("R2")
+_ = plt.ylim(0, 1)
 ```
 :::
-
 ::: {.cell .markdown}
 
 #### Discussion Question 8 
@@ -779,13 +834,17 @@ course?
 ::: {.cell .markdown}
 
 
-### Data leakage
+### Review: what went wrong?
 
-In this case study, we saw evidence of data leakage: The identity of the instructor "leaked" into the data set, and then the model learned the instructor ID, not a true relationship between instructor characteristics and teaching evaluation scores. 
 
-As a result, the model had overly optimistic error on the test set. The model appeared to generalize to new, unseen, data, but in fact would not generalize to different instructors.
+In this case study, we saw *two* problems:
 
+The first problem is that the model was "memorizing" the individual instructors that appeared in the training data, rather than learning a general relationship between the features and the target variable. This is known as *overfitting*. 
+
+Usually, when a model is overfitting, it will be evident in the evaluation on the test set, because a model that overfits on training data will have excellent performance on training data and poor performance on test data. That's where the second problem comes in: data leakage! We expect the model to be able to predict a baseline score for instructors it has not been trained on, but our model was being trained on data from a set of instructors, then evaluated on data from the same instructors. 
+
+As a result of this data leakage, the model had overly optimistic error on the test set. The model appeared to generalize to new, unseen, data, but in fact would not generalize to different instructors.
+
+One of the "red flags" that helped us identify the problem was that the model seemed to be learning from features that we know are not really informative - for example, the characteristics of the photo used to derive the attractiveness ratings. This is often a sign of data leakage.
 
 :::
-
--->
