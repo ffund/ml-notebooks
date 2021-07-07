@@ -18,6 +18,7 @@ SOURCES += 3-neural-model-selection-hw.md
 SOURCES += 4-logistic-regression-in-depth.md
 SOURCES += 4-logistic-regression-digits.md
 SOURCES += 4-compas-case-study.md
+SOURCES += 4-hw-logistic-regression.md
 SOURCES += 5-k-nearest-neighbors-in-depth.md
 
 # Convert the list of source files (Markdown files )
