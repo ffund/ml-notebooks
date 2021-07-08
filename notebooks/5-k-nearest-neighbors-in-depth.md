@@ -395,8 +395,8 @@ plt.ylabel("x2");
 
 ::: {.cell .code }
 ```python
-X[:,0] = 10*X[:,0]
-x_test[:,0] = 10*x_test[:,0]
+X[:,0] = 100*X[:,0]
+x_test[:,0] = 100*x_test[:,0]
 ```
 :::
 
