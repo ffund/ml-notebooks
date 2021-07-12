@@ -229,7 +229,7 @@ p = plt.title('Shape: ' + str(np.asarray(image_bw_resized_inverted).shape))
 pixel_filter = 20 # value from 0 to 100 - may need to adjust this manually
 min_pixel = np.percentile(image_bw_resized_inverted, pixel_filter)
 image_bw_resized_inverted_scaled = np.clip(image_bw_resized_inverted-min_pixel, 0, 255)
-max_pixel = np.max(image_bw_resized_inverted)
+max_pixel = np.max(image_bw_resized_inverted_scaled)
 image_bw_resized_inverted_scaled = np.asarray(image_bw_resized_inverted_scaled)/max_pixel
 p = plt.imshow(np.asarray(image_bw_resized_inverted_scaled), cmap=plt.cm.gray,);
 p = plt.title('Shape: ' + str(np.asarray(image_bw_resized_inverted_scaled).shape))
