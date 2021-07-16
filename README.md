@@ -2,48 +2,61 @@
 
 These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU Tandon School of Engineering.
 
-### Intro to ML
 
-* Pre-work: [Python + numpy tutorial](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-python-numpy-tutorial.ipynb) [[PDF](notebooks/1-python-numpy-tutorial.pdf)]
-* Case study: [Exploratory data analysis on the Brooklyn Bridge pedestrian data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-exploratory-data-analysis.ipynb) [[PDF](notebooks/1-exploratory-data-analysis.pdf)]
-* Challenge: [Find the problem with these datasets](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-candidate-datasets.ipynb)
-* Homework: [Explore COVID-19 Community Mobility data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-hw.ipynb) [[PDF](notebooks/1-explore-hw.pdf)]
+### Intro ML, exploratory data analysis
+
+* Notebook: Python + numpy tutorial <a href="notebooks/notebooks/1-python-numpy-tutorial.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-python-numpy-tutorial.ipynb)
+* Notebook: Colab tutorial [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-colab-tour.ipynb)
+* Notebook: Printing from Colab [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-print-colab.ipynb)
+* Notebook: Exploratory data analysis (in-class) <a href="notebooks/notebooks/1-exploratory-data-analysis.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"> [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-exploratory-data-analysis.ipynb)
+* Notebook: Exploratory data analysis (homework) <a href="notebooks/notebooks/1-explore-hw.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"> [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-explore-hw.ipynb)
+* Notebook: Data detective challenge (optional homework) <a href="notebooks/notebooks/1-data-detective.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"> [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-data-detective.ipynb)
+
 
 ### Linear regression
 
-* Pre-work: [Computing linear regression coefficients by hand](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-compute-by-hand.ipynb) [[PDF](notebooks/2-compute-by-hand.pdf)]
-* Deep dive: [Linear regression in depth](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb)
-* Case study: [Linear regression on the "Beauty in the Classroom" data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-case-study.ipynb) [[PDF](notebooks/2-linear-regression-case-study.pdf)]
-* Homework: [Linear regression on the Advertising data](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-advertising-hw.ipynb) [[PDF](notebooks/2-advertising-hw.pdf)]
+* Notebook: Linear regression in depth <a href="notebooks/notebooks/2-linear-regression-deep-dive.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-deep-dive.ipynb)  
+* Notebook: Compute regression coefficients by hand <a href="notebooks/notebooks/2-compute-by-hand.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a> <a href="https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-compute-by-hand.ipynb"><img src="/intro-ml-tss21/colab_20.png" alt="Open in Colab" height="20px"></a> 
+* Notebook: Regression metrics <a href="notebooks/notebooks/2-regression-r2.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-regression-r2.ipynb)
+* Notebook: Case study on "Beauty in the Classroom" <a href="notebooks/notebooks/2-linear-regression-case-study.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-linear-regression-case-study.ipynb)
+* Notebook: Residual analysis on Advertising data (homework) <a href="notebooks/notebooks/2-advertising-hw.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/2-advertising-hw.ipynb)
 
 ### Gradient descent
+  
+* Notebook: Gradient descent in depth <a href="notebooks/notebooks/3-gradient-descent-deep-dive.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb)
 
-* Deep dive: [Gradient descent in depth](https://olab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-deep-dive.ipynb)
-* Homework: [Gradient descent](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-gradient-descent-hw.ipynb)
+### Bias-variance tradeoff, model selection
+  
+* Notebook: Bias-variance tradeoff and model selection in depth <a href="notebooks/notebooks/3-bias-variance-model-selection-deep-dive.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-bias-variance-model-selection-deep-dive.ipynb)
+* Notebook: Model order selection for neural data (homework)  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RKVHfezDfY0ar6KB6QVkJNRpcJt20Tgy?usp=sharing)
 
-### Bias/variance tradeoff, model selection, regularization
+### Regularization
 
-* Deep dive: [Bias variance tradeoff and model selection in depth](https://colab.research.google.com/drive/1bgVlPfNk-Qi98JlPTJktJQNjLcNTL-8R?usp=sharing) (use NYU Google account to open)
-* Deep dive: [Regularization in depth](https://colab.research.google.com/drive/1RrT-JDAouMyJWMMIpDs9rO--82cD0xdm?usp=sharing) (use NYU Google account to open)
-* Homework: [Model selection on neural data](https://colab.research.google.com/drive/1RKVHfezDfY0ar6KB6QVkJNRpcJt20Tgy?usp=sharing) (use NYU Google account to open)
+* Notebook: Regularization in depth <a href="notebooks/notebooks/3-regularization-deep-dive.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/3-regularization-deep-dive.ipynb)
 
-### Logistic regression and classification
+### Logistic regression
 
-* Deep dive: [Logistic regression in depth](https://colab.research.google.com/drive/19V8COW_A2Ny_cMtlalSlnBVrvO33huIs?usp=sharing) (use NYU Google account to open)
-* Demo: [Logistic regression for classification of handwritten digits](https://colab.research.google.com/drive/13g6dimfRTjgABan1UqCOaZf1QEkzUN_J?usp=sharing) (use NYU Google account to open)
-* Case study: [Classifier fairness case study on COMPAS data](https://colab.research.google.com/drive/1vWOoIlxsEdzZGsIiSgSUyZPRjZoKOABM?usp=sharing) (use NYU Google account to open)
-* Homework: [Classify your *own* handwritten digit](https://colab.research.google.com/drive/1qy_j8ma_Yzyj4LlwDPaBMb7gMayhk0dH?usp=sharing)
+* Notebook: Logistic regression in depth <a href="notebooks/notebooks/4-logistic-regression-in-depth.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/4-logistic-regression-in-depth.ipynb)
+* Notebook: Logistic regression for handwritten digits classification <a href="notebooks/notebooks/4-logistic-regression-digits.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/4-logistic-regression-digits.ipynb)
+* Notebook: COMPAS case study <a href="notebooks/notebooks/4-compas-case-study.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/4-compas-case-study.ipynb)
+* Notebook: Classifying your own handwritten digit (homework) <a href="notebooks/notebooks/4-hw-logistic-regression.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/4-hw-logistic-regression.ipynb)
 
-### K nearest neighbors
+###  K nearest neighbor
 
-* Deep dive: [k nearest neighbors in depth](https://colab.research.google.com/drive/1gYjAAX51RY4jWcVV7-sEcFNx0PIbDDE-?usp=sharing) (use NYU Google account to open)
-* Homework: [Voter classification using exit poll data](https://colab.research.google.com/drive/1J6O6NGnQFhS_pj2LRx_C3LmRggVu46ah?usp=sharing) (use NYU Google account to open)
+* Notebook: K nearest neighbor in depth <a href="notebooks/notebooks/5-k-nearest-neighbors-in-depth.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/5-k-nearest-neighbors-in-depth.ipynb)
+* Notebook: Voter classification with K nearest neighbor (homework)  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1i9pHIL96xXAn_FCc5TrD_z42PTcIR5u0?usp=sharing)
+
+### Decision tree, ensemble methods
+  
+* Notebook: Decision trees and ensembles <a href="notebooks/notebooks/5-trees-ensembles-in-depth.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/5-trees-ensembles-in-depth.ipynb)
+* Notebook: AdaBoost <a href="notebooks/notebooks/5-demo-adaboost.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/5-demo-adaboost.ipynb)
+* Notebook: Bias and variance of KNN and decision tree models [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/5-knn-tree-bias-variance.ipynb)
 
 ### Support vector machines
+  
+* Notebook: Support vector machines <a href="notebooks/notebooks/6-svm-pre-kernel.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/6-svm-pre-kernel.ipynb)
+* Notebook: Handwritten digits classification <a href="notebooks/notebooks/6-demo-digits-classifiers.pdf"><img src="/intro-ml-tss21/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/6-demo-digits-classifiers.ipynb)
 
-* Intro: [SVM intro](https://colab.research.google.com/drive/1-UjNt7f7c0CYPAWLpjDSU-Gb7WdU1JAV?usp=sharing) (use NYU Google account to open)
-* Deep dive: [Bias and variance of SVM](https://colab.research.google.com/drive/182TR80qYmCe1dkdOwgZj29TUDSONf1vn?usp=sharing) (use NYU Google account to open)
-* Demo: [Classification of handwritten digits](https://colab.research.google.com/drive/1THbSRE2OqZhBu0aphoXJCtTNWLPhQ4vy?usp=sharing) (use NYU Google account to open)
 * Homework: [Grid search for SVM hyperparameter tuning](https://colab.research.google.com/drive/1lpudIgi9VqxIjckUVNhXbOssrtd7ah3Z?usp=sharing) (use NYU Google account to open)
 
 ### Neural networks
