@@ -23,6 +23,7 @@ SOURCES += 5-k-nearest-neighbors-in-depth.md
 SOURCES += 5-trees-ensembles-in-depth.md
 SOURCES += 5-demo-adaboost.md
 SOURCES += 5-knn-tree-bias-variance.md
+SOURCES += 5-hw-voter-classification.md
 SOURCES += 6-svm-pre-kernel.md
 SOURCES += 6-demo-digits-classifiers.md
 
