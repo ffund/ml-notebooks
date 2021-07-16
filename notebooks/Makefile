@@ -20,6 +20,9 @@ SOURCES += 4-logistic-regression-digits.md
 SOURCES += 4-compas-case-study.md
 SOURCES += 4-hw-logistic-regression.md
 SOURCES += 5-k-nearest-neighbors-in-depth.md
+SOURCES += 5-trees-ensembles-in-depth.md
+SOURCES += 5-demo-adaboost.md
+SOURCES += 6-svm-pre-kernel.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files
@@ -41,6 +44,9 @@ EXECS += 4-logistic-regression-in-depth.md
 EXECS += 4-logistic-regression-digits.md
 EXECS += 4-compas-case-study.md
 EXECS += 5-k-nearest-neighbors-in-depth.md
+EXECS += 5-trees-ensembles-in-depth.md
+EXECS += 5-demo-adaboost.md
+EXECS += 6-svm-pre-kernel.md
 
 NBSEXEC := $(patsubst %.md,%.nbconvert.ipynb,$(EXECS))
 PDFS := $(patsubst %.md,%.pdf,$(EXECS))
