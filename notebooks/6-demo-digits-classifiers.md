@@ -14,6 +14,11 @@ jupyter:
 ::: {.cell .markdown }
 ## Classification of handwritten digits
 
+_Fraida Fund_
+:::
+
+::: {.cell .markdown }
+
 In this notebook, we will explore the use of different techniques for
 classification of handwritten digits, with a focus on:
 
