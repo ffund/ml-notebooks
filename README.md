@@ -44,7 +44,7 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
 ###  K nearest neighbor
 
 * Notebook: K nearest neighbor in depth <a href="notebooks/5-k-nearest-neighbors-in-depth.pdf"><img src="https://raw.githubusercontent.com/ffund/intro-ml-tss21/master/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/5-k-nearest-neighbors-in-depth.ipynb)
-* Notebook: Voter classification with K nearest neighbor (homework)  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1i9pHIL96xXAn_FCc5TrD_z42PTcIR5u0?usp=sharing)
+* Notebook: Voter classification with K nearest neighbor (homework)  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/5-hw-voter-classification.ipynb)
 
 ### Decision tree, ensemble methods
   

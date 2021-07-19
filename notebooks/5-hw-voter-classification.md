@@ -1388,7 +1388,7 @@ political leaning.
 Your choices for additional features include:
 
 -   More demographic information: `INCOME16GEN`, `MARRIED`, `RELIGN10`,
-    `ATTEND16`, `LGBT`, `VETVOTER`
+    `ATTEND16`, `LGBT`, `VETVOTER`, `SEX`
 -   Opinions about political issues and about what factors are most
     important in determining which candidate to vote for: `TRACK`,
     `SUPREME16`, `FINSIT`, `IMMWALL`, `ISIS16`, `LIFE`, `TRADE16`,
@@ -1408,7 +1408,7 @@ questions:
 ::: {.cell .code }
 ```python
 features = ['INCOME16GEN', 'MARRIED', 'RELIGN10', 'ATTEND16', 'LGBT', 'VETVOTER', 
-            'TRACK', 'SUPREME16',  'FINSIT', 'IMMWALL', 'ISIS16', 'LIFE', 
+            'SEX', 'TRACK', 'SUPREME16',  'FINSIT', 'IMMWALL', 'ISIS16', 'LIFE', 
             'TRADE16', 'HEALTHCARE16', 'GOVTDO10', 'GOVTANGR16', 'QLT16', 
             'ISSUE16', 'NEC']
 
