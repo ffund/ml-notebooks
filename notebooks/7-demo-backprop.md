@@ -482,32 +482,38 @@ We will use a similar method to train our neural network.
 :::
 
 ::: {.cell .markdown }
+
 We will execute the backpropagation algorithm on our neural network as
 follows:
 
-1.  Apply input (or batch of inputs) to network and propagate values
+**Step 1**:  Apply input (or batch of inputs) to network and propagate values
     forward. (Sum is over all inputs to node $j$)
 
 $$z_j = \sum_i w_{j,i} u_i, \quad u_j = g(z_j)$$
 
-1.  Evaluate $\delta_k = \frac{\delta L}{\delta z_k}$ for all output
+**Step 2**:   Evaluate $\delta_k = \frac{\delta L}{\delta z_k}$ for all output
     units.
 
 For a regression network with a linear activation function at the output
 nodes, $\delta_k = \frac{\partial L}{\partial z_k} = -(y_n - z_{k})$
 
-1.  For each hidden unit, we we "backpropagate" the $\delta$s from all
+**Step 3**:   For each hidden unit, we we “backpropagate” the $\delta$s from all
     outputs of a hidden unit to get $\delta_j$ for that hidden unit.
     (Sum is over all outputs of node $j$)
 
-\\begin{aligned} \\delta_j & = \\frac{\\delta L}{\\delta z_j} \\ & =
-\\sum_k \\frac{\\delta L}{\\delta z_k}\\frac{\\delta z_k}{\\delta z_j}
-\\ & = \\sum_k \\delta_k \\frac{\\delta z_k}{\\delta z_j} \\ & = \\sum_k
-\\delta_k w\_{k,j} g\'(z_j) \\ & = g\'(z_j) \\sum_k w\_{k,j} \\delta_k
-\\end{aligned}
+$$
+\begin{aligned}
+\delta_j & = \frac{\delta L}{\delta z_j} \\
+ & = \sum_k \frac{\delta L}{\delta z_k}\frac{\delta z_k}{\delta z_j} \\
+ & = \sum_k  \delta_k \frac{\delta z_k}{\delta z_j} \\
+ & = \sum_k  \delta_k w_{k,j} g'(z_j) \\
+ & = g'(z_j) \sum_k w_{k,j} \delta_k
+\end{aligned}
+$$
 
-1.  Use $\frac{\partial L_n}{\partial w_{j,i}} = \delta_j u_i$ to
+**Step 4**:   Use $\frac{\partial L_n}{\partial w_{j,i}} = \delta_j u_i$ to
     evaluate derivatives with respect to weights at all nodes.
+
 :::
 
 ::: {.cell .markdown }
