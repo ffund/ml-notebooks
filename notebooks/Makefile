@@ -26,6 +26,9 @@ SOURCES += 5-knn-tree-bias-variance.md
 SOURCES += 5-hw-voter-classification.md
 SOURCES += 6-svm-pre-kernel.md
 SOURCES += 6-demo-digits-classifiers.md
+SOURCES += 7-svm-bias-variance.md
+SOURCES += 7-demo-backprop.md
+SOURCES += 7-neural-net-demo-draw.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files
@@ -51,6 +54,8 @@ EXECS += 5-trees-ensembles-in-depth.md
 EXECS += 5-demo-adaboost.md
 EXECS += 6-svm-pre-kernel.md
 EXECS += 6-demo-digits-classifiers.md
+EXECS += 7-svm-bias-variance.md
+EXECS += 7-demo-backprop.md
 
 NBSEXEC := $(patsubst %.md,%.nbconvert.ipynb,$(EXECS))
 PDFS := $(patsubst %.md,%.pdf,$(EXECS))
