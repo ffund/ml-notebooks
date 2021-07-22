@@ -1333,7 +1333,7 @@ plt.ylabel('w1');
 :::
 
 ::: {.cell .markdown }
-## 3D visualization of L1 and L2 regularization {#3d-visualization-of-l1-and-l2-regularization}
+## 3D visualization of L1 and L2 regularization 
 :::
 
 ::: {.cell .code }

@@ -635,3 +635,66 @@ plot_svc_decision_function(clf)
 Using this kernelized support vector machine, we learn a suitable
 nonlinear decision boundary.
 :::
+
+
+
+::: {.cell .markdown}
+
+### 3D visualization of support vectors for RBF kernel
+
+:::
+
+::: {.cell .code}
+```python
+from sklearn.metrics.pairwise import rbf_kernel
+
+
+colors = ['red','yellow']
+C = 1
+gamma = 10
+
+clf = SVC(kernel='rbf', C=C, gamma=gamma)
+clf.fit(X, y)
+
+def plot_3D(elev=30, azim=30, sv=[], use_alpha=False, X=X, y=y, gamma=gamma):
+
+    plt.figure(figsize=(12,12))
+    ax = plt.subplot(projection='3d')
+    ax.scatter3D(X[:, 0], X[:, 1], 0, c=y, s=50, cmap='autumn', alpha=0.4, edgecolor='black')
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('r')
+    ax.set_zlim(-1, 1)
+
+
+    # Make data.
+    xx1 = np.linspace(-1.5, 1.5, 30)
+    xx2 = np.linspace(-1.5, 1.5, 30)
+
+    X1, X2 = np.meshgrid(xx1, xx2)
+    coords = np.column_stack((X1.ravel(), X2.ravel()))
+    Z = np.zeros((X1.shape[0], X1.shape[1]))
+    for sidx in sv:
+      s = clf.support_vectors_[sidx]
+      a = clf.dual_coef_[0][sidx]
+      if not use_alpha:
+        a =  np.sign(a)
+      z = rbf_kernel(coords, [s], gamma=gamma)
+      Z = Z + a*z.reshape((X1.shape[0], X1.shape[1]))
+      ax.scatter3D(clf.support_vectors_[sidx][0], clf.support_vectors_[sidx][1], 0, 
+                  edgecolor='black', color=colors[int(np.clip(np.sign(clf.dual_coef_[0][sidx]), 0, 1))], s=100)
+
+    surf = ax.plot_surface(X1, X2, Z, cmap='autumn', alpha=0.1, vmin=-1, vmax=1,
+                      linewidth=0, antialiased=False)
+
+
+interact(plot_3D, 
+         elev=widgets.IntSlider(min=-90, max=90, step=10, value=30),
+         azim=widgets.IntSlider(min=-90, max=90, step=10, value=30),
+         sv=widgets.SelectMultiple(options=range(np.sum(clf.n_support_)), value=[]),
+         use_alpha = widgets.Checkbox(value=False),
+         gamma=fixed(gamma), X=fixed(X), y=fixed(y));
+```
+:::
+
