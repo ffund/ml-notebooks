@@ -398,7 +398,7 @@ iteration of the loop:
     iteration.
 -   select the optimizer. Use the Adam optimizer with a 0.001 learning
     rate.
--   train the model for 20 epochs
+-   train the model for **40** epochs
 -   save the history of training and validation accuracy and losses for
     this model
 :::
