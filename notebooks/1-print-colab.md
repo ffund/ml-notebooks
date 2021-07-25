@@ -80,6 +80,7 @@ In *this* notebook, run the following cell:
 
 ::: {.cell .code}
 ``` {.python}
+!apt-get update
 !apt-get install texlive texlive-xetex texlive-latex-extra pandoc
 !pip install pypandoc
 ```
