@@ -32,6 +32,7 @@ SOURCES += 7-neural-net-demo-draw.md
 SOURCES += 7-lab-neural-net-music-classification.md
 SOURCES += 8-slash-dataset.md
 SOURCES += 8-convolutional-neural-networks.md
+SOURCES += 8-fine-tune-rock-paper-scissors.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files
