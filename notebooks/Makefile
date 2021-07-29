@@ -29,6 +29,9 @@ SOURCES += 6-demo-digits-classifiers.md
 SOURCES += 7-svm-bias-variance.md
 SOURCES += 7-demo-backprop.md
 SOURCES += 7-neural-net-demo-draw.md
+SOURCES += 7-lab-neural-net-music-classification.md
+SOURCES += 8-slash-dataset.md
+SOURCES += 8-convolutional-neural-networks.md
 
 # Convert the list of source files (Markdown files )
 # into a list of output files

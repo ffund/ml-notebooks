@@ -1679,7 +1679,7 @@ carry redundant information. In that case, we don't gain much from
 having both features in our model, but both will have similar scores.
 
 As an alternative to univariate feature selection, we might consider
-**greedy feature selection**, where we start with a small number of
+**greedy multivariate feature selection**, where we start with a small number of
 features and then add features one at a time:
 
 -   Let $S^{t-1}$ be the set of selected features at time ${t-1}$.
