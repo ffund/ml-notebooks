@@ -450,7 +450,7 @@ This is a horizontal Sobel filter, which detects horizontal edges.
 ::: {.cell .code }
 ```python
 horizontal_sobel = np.array([[1,2,1],[0,0,0],[-1,-2,-1]])
-plt.imshow(horizontal_sobel, cmap='gray');
+plt.imshow(horizontal_sobel, cmap='RdBu');
 ```
 :::
 
@@ -504,7 +504,7 @@ This is a vertical Sobel filter, which detects vertical edges.
 ::: {.cell .code }
 ```python
 vertical_sobel =  np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
-plt.imshow(horizontal_sobel, cmap='gray');
+plt.imshow(vertical_sobel, cmap='RdBu');
 ```
 :::
 
