@@ -371,7 +371,7 @@ learning rates are more stable, but converge slower, while with a
 learning rate that is too high, the gradient descent may fail to move
 towards weights that decrease the loss function.
 
-Make sure to label each axis, and each series (training and validation).
+Make sure to label each axis, and each series.
 
 **Comment on the results.**
 :::
