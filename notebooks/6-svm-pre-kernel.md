@@ -692,7 +692,7 @@ def plot_3D(elev=30, azim=30, sv=[], use_alpha=False, X=X, y=y, gamma=gamma):
 interact(plot_3D, 
          elev=widgets.IntSlider(min=-90, max=90, step=10, value=30),
          azim=widgets.IntSlider(min=-90, max=90, step=10, value=30),
-         sv=widgets.SelectMultiple(options=range(np.sum(clf.n_support_)), value=[]),
+         sv=widgets.SelectMultiple(options=list(np.arange(np.sum(clf.n_support_))), value=[]),
          use_alpha = widgets.Checkbox(value=False),
          gamma=fixed(gamma), X=fixed(X), y=fixed(y));
 ```
