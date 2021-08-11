@@ -156,7 +156,7 @@ Use the training data to fit a simple linear regression to predict product sales
 
 Also, for each regression model, print the intercept and coefficients, and compute the MSE and R2 on the training data, and MSE and R2 on the test data. 
 
-Comment on the results. Which type of ads seems to have the greatest association with increased product sales? Which regression model is most effective at predicting product sales? 
+Comment on the results. Which type of ad spending seems to be associated with the largest increase in product sales? Which regression model is most effective at predicting product sales? 
 
 **The code in this section is provided for you**. However, you should add text cells in which you write your comments, observations, and answers to the questions. 
 
