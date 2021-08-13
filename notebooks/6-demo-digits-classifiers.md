@@ -564,7 +564,7 @@ acc
 :::
 
 ::: {.cell .markdown }
-The next classifier we'l attempt is a support vector classifier.
+The next classifier we'll attempt is a support vector classifier.
 :::
 
 ::: {.cell .code }
@@ -789,11 +789,13 @@ Now we have the dual coefficients!
 ::: {.cell .markdown }
 A brief digression - recall that the dual SVC problem is
 
-\\begin{aligned} \\max\_\\alpha \\quad & \\sum\_{i=1}\^n \\alpha_i -
-\\frac{1}{2} \\sum\_{i,j = 1}\^{n} \\alpha_i \\alpha_j y_i y_j
-\\mathbf{x}\_i\^T \\mathbf{x}*j \\ \\text{s.t.} \\quad & \\sum*{i=1}\^n
-\\alpha_i y_i = 0, \\quad 0 \\leq \\alpha_i \\leq C, \\quad \\forall i
-\\end{aligned}
+$$
+\begin{aligned} 
+\max_\alpha \quad & \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i,j = 1}^{n} \alpha_i \alpha_j y_i y_j
+\mathbf{x}_i^T \mathbf{x}_j \\ 
+\text{s.t.} \quad & \sum_{i=1}^n \alpha_i y_i = 0, \quad 0 \leq \alpha_i \leq C, \quad \forall i
+\end{aligned}
+$$
 
 so each $\alpha_i$ will be between $0$ and $C$.
 
