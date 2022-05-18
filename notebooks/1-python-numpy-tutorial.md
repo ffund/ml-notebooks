@@ -16,6 +16,7 @@ _Fraida Fund_
 - Parts of this notebook are adapted from a [tutorial from CS231N at Stanford University](https://cs231n.github.io/python-numpy-tutorial/), which is shared under the [MIT license]((https://opensource.org/licenses/MIT)). 
 - Parts of this notebook are adapted from Jake VanderPlas's [Whirlwind Tour of Python](https://colab.research.google.com/github/jakevdp/WhirlwindTourOfPython/blob/master/Index.ipynb), which is shared under the [Creative Commons CC0 Public Domain Dedication license](https://github.com/jakevdp/WhirlwindTourOfPython/blob/master/LICENSE).
 -   The visualizations in this notebook are from [A Visual Intro to NumPy](http://jalammar.github.io/visual-numpy/) by Jay Alammar, which is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+-   Parts of this notebook (and some images) about `numpy` broadcasting are adapted from Sebastian Raschka's [STATS451](https://github.com/rasbt/stat451-machine-learning-fs20) materials.
 
 :::
 
@@ -773,6 +774,7 @@ g.greet(loud=True)   # Call an instance method; prints "HELLO, FRED!"
 ```
 :::
 
+
 ::: {.cell .markdown}
 ## Numpy
 :::
@@ -796,7 +798,7 @@ import numpy as np
 :::
 
 ::: {.cell .markdown}
-### Arrays
+### Arrays and array construction
 :::
 
 ::: {.cell .markdown}
@@ -872,6 +874,17 @@ want to create:
 ![](http://jalammar.github.io/images/numpy/numpy-3d-array-creation.png)
 :::
 
+
+
+::: {.cell .markdown}
+
+Sometimes, we need an array of a specific shape with "placeholder" values that we plan to fill 
+in with the result of a computation. The `zeros` or `ones` functions are handy for this:
+
+:::
+
+
+
 ::: {.cell .code}
 ``` {.python}
 a = np.zeros((2,2))  # Create an array of all zeros
@@ -904,6 +917,61 @@ print(d)
 ``` {.python}
 e = np.random.random((2,2)) # Create an array filled with random values
 print(e)
+```
+:::
+
+Lastly, I want to mention two very useful functions for creating sequences of numbers within a specified range, namely, arange and linspace. NumPy's arange function follows the same syntax as Python's range objects: If two arguments are provided, the first argument represents the start value and the second value defines the stop value of a half-open interval:
+
+
+
+::: {.cell .markdown}
+Numpy also has two useful functions for creating sequences of numbers: `arange` and `linspace`.
+
+The `arange` function accepts three arguments, which define the start value, stop value of a half-open interval, and step size. (The default step size, if not explicitly specified, is 1; the default start value, if not explicitly specified, is 0.)
+
+The `linspace` function is similar, but we can specify the number of values instead of the step size, and it will create a sequence of evenly spaced values.
+:::
+
+
+::: {.cell .code}
+``` {.python}
+f = np.arange(10,50,5)   # Create an array of values starting at 10 in increments of 5
+print(f)
+```
+:::
+
+::: {.cell .markdown}
+Note this ends on 45, not 50 (does not include the top end of the interval).
+:::
+
+
+::: {.cell .code}
+``` {.python}
+g = np.linspace(0., 1., num=5)
+print(g)
+```
+:::
+
+
+
+::: {.cell .markdown}
+Sometimes, we may want to construct an array from existing arrays by "stacking" the existing arrays, either vertically or horizontally. We can use `vstack()` (or `row_stack`) and `hstack()` (or `column_stack`), respectively.
+:::
+
+::: {.cell .code}
+``` {.python}
+a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+np.vstack((a,b))
+```
+:::
+
+
+::: {.cell .code}
+``` {.python}
+a = np.array([[7], [8], [9]])
+b = np.array([[4], [5], [6]])
+np.hstack((a,b))
 ```
 :::
 
@@ -1134,7 +1202,44 @@ You can read all about numpy datatypes in the
 :::
 
 ::: {.cell .markdown}
-Basic mathematical functions operate elementwise on arrays, and are available both as operator overloads and as functions in the numpy module.
+What makes working with `numpy` so powerful and convenient is that it comes with many *vectorized* math functions for computation over elements of an array. These functions are highly optimized and are *very* fast - much, much faster than using an explicit `for` loop.
+
+
+For example, let's create a large array of random values and then sum it both ways. We'll use a `%%time` *cell magic* to time them.
+:::
+
+::: {.cell .code}
+``` {.python}
+a = np.random.random(100000000)
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+%%time
+x = np.sum(a)
+```
+:::
+
+::: {.cell .code}
+``` {.python}
+%%time
+x = 0 
+for element in a:
+  x = x + element
+```
+:::
+
+::: {.cell .markdown}
+
+Look at the "Wall Time" in the output - note how much faster the vectorized version of the operation is! This type of fast computation is a major enabler of machine learning, which requires a *lot* of computation.
+
+Whenever possible, we will try to use these vectorized operations.
+
+:::
+
+::: {.cell .markdown}
+Some mathematic functions are available both as operator overloads and as functions in the numpy module.
 :::
 
 ::: {.cell .markdown}
@@ -1254,7 +1359,8 @@ print(x @ y)
 :::
 
 ::: {.cell .markdown}
-Numpy provides many useful functions for performing computations on
+Besides for the functions that overload operators, Numpy also 
+provides many useful functions for performing computations on
 arrays, such as `min()`, `max()`, `sum()`, and others:
 
 ![](http://jalammar.github.io/images/numpy/numpy-matrix-aggregation-1.png)
@@ -1291,6 +1397,9 @@ print(np.max(x, axis=1))  # Compute max of each row; prints "[2 5 6]"
 You can find the full list of mathematical functions provided by numpy
 in the
 [documentation](http://docs.scipy.org/doc/numpy/reference/routines.math.html).
+:::
+
+::: {.cell .markdown}
 
 Apart from computing mathematical functions using arrays, we frequently
 need to reshape or otherwise manipulate data in arrays. The simplest
@@ -1327,6 +1436,78 @@ method is useful in these cases.
 ![](http://jalammar.github.io/images/numpy/numpy-reshape.png)
 :::
 
+
+
+::: {.cell .markdown}
+
+A common task in this class will be to convert a 1D array to a 2D array, and vice versa. We can use `reshape()` for this.
+
+
+
+:::
+
+
+::: {.cell .markdown}
+
+For example, suppose we had this 2D array, but we need to pass it to a function that expects a 1D array.
+
+:::
+
+
+::: {.cell .code}
+``` {.python}
+w = np.array([[1],[2],[3]])
+print(w)
+w.shape
+```
+:::
+
+
+::: {.cell .markdown}
+
+We can remove the "unnecessary" extra dimension with
+:::
+
+
+::: {.cell .code}
+``` {.python}
+y = w.reshape(-1,)
+print(y)
+y.shape
+```
+:::
+
+
+
+::: {.cell .markdown}
+
+Note that we can pass -1 as one dimension and numpy will infer the correct size based on our matrix size!
+
+There's also a `squeeze()` function that removes *all* of the "unnecessary" dimensions (dimensions that have size 1) from an array:
+:::
+
+
+::: {.cell .code}
+``` {.python}
+z = w.squeeze()
+print(z)
+z.shape
+```
+:::
+
+::: {.cell .markdown}
+
+To go from a 1D to 2D array, we can just add in another dimension of size 1:
+
+:::
+
+::: {.cell .code}
+``` {.python}
+y.reshape((-1,1))
+```
+:::
+
+
 ::: {.cell .markdown}
 ### Broadcasting
 :::
@@ -1334,101 +1515,86 @@ method is useful in these cases.
 ::: {.cell .markdown}
 Broadcasting is a powerful mechanism that allows numpy to work with
 arrays of different shapes when performing arithmetic operations.
-Frequently we have a smaller array and a larger array, and we want to
-use the smaller array multiple times to perform some operation on the
-larger array.
 :::
 
 ::: {.cell .markdown}
-For example, suppose that we want to add a constant vector to each row
-of a matrix. We could do it like this:
+
+For example: basic linear algebra, we can only add (and perform similar element-wise operations) 
+two matrics that have the *same* dimension. In numpy, if we want to add two matrics 
+that have different dimensions, numpy will implicitly "extend" the dimension of one matrix
+to match the other so that we can perform the operation.
+
+So these operations will work, instead of returning an error:
+
+![](https://sebastianraschka.com/images/blog/2020/numpy-intro/broadcasting-1.png)
+
+![](https://sebastianraschka.com/images/blog/2020/numpy-intro/broadcasting-2.png)
+
 :::
 
-::: {.cell .code}
-``` {.python}
-# We will add the vector v to each row of the matrix x,
-# storing the result in the matrix y
-x = np.array([[1,2,3], [4,5,6], [7,8,9], [10, 11, 12]])
-v = np.array([1, 0, 1])
-y = np.empty_like(x)   # Create an empty matrix with the same shape as x
 
-# Add the vector v to each row of the matrix x with an explicit loop
-for i in range(4):
-    y[i, :] = x[i, :] + v
-
-print(y)
-```
-:::
 
 ::: {.cell .markdown}
-This works; however when the matrix `x` is very large, computing an
-explicit loop in Python could be slow. Note that adding the vector v to
-each row of the matrix `x` is equivalent to forming a matrix `vv` by
-stacking multiple copies of `v` vertically, then performing elementwise
-summation of `x` and `vv`. We could implement this approach like this:
-:::
-
-::: {.cell .code}
-``` {.python}
-vv = np.tile(v, (4, 1))  # Stack 4 copies of v on top of each other
-print(vv)                # Prints "[[1 0 1]
-                         #          [1 0 1]
-                         #          [1 0 1]
-                         #          [1 0 1]]"
-```
-:::
-
-::: {.cell .code}
-``` {.python}
-y = x + vv  # Add x and vv elementwise
-print(y)
-```
-:::
-
-::: {.cell .markdown}
-Numpy broadcasting allows us to perform this computation without
-actually creating multiple copies of v. Consider this version, using
-broadcasting:
-:::
-
-::: {.cell .code}
-``` {.python}
-import numpy as np
-
-# We will add the vector v to each row of the matrix x,
-# storing the result in the matrix y
-x = np.array([[1,2,3], [4,5,6], [7,8,9], [10, 11, 12]])
-v = np.array([1, 0, 1])
-y = x + v  # Add v to each row of x using broadcasting
-print(y)
-```
-:::
-
-::: {.cell .markdown}
-The line `y = x + v` works even though `x` has shape `(4, 3)` and `v`
-has shape `(3,)` due to broadcasting; this line works as if v actually
-had shape `(4, 3)`, where each row was a copy of `v`, and the sum was
-performed elementwise.
 
 Broadcasting two arrays together follows these rules:
 
-1.  If the arrays do not have the same rank, prepend the shape of the
-    lower rank array with 1s until both shapes have the same length.
-2.  The two arrays are said to be compatible in a dimension if they have
-    the same size in the dimension, or if one of the arrays has size 1
-    in that dimension.
-3.  The arrays can be broadcast together if they are compatible in all
-    dimensions.
-4.  After broadcasting, each array behaves as if it had shape equal to
-    the elementwise maximum of shapes of the two input arrays.
-5.  In any dimension where one array had size 1 and the other array had
-    size greater than 1, the first array behaves as if it were copied
-    along that dimension
+**Rule 1**: If the two arrays differ in their number of dimensions, the shape of the one with fewer dimensions is padded with ones on its leading (left) side.
 
-If this explanation does not make sense, try reading the explanation
-from the
-[documentation](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
-or this [explanation](http://wiki.scipy.org/EricsBroadcastingDoc).
+For example, in the following cell, `a` will be implicitly extended to shape (1,3):
+
+:::
+
+::: {.cell .code}
+```python
+a = np.array([1,2,3])         # has shape (3,): one dimension
+b = np.array([[4], [5], [6]]) # has shape (3,1): two dimensions
+c = a + b                     # will have shape (3,3) (two dimensions)
+```
+:::
+
+::: {.cell .markdown}
+
+**Rule 2**: If the shape of the two arrays does not match in any dimension, 
+the array with shape equal to 1 in that dimension is stretched to match the other shape.
+
+For example, in the following cell `a` will be implicitly extended to shape (3,2):
+
+:::
+
+::: {.cell .code}
+```python
+a = np.array([[1],[2],[3]])         # has shape (3,1)
+b = np.array([[4,5], [6,7], [8,9]]) # has shape (3,2)
+c = a + b                           # will have shape (3,2) 
+```
+:::
+
+::: {.cell .markdown}
+
+**Rule 3**: If in any dimension the sizes disagree and neither is equal to 1, an error is raised:
+
+:::
+
+::: {.cell .code}
+```python
+a = np.array([[1],[2],[3],[4]])      # has shape (4,1)
+b = np.array([[4,5], [6,7], [8,9]])  # has shape (3,2)
+c = a + b                            # ValueError: operands could not be broadcast
+```
+:::
+
+::: {.cell .markdown}
+
+For more detail, you can read the explanation from the
+[documentation](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html).
+
+:::
+
+
+
+
+
+::: {.cell .markdown}
 
 Functions that support broadcasting are known as universal functions.
 You can find the list of all universal functions in the
@@ -1436,11 +1602,12 @@ You can find the list of all universal functions in the
 :::
 
 ::: {.cell .markdown}
-Here are a couple of visual examples involving broadcasting.
+
+Here are a few visual examples involving broadcasting.
 
 ![](http://jalammar.github.io/images/numpy/numpy-array-broadcast.png)
 
-Note the application of rule# 2 - these arrays are compatible in each
+Note that these arrays are compatible in each
 dimension if they have either the same size in that dimension, or if one
 array has size 1 in that dimension.
 
@@ -1448,6 +1615,7 @@ array has size 1 in that dimension.
 :::
 
 ::: {.cell .markdown}
+
 And here are some more practical applications:
 :::
 
@@ -1542,7 +1710,7 @@ import matplotlib.pyplot as plt
 
 ::: {.cell .markdown}
 The most important function in `matplotlib` is `plot`, which allows you
-to plot 2D data. Here is a simple example:
+to plot 2D data as a line plot. Here is a simple example:
 :::
 
 ::: {.cell .code}
@@ -1598,6 +1766,12 @@ plt.scatter(x, y, c=colors)
 
 plt.show()
 ```
+:::
+
+::: {.cell .markdown}
+
+When there is no logical connection between adjacent points (for example: if the horizontal axis is a categorical variable without a logical order), then you should *not* connect them (as in a line plot), since this implies a relationship that does not exist! Instead, you would use a scatter plot.
+
 :::
 
 ::: {.cell .markdown}

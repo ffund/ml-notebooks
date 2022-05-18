@@ -56,20 +56,24 @@ These are notebooks developed for ECE-GY 6143 Intro to Machine Learning at NYU T
   
 * Notebook: Support vector machines <a href="notebooks/6-svm-pre-kernel.pdf"><img src="https://raw.githubusercontent.com/ffund/intro-ml-tss21/master/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/6-svm-pre-kernel.ipynb)
 * Notebook: Handwritten digits classification <a href="notebooks/6-demo-digits-classifiers.pdf"><img src="https://raw.githubusercontent.com/ffund/intro-ml-tss21/master/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/6-demo-digits-classifiers.ipynb)
-
+* Notebook: Bias and variance of SVM <a href="notebooks/7-svm-bias-variance.pdf"><img src="https://raw.githubusercontent.com/ffund/intro-ml-tss21/master/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/7-svm-bias-variance.ipynb)
 * Homework: [Grid search for SVM hyperparameter tuning](https://colab.research.google.com/drive/1lpudIgi9VqxIjckUVNhXbOssrtd7ah3Z?usp=sharing) (use NYU Google account to open)
 
 ### Neural networks
 
-* Deep dive: [Train a neural network to classify a decision region *you* draw](https://colab.research.google.com/drive/1t2OeBGcfB5HSDFl6FPQFaQKbmeEAPPgG?usp=sharing) (use NYU Google account to open)
-* Deep dive: [Backpropagation from scratch](https://colab.research.google.com/drive/1S8cCef6HSCxXA_oBB1dteF_7ONvy3p73?usp=sharing) (use NYU Google account to open)
-* Homework: [Musical instrument classification](https://colab.research.google.com/drive/1K0QchRg9ubKNb_TEBOl8Hw29qRXR_4U5?usp=sharing) (use NYU Google account to open)
+* Notebook: Backpropagation from scratch <a href="notebooks/7-demo-backprop.pdf"><img src="https://raw.githubusercontent.com/ffund/intro-ml-tss21/master/pdf.svg" alt="PDF" height="20px"></a>  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/7-demo-backprop.ipynb)
+* Notebook: Draw your own classification problem for a neural network [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/7-neural-net-demo-draw.ipynb)
+* Homework: Neural network for musical instrument classification (homework)  [![Open In Colab](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/7-lab-neural-net-music-classification.ipynb)
+
 
 ### Convolutional neural networks
 
 * Deep dive: [Convolutional neural networks](https://colab.research.google.com/drive/1gHQEEIDkmgExueDe_LtM24dN2PN8Wvs0?usp=sharing) (use NYU Google account to open)
 * [Transfer learning](https://colab.research.google.com/drive/1tm5ZxeN8uVqj6veLKarFizD0eW9cRd4e#scrollTo=_yz-QM1sLt0Cusp=sharing) (use NYU Google account to open)
 * Homework: [Transfer learning](https://colab.research.google.com/drive/16w-mLZ4tSxwH7bZof-1Baota-TIYv19B?usp=sharing)
+
+
+### Unsupervised learning
 
 ### Project topics
 
