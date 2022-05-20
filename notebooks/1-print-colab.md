@@ -15,43 +15,7 @@ To submit homework assignments, you will need to generate PDF versions of your c
 
 Printing to a PDF from Colab seems easy - there's a File > Print option in the menu! However, the built-in print option won't always work well for us, because if a plot or other output happens to come out near a page break, it can get cut off.
 
-For example, try running the following cell, which creates a large plot:
-
 :::
-
-::: {.cell .code}
-``` {.python}
-import numpy as np
-import matplotlib.pyplot as plt
-
-
-x = np.arange(0, 3 * np.pi, 0.1)
-
-# set up figure and subplots
-plt.figure(figsize=(6, 20))
-plt.subplot(8, 1, 1)
-
-# plot random data
-for p in range(1,8+1):
-  y = np.random.exponential(size=len(x))
-  plt.subplot(8, 1, p)
-  plt.scatter(x, y)
-  plt.title('Plot %d/8' % p)
-
-# adjust spacing between subplots
-plt.subplots_adjust(hspace = 0.4)
-
-# show the figure.
-plt.show()
-```
-:::
-
-::: {.cell .markdown}
-
-Then, look at the preview PDF output using File > Print, and note how some of the subplots do not appear in the PDF output.
-
-:::
-
 
 ::: {.cell .markdown}
 
@@ -117,7 +81,7 @@ In *both* of the following cells, change the name "Untitled" to whatever your no
 
 ::: {.cell .code}
 ``` {.python}
-!xelatex --interaction=nonstopmode 'Untitled.tex'
+!buf_size=1000000 xelatex --interaction=nonstopmode 'Untitled.tex'
 ```
 :::
 

@@ -556,3 +556,82 @@ As mentioned above, despite the resource limits, Colab will be sufficient for al
 These resources will be available to you at no charge - you should not pay for compute resources for this course.
 
 :::
+
+
+
+
+::: {.cell .markdown}
+
+### Submitting your work
+
+:::
+
+::: {.cell .markdown}
+
+
+To submit lab assignments, you will need to generate two versions of your completed Colab notebooks. 
+
+
+* a version in "notebook" format (`.ipynb`) including all code and the output of each cell. 
+* a version in PDF format including all code and the output of each cell.
+
+:::
+
+
+::: {.cell .markdown}
+
+For the `.ipynb` version, you'll make sure you ran every cell and the output appears as expected. Then, use File > Download > Download `.ipynb`.
+
+:::
+
+
+::: {.cell .markdown}
+
+The PDF format seems similarly easy - there's a File > Print option in the menu! However, the built-in print option won't always work well for us, because if a plot or other output happens to come out near a page break, it can get cut off.
+
+For example, try running the following cell, which creates a large plot:
+
+:::
+
+::: {.cell .code}
+``` {.python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+x = np.arange(0, 3 * np.pi, 0.1)
+
+# set up figure and subplots
+plt.figure(figsize=(6, 20))
+plt.subplot(8, 1, 1)
+
+# plot random data
+for p in range(1,8+1):
+  y = np.random.exponential(size=len(x))
+  plt.subplot(8, 1, p)
+  plt.scatter(x, y)
+  plt.title('Plot %d/8' % p)
+
+# adjust spacing between subplots
+plt.subplots_adjust(hspace = 0.4)
+
+# show the figure.
+plt.show()
+```
+:::
+
+::: {.cell .markdown}
+
+Then, look at the preview PDF output using File > Print, and note how some of the subplots do not appear in the PDF output.
+
+:::
+
+
+::: {.cell .markdown}
+
+As an alternative to Colab's built-in print, you can:
+
+* Use this [helper notebook](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-print-colab.ipynb) to create a PDF version of your notebook. (Note that you will have to follow the instructions carefully to connect your Google Drive and specify your notebook name.)
+* Or, if you feel comfortable uploading your `ipynb` to a third party service, you can use: [https://htmtopdf.herokuapp.com/ipynbviewer/](https://htmtopdf.herokuapp.com/ipynbviewer/)
+
+:::
