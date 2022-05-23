@@ -192,7 +192,7 @@ InteractiveShell.ast_node_interactivity = "all"
 
 Now we are ready to read in our data!
 
-The main type of data structure in `pandas` is a `DataFrame`, which organizes data into a 2D table, like a spreadsheet. Unlike a `numpy` array, however, different column in a `DataFrame` can have different data types - for example, you can have a string column, an integer column, and a float column all in the same `DataFrame`. 
+The main type of data structure in `pandas` is a `DataFrame`, which organizes data into a 2D table, like a spreadsheet. Unlike a `numpy` array, however, each column in a `DataFrame` can have different data types - for example, you can have a string column, an integer column, and a float column all in the same `DataFrame`. 
 
 (The other major type of data in `pandas` is a `Series`, which is like a 1D array- any individual row or column from a `DataFrame` will be a `Series`.)
 
@@ -603,7 +603,7 @@ It looks like at least one hour appears twice in the data, which is unexpected! 
 ::: {.cell .code}
 ```python
 hour_counts = df['hour_beginning'].value_counts()
-hour_counts[hour_counts > 1]
+hour_counts.loc[hour_counts > 1]
 ```
 :::
 
@@ -611,14 +611,14 @@ hour_counts[hour_counts > 1]
 
 It seems to happen exactly once. Let's filter the dataframe to find the rows corresponding to the duplicate day.
 
-Here's a useful clue - we can see that this hour appears twice because the clock is shifted for Daylight Savings time. (It's not clear why there is no duplicate hour for that same event in 2018. Perhaps only one of those hours is recorded.) 
+Here's a useful clue - we can see that this hour appears twice because the clock is shifted for Daylight Savings time. (It's not clear why there is no duplicate hour for that same event in 2017. Perhaps only one of those hours is recorded.) 
 
 
 :::
 
 ::: {.cell .code}
 ```python
-df[df['hour_beginning']=="2019-11-03 01:00:00"]
+df.loc[df['hour_beginning']=="2019-11-03 01:00:00"]
 ```
 :::
 
