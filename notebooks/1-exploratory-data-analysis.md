@@ -707,7 +707,10 @@ df.isnull().sum()
 
 ::: {.cell .markdown}
 
-Next, let us look at summary statistics.  The "five number summary" - extremes (min and max), median, and quartiles -can help us gain a better understanding of numeric fields in the data. We can use the `describe` function in `pandas` to compute this summary.
+Now that we have some idea of the completeness of the data, let's look at whether the data values are consistent with our expectations.
+
+
+To start, let's look at summary statistics.  The "five number summary" - extremes (min and max), median, and quartiles -can help us gain a better understanding of numeric fields in the data, and see whether they have reasonable values. We can use the `describe` function in `pandas` to compute this summary.
 
 :::
 
@@ -721,21 +724,25 @@ df.describe()
 
 ::: {.cell .markdown}
 
-We are especially interested in `Pedestrians`, the target variable, so we can describe that one separately:
+We can only compute those summary statistics for numerical variables. For categorical variables, we can use `value_counts()` to get frequency of each value.
+
+For example, let's see how often each `weather` condition occurs, and whether it is reasonable for NYC: 
 
 :::
 
 ::: {.cell .code}
 ```python
-df['Pedestrians'].describe()
+df.weather_summary.value_counts()
 ```
 :::
 
+
 ::: {.cell .markdown}
 
-For categorical variables, we can use `groupby` to get frequency and other useful summary statistics.
+It's also useful to verify expected relationships. 
 
-For example, we may be interested in the summary statistics for `Pedestrians` for different weather conditions: 
+
+For example, we expect to see fewer pedestrians on the bridge in poor weather conditions. We can use `groupby` in `pandas` to capture the effect between a categorical variable (`weather_summary`) and a numerical one:
 
 :::
 
@@ -745,9 +752,28 @@ df.groupby('weather_summary')['Pedestrians'].describe()
 ```
 :::
 
+
 ::: {.cell .markdown}
 
 Make special note of the `count` column, which shows us the prevalence of different weather conditions in this dataset. There are some weather conditions for which we have very few examples.
+
+:::
+
+::: {.cell .markdown}
+
+Similarly, we can validate our expectation of more pedestrians on weekends:
+:::
+
+::: {.cell .code}
+```python
+df.groupby('day_name')['Pedestrians'].describe()
+```
+:::
+
+
+::: {.cell .markdown}
+
+
 
 Another categorical variable is `events`, which indicates whether the day is a holiday, and which holiday. Holidays have very different pedestrian traffic characteristics from other days. 
 
@@ -759,26 +785,11 @@ df.groupby('events')['Pedestrians'].describe()
 ```
 :::
 
-::: {.cell .markdown}
-
-It can be useful to get the total pedestrian count for the day of a holiday, rather than the summary statistics for the hour-long intervals. We can use the `agg` function to compute key statistics, including summing over all the samples in the group:
-
-:::
-
-
-::: {.cell .code}
-
-```python
-df.groupby('events').agg({'Pedestrians': 'sum'})
-
-```
-:::
-
 
 
 ::: {.cell .markdown}
 
-For tabular data, and especially tabular data with many numeric features, it is often useful to create a *pairplot*. A pairplot shows pairwise relationships between all numerical variables. It is a useful way to identify:
+For tabular data with multiple numeric features, it is often useful to create a *pairplot*. A pairplot shows pairwise relationships between all numerical variables. It is a useful way to identify:
 
 * features that are predictive - if there is any noticeable relationship between the target variable and any other variable.
 * features that are correlated - if two features are highly correlated, we may be able to achieve equally good results just using one of them.
