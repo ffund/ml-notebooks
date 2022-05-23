@@ -78,7 +78,7 @@ We will practice using a basic "recipe" for exploratory data analysis.
 
 1.  Set down *expectations* about the data
 2.  Load data and check that it is loaded correctly
-3.  Inspect the data to make sure it is consistent with your expectations ("sanity checks"), and clear or filter the data if needed
+3.  Inspect the data to make sure it is consistent with your expectations ("sanity checks"), and clean or filter the data if needed
 4.  Explore relationships in the data to identify good candidate features and target variables
 
 Every exploratory data analysis is different, as specific characteristics of the data may lead you to explore different things in depth. However, this "recipe" can be a helpful starting point.
