@@ -456,6 +456,15 @@ For many of these "sanity checks", we will need some *domain knowledge*. It's ha
 :::
 
 
+::: {.cell .markdown}
+
+
+#### Check whether data is complete
+
+:::
+
+
+
 
 ::: {.cell .markdown}
 
@@ -515,7 +524,7 @@ df.loc[df.temperature.isnull()]
 
 ::: {.cell .markdown}
 
-We can see that for these particular instances, all of the weather information. There's no obvious reason or pattern. We'll deal with these soon, when we try to clean/filter the data.
+We can see that for these particular instances, all of the weather information is missing. There's no obvious reason or pattern. We'll deal with these soon, when we try to clean/filter the data.
 
 :::
 
@@ -622,15 +631,24 @@ df.loc[df['hour_beginning']=="2019-11-03 01:00:00"]
 ```
 :::
 
+::: {.cell .markdown}
+
+
+#### Handle missing values
+
+:::
 
 
 ::: {.cell .markdown}
 
 
-Now that we have evaluated the "completeness" of our data, we have to decide what to do about missing values. Some machine learning models cannot tolerate data with missing values. Depending on what *type* of data is missing, we can
+Now that we have evaluated the "completeness" of our data, we have to decide what to do about missing values. 
+
+
+Some machine learning models cannot tolerate data with missing values. Depending on what *type* of data is missing and *why* it is missing, we can
 
 * drop rows with missing values from the dataset
-* fill in those missing values with another value: a 0, the mode of that column, the median of that column, or forward/back fill data from the nearest row that is not missing
+* fill in ("impute") the missing values with some value: a 0, the mode of that column, the median of that column, or forward/back fill data from the nearest row that is not missing
 
 
 :::
@@ -693,7 +711,7 @@ df['weather_summary'] = df['weather_summary'].fillna(method="ffill")
 
 ::: {.cell .markdown}
 
-Now we can count the NAs again and find that there are only missing values in the `events` column. 
+Having imputed missing vaules in the weather-related columns, we can count the NAs again and find that there are only missing values in the `events` column. 
 
 :::
 
@@ -704,6 +722,12 @@ df.isnull().sum()
 :::
 
 
+::: {.cell .markdown}
+
+
+#### Validating expectations
+
+:::
 
 ::: {.cell .markdown}
 
@@ -742,13 +766,13 @@ df.weather_summary.value_counts()
 It's also useful to verify expected relationships. 
 
 
-For example, we expect to see fewer pedestrians on the bridge in poor weather conditions. We can use `groupby` in `pandas` to capture the effect between a categorical variable (`weather_summary`) and a numerical one:
+For example, we expect to see precipitation when the weather is rainy. We can use `groupby` in `pandas` to capture the effect between a categorical variable (`weather_summary`) and a numerical one, `precipitation`:
 
 :::
 
 ::: {.cell .code}
 ```python
-df.groupby('weather_summary')['Pedestrians'].describe()
+df.groupby('weather_summary')['precipitation'].describe()
 ```
 :::
 
@@ -761,38 +785,37 @@ Make special note of the `count` column, which shows us the prevalence of differ
 
 ::: {.cell .markdown}
 
-Similarly, we can validate our expectation of more pedestrians on weekends:
+Similarly, we can validate our expectation of hotter weather in the summer months:
 :::
 
 ::: {.cell .code}
 ```python
-df.groupby('day_name')['Pedestrians'].describe()
+df.groupby('month')['temperature'].describe()
 ```
 :::
 
 
 ::: {.cell .markdown}
 
-
-
-Another categorical variable is `events`, which indicates whether the day is a holiday, and which holiday. Holidays have very different pedestrian traffic characteristics from other days. 
+as well as during the middle of the day:
 
 :::
 
 ::: {.cell .code}
 ```python
-df.groupby('events')['Pedestrians'].describe()
+df.groupby('hour')['temperature'].describe()
 ```
 :::
 
+::: {.cell .markdown}
 
+#### Create a pairplot
+
+::::
 
 ::: {.cell .markdown}
 
-For tabular data with multiple numeric features, it is often useful to create a *pairplot*. A pairplot shows pairwise relationships between all numerical variables. It is a useful way to identify:
-
-* features that are predictive - if there is any noticeable relationship between the target variable and any other variable.
-* features that are correlated - if two features are highly correlated, we may be able to achieve equally good results just using one of them.
+For tabular data with multiple numeric features, it is often useful to create a *pairplot*. A pairplot shows pairwise relationships between all numerical variables. It is a useful way to identify variables that have a relationship.
 
 
 :::
@@ -842,16 +865,35 @@ sns.pairplot(df,
 
 ::: {.cell .markdown}
 
-We are mainly interested in the top row of the plot, which shows how the target variable (`Pedestrians`) varies with the temperature, precipitation levels, and hour. However, it is also useful to note relationships between features. For example, there is a natural relationship between the time of data and the temperature, and between the month and the temperature.
+This plot validates the relationship between `temperature` and `hour`, and between `temperature` and `month`. However, we can also use this plot to identify useful features - features that appear to be related to the `target` variable.
+
 
 
 :::
 
 ::: {.cell .markdown}
 
-### Explore relationships and look for issues
 
-Finally, let's further explore relationships between likely predictors and our target variable. We can group by `day_name`, then call the `describe` function on the `Pedestrians` column to see the effect of day of the week on traffic volume:
+### Explore relationships and identify good features and target variable
+
+
+:::
+
+
+::: {.cell .markdown}
+
+Finally, since our goal is to train a machine learning model, we want to identify:
+
+* an appropriate target variable - something on which to train our model.
+* features that are predictive - if there is any noticeable relationship between the target variable and any other variable, this is likely to be a useful feature.
+* features that are correlated with one another - if two features are highly correlated, this presents some difficulty to certain types of models, so we'll want to know about it in advance.
+
+:::
+
+
+::: {.cell .markdown}
+
+We can group by `day_name`, then call the `describe` function on the `Pedestrians` column to see the effect of day of the week on traffic volume:
 
 :::
 
