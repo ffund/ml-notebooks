@@ -676,14 +676,14 @@ df.head()
 ::: {.cell .markdown}
 
 
-We can also "reset" the index now, so that if we ask for `df[0]` we'll get the first row in time, and so on.
+We can also "reset" the index now, so that if we ask for `df.loc[0]` we'll get the first row in time, and so on.
 :::
 
 
 ::: {.cell .code}
 
 ```python
-df.reset_index(drop=True)
+df.reset_index(drop=True, inplace=True)
 df.head()
 ```
 :::
