@@ -874,26 +874,39 @@ This plot validates the relationship between `temperature` and `hour`, and betwe
 ::: {.cell .markdown}
 
 
-### Explore relationships and identify good features and target variable
+### Explore relationships and identify target variable and features
 
 
 :::
-
 
 ::: {.cell .markdown}
 
 Finally, since our goal is to train a machine learning model, we want to identify:
 
-* an appropriate target variable - something on which to train our model.
+* an appropriate target variable - something on which to train our model. (Either a direct target variable, or a proxy.)
 * features that are predictive - if there is any noticeable relationship between the target variable and any other variable, this is likely to be a useful feature.
-* features that are correlated with one another - if two features are highly correlated, this presents some difficulty to certain types of models, so we'll want to know about it in advance.
+* features that are correlated with one another - if two features are highly correlated, this presents some difficulty to certain types of models, so we'll want to know about it.
+
+:::
+
+::: {.cell .markdown}
+
+The `Pedestrians` variable is the obvious target variable for this learning problem: it's exactly the quantity we want to predict.
+
+:::
+
+
+
+::: {.cell .markdown}
+
+To identify potential predictive features among the numeric variables in the data, we can use the pairplot. Look at the row of the pairplot in which `Pedestrians` is on the vertical axis, and each of the other variables in turn is on the horizontal axis. Which of these seem to show a relationship? (Note: the relationship does not necessarily need to be a linear relationship.)
 
 :::
 
 
 ::: {.cell .markdown}
 
-We can group by `day_name`, then call the `describe` function on the `Pedestrians` column to see the effect of day of the week on traffic volume:
+We will also want to evaluate the categorical variables. For example, to look for a relationship between day of the week and pedestrian volume, we can group by `day_name`, then call the `describe` function on the `Pedestrians` column:
 
 :::
 
@@ -905,45 +918,32 @@ df.groupby('day_name')['Pedestrians'].describe()
 
 ::: {.cell .markdown}
 
-Similarly, we can see the effect of temperature:
+Similarly, we can see the effect of weather:
 
 :::
 
 ::: {.cell .code}
 ```python
-df.groupby('temperature')['Pedestrians'].describe()
+df.groupby('weather_summary')['Pedestrians'].describe()
 ```
 :::
 
 ::: {.cell .markdown}
 
-And the effect of precipitation:
+And the effect of various holidays:
 
 :::
 
 ::: {.cell .code}
 ```python
-df.groupby('precipitation')['Pedestrians'].describe()
+df.groupby('events')['Pedestrians'].describe()
 ```
 :::
 
-::: {.cell .markdown}
 
-We can even plot it separately, by saving it in a new data frame and plotting _that_ data frame:
-
-:::
-
-::: {.cell .code}
-```python
-df_precip = df.groupby('precipitation')['Pedestrians'].describe()
-df_precip = df_precip.reset_index()
-sns.scatterplot(data=df_precip, x='precipitation', y='50%')
-```
-:::
 
 ::: {.cell .markdown}
 
-We see that certain weather conditions (very high temperature, heavy precipitation, fog) are extremely underrepresented in the dataset. This would be something to consider if, for example, we wanted to use this dataset to predict the effect of extreme weather on pedestrian traffic.
+Now armed with information about these relationships, we can identify good candidate features for a machine learning model.
 
 :::
-
