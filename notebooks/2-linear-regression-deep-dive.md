@@ -30,7 +30,7 @@ import seaborn as sns
 sns.set()
 
 # for 3d interactive plots
-from ipywidgets import interact, fixed
+from ipywidgets import interact, fixed, widgets
 from mpl_toolkits import mplot3d
 
 from IPython.core.interactiveshell import InteractiveShell
@@ -133,10 +133,45 @@ plt.ylabel('y');
 :::
 
 
+::: {.cell .markdown}
+
+Note: we generated `x` as a 2D array with `n_samples` rows and 1 column, but to plot it we need a 1D array. In our "crash course" lecture, we introduced the `squeeze()` function that removes any dimension with size 1, so the result here is a 1D array. We could also have used `x_train.reshape(-1,)`.
+
+:::
+
+
 
 ::: {.cell .markdown}
 
 ### Fit a linear regression
+
+:::
+
+
+
+::: {.cell .markdown}
+
+In the "classical machine learning" part of this course, we'll use `scikit-learn` implementations of most ML models. These all follow the same standard format, so once you learn how to use one, you know the basic usage of all of them.
+
+The basic format is:
+
+```python
+m = Model()        # create an instance of the model - whatever type it is
+m.fit(x_tr, y_tr)  # fit the model using the training data. Note: x_tr must be 2D
+                   # if x_tr is 1D, make it 2D by passing x_tr.reshape((-1,1)) or x_tr[:,None]
+
+y_tr_hat = m.predict(x_tr)  # now get model prediction on training data (note: x_tr still must be 2D!)
+y_ts_hat = m.predict(x_ts)  # also get model prediction on test data (note: x_ts must be 2D!)
+
+
+metrics.mean_squared_error(y_ts, y_ts_hat)  # for regression: get error on the test data
+metrics.r2_score(y_ts, y_ts_hat)            # or R2 on the test data
+m.score(x_ts, y_ts)                         # another way to get test data performance (R2 for regression)
+```
+
+Many models have some additional arguments you can set, or parameters you can check after fitting - check the documentation for details. For example, you can review the [LinearRegression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html) model documentation.
+
+Here's how this would apply for a `LinearRegression()` model. 
 
 :::
 
@@ -156,7 +191,7 @@ x_line = [np.min(x_train), np.max(x_train)]
 y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
 sns.scatterplot(x=x_test.squeeze(), y=y_test, s=50, color='green');
 sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
-sns.lineplot(x=x_line, y=y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -170,12 +205,12 @@ plt.ylabel('y');
 x_tilde = np.hstack((np.ones((n_samples, 1)), x_train))
 
 # using matrix operations to find w = (X^T X)^{-1} X^T y
-print( (np.linalg.inv((x_tilde.T.dot(x_tilde))).dot(x_tilde.T)).dot(y_train) )
+print( (np.linalg.inv((x_tilde.T @ x_tilde)) @ x_tilde.T @ y_train) )
 
 # using solve on normal equations: X^T X w = X^T y
 # solve only works on matrix that is square and of full-rank
 # see https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html
-print( np.linalg.solve(x_tilde.T.dot(x_tilde), x_tilde.T.dot(y_train)) )
+print( np.linalg.solve(x_tilde.T @ x_tilde, x_tilde.T @ y_train) )
 
 # using the lstsq solver 
 # problem may be under-, well-, or over-determined
@@ -214,6 +249,7 @@ Note that now the data is mean removed - zero mean in every dimension. (Removing
 
 This time, the fitted linear regression has 0 intercept:
 
+(We could have specified `fit_intercept=False` as an argument to the model, but we didn't so that we could see for ourselves that the intercept is zero!)
 :::
 
 
@@ -225,6 +261,17 @@ print("Coefficient list: ", reg_mr.coef_)
 ```
 :::
 
+
+::: {.cell .markdown}
+
+Important: when pre-processing data (for example, scaling, or removing the mean), we will always use the training data *only* to get the pre-processing parameters. For example, to get the mean-removed test data we would use
+
+```python
+x_test_mr = x_test - np.mean(x_train)
+y_test_mr = y_test - np.mean(y_train)
+```
+
+:::
 
 
 ::: {.cell .markdown}
@@ -238,7 +285,7 @@ OK, now we can predict some new points:
 
 ::: {.cell .code}
 ```python
-y_test_hat = reg_simple.intercept_ + np.dot(x_test,reg_simple.coef_)
+y_test_hat = reg_simple.predict(x_test)
 ```
 :::
 
@@ -253,8 +300,8 @@ y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
 
 ::: {.cell .code}
 ```python
-sns.lineplot(x=x_line, y=y_line, color='red');
-sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, s=50, color='purple');
+sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
+sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, s=50, color=sns.color_palette()[2]);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -272,7 +319,7 @@ plt.ylabel('y');
 
 ::: {.cell .markdown}
 
-To evaluate the model, we will compute the MSE on the test data (not the data used to find the parameters).
+To evaluate the model, we will compute the MSE on the test data (*not* the data used to find the parameters).
 
 $$MSE = \frac{1}{n} \sum_{i=1}^n (y_i - (w_0 + w_1 x_i)) ^2$$
 
@@ -280,6 +327,12 @@ Use $\hat{y}_i = w_0 + w_1 x_i$, then
 
 $$MSE = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i) ^2$$
 
+
+:::
+
+::: {.cell .markdown}
+
+Here's the `numpy` way:
 
 :::
 
@@ -293,6 +346,11 @@ mse_simple
 :::
 
 
+::: {.cell .markdown}
+
+Here's the `scikit-learn` way:
+
+:::
 
 
 ::: {.cell .code}
@@ -317,19 +375,16 @@ metrics.mean_squared_error(y_test, y_test_hat)
 
 ::: {.cell .code}
 ```python
+coefs = np.arange(2, 8, 0.5)
+
+x_line_c = np.array([np.min(x_train), np.max(x_train)])
+y_line_c = coefs.reshape(-1,1)*x_line_c.reshape(1,-1) + reg_simple.intercept_
+
 p = sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, s=50);
 p = plt.xlabel('x')
 p = plt.ylabel('y')
-
-coefs = np.arange(2, 8, 0.5)
-mses = np.zeros(len(coefs))
-
 for idx, c in enumerate(coefs):
-  y_test_hat_c = (reg_simple.intercept_ + np.dot(x_test,c)).squeeze()
-  mses[idx] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
-  x_line = [np.min(x_train), np.max(x_train)]
-  y_line = [x_line[0]*c + reg_simple.intercept_, x_line[1]*c + intercept]
-  p = sns.lineplot(x=x_line, y=y_line, color='red', alpha=0.2);
+  p = sns.lineplot(x=x_line_c, y=y_line_c[idx], color=sns.color_palette()[1], alpha=0.2);
 ```
 :::
 
@@ -338,9 +393,12 @@ for idx, c in enumerate(coefs):
 
 ::: {.cell .code}
 ```python
-sns.lineplot(x=coefs, y=mses);
-sns.scatterplot(x=coefs, y=mses, s=50);
-sns.scatterplot(x=reg_simple.coef_, y=mse_simple, color='red', s=100);
+y_test_hat_c = coefs.reshape(-1,1)*x_test.reshape(1,-1) + reg_simple.intercept_
+mses_c = 1.0/(len(y_test)) * np.sum((y_test - y_test_hat_c)**2, axis=1)
+
+sns.lineplot(x=coefs, y=mses_c);
+sns.scatterplot(x=coefs, y=mses_c, s=50);
+sns.scatterplot(x=reg_simple.coef_, y=mse_simple, color=sns.color_palette()[1], s=100);
 p = plt.xlabel('w1');
 p = plt.ylabel('Test MSE');
 ```
@@ -383,7 +441,7 @@ $$\sigma_{xy} = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})$$
 
 ::: {.cell .code}
 ```python
-var_y = 1.0/len(y_test) * np.sum((y_test - np.mean(y_test))**2)
+var_y = 1.0/len(y_test) * np.sum((y_test - np.mean(y_test))**2) # or use np.var()
 var_y
 ```
 :::
@@ -412,8 +470,8 @@ The variance of $y$ is the mean sum of the squares of the distances from each $y
 ::: {.cell .code}
 ```python
 plt.hlines(y=mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
-plt.vlines(x_test, ymin=mean_y, ymax=y_test, alpha=0.5, color='magenta');
-sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
+plt.vlines(x_test, ymin=mean_y, ymax=y_test, alpha=0.5, color=sns.color_palette()[3]);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -434,11 +492,11 @@ Now let's look at a similar kind of plot, but with distances to the regression l
 ::: {.cell .code}
 ```python
 plt.plot(x_test, y_test_hat);
-plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='magenta', alpha=0.5);
-sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
+plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color=sns.color_palette()[3], alpha=0.5);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
-sns.lineplot(x=x_line, y=y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -450,8 +508,13 @@ plt.ylabel('y');
 
 These two plots together show how well the variance of $y$ is "explained" by the linear regression model:
 
-* The total variance of $y$ is shown in the first plot, where each vertical line is $y_i - \bar{y}$
-* The *unexplained* variance of $y$ is shown in the second plot, where each vertical line is the error of the model, $y_i - \hat{y}_i$
+* The total variance of $y$ is shown in the first plot, where each vertical line is 
+
+$$y_i - \bar{y}$$
+
+* The *unexplained* variance of $y$ is shown in the second plot, where each vertical line is the error of the model, 
+
+$$y_i - \hat{y}_i$$
 
 In this example, *all* of the variance of $y$ is "explained" by the linear regression. 
 
@@ -522,7 +585,7 @@ x_line = [np.min(x_train), np.max(x_train)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
 sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
-sns.lineplot(x=x_line, y=y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
 plt.xlabel('x');
 plt.ylabel('y');
 
@@ -556,9 +619,9 @@ y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
 ::: {.cell .code}
 ```python
-sns.lineplot(x=x_line, y=y_line, color='red');
-sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, color='red', s=50);
-sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
+sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
+sns.scatterplot(x=x_test.squeeze(), y=y_test_hat, color=sns.color_palette()[1], s=50);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 
@@ -604,7 +667,7 @@ mse_perfect_coef
 
 ::: {.cell .markdown}
 
-Important: I thought we selected the coefficients that minimize MSE! But sometimes our linear regression doesn't select the "true" coefficients?
+Sometimes our linear regression doesn't select the "true" coefficients?
 
 :::
 
@@ -644,7 +707,7 @@ Soon - we will formalize this discussion of different sources of error:
 
 * Error in parameter estimates
 * "Noise" - any variation in data that is not a function of the $X$ that we use as input to the model
-* Other error - model (hypothesis class) not a good choice for the data, for example
+* Other error - for example, model (hypothesis class) not a good choice for the data
 
 :::
 
@@ -661,14 +724,11 @@ Soon - we will formalize this discussion of different sources of error:
 ::: {.cell .code}
 ```python
 coefs = np.arange(4.5, 5.5, 0.1)
-mses_test = np.zeros(len(coefs))
-mses_train = np.zeros(len(coefs))
 
-for idx, c in enumerate(coefs):
-  y_test_hat_c = (reg_noisy.intercept_ + np.dot(x_test,c)).squeeze()
-  mses_test[idx] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
-  y_train_hat_c = (reg_noisy.intercept_ + np.dot(x_train,c)).squeeze()
-  mses_train[idx] =  1.0/(len(y_train_hat_c)) * np.sum((y_train - y_train_hat_c)**2)
+y_test_hat_c = reg_noisy.intercept_ + np.dot(x_test,coefs.reshape(1,-1))
+mses_test =  np.mean((y_test.reshape(-1,1) - y_test_hat_c)**2, axis=0)
+y_train_hat_c = reg_noisy.intercept_ + np.dot(x_train,coefs.reshape(1,-1))
+mses_train =  np.mean((y_train.reshape(-1,1) - y_train_hat_c)**2, axis=0)
 ```
 :::
 
@@ -679,7 +739,7 @@ plt.figure(figsize=(10,5))
 plt.subplot(1,2,1)
 sns.lineplot(x=coefs, y=mses_train)
 sns.scatterplot(x=coefs, y=mses_train, s=50);
-sns.scatterplot(x=reg_noisy.coef_, y=mse_train_est, color='red', s=100);
+sns.scatterplot(x=reg_noisy.coef_, y=mse_train_est, color=sns.color_palette()[1], s=100);
 plt.title("Training MSE vs. coefficient");
 plt.xlabel('w1');
 plt.ylabel('MSE');
@@ -687,7 +747,7 @@ plt.ylabel('MSE');
 plt.subplot(1,2,2)
 sns.lineplot(x=coefs, y=mses_test)
 sns.scatterplot(x=coefs, y=mses_test, s=50);
-sns.scatterplot(x=reg_noisy.coef_, y=mse_noisy, color='red', s=100);
+sns.scatterplot(x=reg_noisy.coef_, y=mse_noisy, color=sns.color_palette()[1], s=100);
 plt.title("Test MSE vs. coefficient");
 plt.xlabel('w1');
 plt.ylabel('MSE');
@@ -733,8 +793,8 @@ mean_y
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
-plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='magenta', alpha=0.5);
-sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
+plt.vlines(x_test, ymin=mean_y, ymax=y_test, color=sns.color_palette()[3], alpha=0.5);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -743,11 +803,11 @@ plt.ylabel('y');
 
 ::: {.cell .code}
 ```python
-plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='red', alpha=0.5);
-sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
+plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color=sns.color_palette()[1], alpha=0.5);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
-sns.lineplot(x=x_line, y=y_line, color='red');
+sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -775,10 +835,10 @@ x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
 plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
-plt.vlines(x_test, ymin=mean_y, ymax=y_test, color='red');
-plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color='maroon');
-sns.scatterplot(x=x_test.squeeze(), y=y_test, color='purple', s=50);
-sns.lineplot(x=x_line, y=y_line, color='red');
+plt.vlines(x_test, ymin=mean_y, ymax=y_test, color=sns.color_palette()[1]);
+plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color=sns.color_palette()[3]);
+sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
+sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
 plt.xlabel('x');
 plt.ylabel('y');
 ```
@@ -831,10 +891,67 @@ metrics.r2_score(y_test, y_test_hat)
 :::
 
 
-
 ::: {.cell .markdown}
 
 What does a negative R2 mean, in terms of a comparison to "prediction by mean"?
+
+:::
+
+::: {.cell .markdown}
+
+### More on coefficient value, metrics
+
+:::
+
+::: {.cell .code}
+```python
+@interact(sigma = widgets.IntSlider(min=0, max=5, step=1, value=2),
+   coef = widgets.IntSlider(min=-5, max=5, step=1, value=2))
+def plot_reg(sigma, coef):
+    x_train, y_train = generate_linear_regression_data(n=20000, d=1, coef=coef, intercept=intercept, sigma=sigma)
+    x_test,  y_test =  generate_linear_regression_data(n=10000, d=1, coef=coef, intercept=intercept, sigma=sigma)
+    r_mod = LinearRegression().fit(x_train, y_train)
+    r2_test = r_mod.score(x_test, y_test)
+    mse_test = metrics.mean_squared_error(y_test, r_mod.predict(x_test))
+    x_line = np.array([-3, 3])
+    y_line = r_mod.predict(x_line.reshape(-1,1))
+    sns.scatterplot(x=x_train[:100,].squeeze(), y=y_train[:100], s=50);
+    sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[2]);
+    plt.axhline(y=np.mean(y_train), color=sns.color_palette()[1]);
+    plt.xlabel('x');
+    plt.ylabel('y');
+    plt.ylim(-20,20)
+    plt.xlim(-3,3)
+    plt.title("MSE: %f\nR2: %f" % (mse_test, r2_test) )
+```
+:::
+
+
+::: {.cell .markdown}
+
+Interpreting the coefficient:
+
+> An increase in $x$ of 1 is, on average, associated with an increase in $y$ of about $w_1$.
+
+Note that it does not imply any causal relationship! 
+
+
+:::
+
+
+::: {.cell .markdown}
+
+Interpreting MSE and R2:
+
+* MSE shows us the variance of the data around the regression line.
+* MSE is a measure of the model error, not relative to any baseline. We can use it to compare different models on the same dataset (but not on different datasets). 
+* R2 tells us what fraction of the variance in the data is "explained" by the regression line.
+* R2 is a measure relative to the "prediction by mean" baseline. (Note that if "prediction by mean" is already good, even a closely fitting regression line will not have a high R2.)
+* Prediction by mean is the same thing as prediction by a line with 
+
+$$w_0 = \overline{y}, w_1 = 0$$ 
+
+* The greater the true $w_1$, the more "wrong" the $w_1 = 0$ "prediction" is.
 
 :::
 
@@ -921,7 +1038,7 @@ What should each of these plots look like if the regression is "good"?
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 data_i   = data_i.assign(   yhat = reg_i.predict(  data_i[['x']]) )
 data_ii  = data_ii.assign(  yhat = reg_ii.predict( data_ii[['x']]) )
 data_iii = data_iii.assign( yhat = reg_iii.predict( data_iii[['x']]) )
@@ -939,7 +1056,7 @@ data_all.head()
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 sns.lmplot(x="x", y="residual", col="dataset", hue="dataset", 
            data=data_all, col_wrap=2, ci=None, palette="muted", height=4, 
            scatter_kws={"s": 50, "alpha": 1}, fit_reg=False);
@@ -1035,7 +1152,8 @@ def plot_3D(elev=20, azim=-20, X=x_train, y=y_train):
     ax.set_ylabel('x2')
     ax.set_zlabel('y')
 
-interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
          X=fixed(x_train), y=fixed(y_train));
 ```
 :::
@@ -1047,21 +1165,18 @@ interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
 ::: {.cell .code}
 ```python
 coefs = np.arange(3.0, 7.0, 0.05)
-mses_train = np.zeros((len(coefs), len(coefs)))
 
-for idx_1, c_1 in enumerate(coefs):
-  for idx_2, c_2 in enumerate(coefs):
-    y_train_hat_c = (reg_multi.intercept_ + np.dot(x_train,[c_1, c_2])).squeeze()
-    mses_train[idx_1,idx_2] =  1.0/(len(y_train_hat_c)) * np.sum((y_train - y_train_hat_c)**2)
+coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
+y_train_hat_c = (reg_multi.intercept_ + np.sum(coef_grid * x_train.reshape(x_train.shape[0], 2, 1, 1), axis=1) )
+mses_train = np.mean((y_train_hat_c- y_train.reshape(-1, 1, 1))**2, axis=0)
 ```
 :::
 
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-X1, X2 = np.meshgrid(coefs, coefs)
-p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c='red')
-p = plt.contour(X1, X2, mses_train, levels=5);
+p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_train, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w2');
 plt.ylabel('w1');
@@ -1072,21 +1187,18 @@ plt.ylabel('w1');
 ::: {.cell .code}
 ```python
 coefs = np.arange(3.0, 7.0, 0.05)
-mses_test = np.zeros((len(coefs), len(coefs)))
 
-for idx_1, c_1 in enumerate(coefs):
-  for idx_2, c_2 in enumerate(coefs):
-    y_test_hat_c = (reg_multi.intercept_ + np.dot(x_test,[c_1, c_2])).squeeze()
-    mses_test[idx_1,idx_2] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
+coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
+y_test_hat_c = (reg_multi.intercept_ + np.sum(coef_grid * x_test.reshape(x_test.shape[0], 2, 1, 1), axis=1) )
+mses_test = np.mean((y_test_hat_c- y_test.reshape(-1, 1, 1))**2, axis=0)
 ```
 :::
 
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-X1, X2 = np.meshgrid(coefs, coefs)
-p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c='red')
-p = plt.contour(X1, X2, mses_test, levels=5);
+p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_test, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w2');
 plt.ylabel('w1');
@@ -1163,7 +1275,8 @@ def plot_3D(elev=20, azim=-20, X=x_train, y=y_train):
     ax.set_ylabel('x2')
     ax.set_zlabel('y')
 
-interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
          X=fixed(x_train), y=fixed(y_train));
 ```
 :::
@@ -1172,24 +1285,22 @@ interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
 ### MSE contour 
 :::
 
+
 ::: {.cell .code}
 ```python
 coefs = np.arange(3.0, 7.0, 0.05)
-mses_train = np.zeros((len(coefs), len(coefs)))
 
-for idx_1, c_1 in enumerate(coefs):
-  for idx_2, c_2 in enumerate(coefs):
-    y_train_hat_c = (reg_multi_noisy.intercept_ + np.dot(x_train,[c_1, c_2])).squeeze()
-    mses_train[idx_1,idx_2] =  1.0/(len(y_train_hat_c)) * np.sum((y_train - y_train_hat_c)**2)
+coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
+y_train_hat_c = (reg_multi.intercept_ + np.sum(coef_grid * x_train.reshape(x_train.shape[0], 2, 1, 1), axis=1) )
+mses_train = np.mean((y_train_hat_c- y_train.reshape(-1, 1, 1))**2, axis=0)
 ```
 :::
 
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-X1, X2 = np.meshgrid(coefs, coefs)
-p = plt.scatter(x=reg_multi_noisy.coef_[1], y=reg_multi_noisy.coef_[0], c='red')
-p = plt.contour(X1, X2, mses_train, levels=5);
+p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_train, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w2');
 plt.ylabel('w1');
@@ -1197,31 +1308,26 @@ plt.ylabel('w1');
 :::
 
 
-
 ::: {.cell .code}
 ```python
 coefs = np.arange(3.0, 7.0, 0.05)
-mses_test = np.zeros((len(coefs), len(coefs)))
 
-for idx_1, c_1 in enumerate(coefs):
-  for idx_2, c_2 in enumerate(coefs):
-    y_test_hat_c = (reg_multi_noisy.intercept_ + np.dot(x_test,[c_1, c_2])).squeeze()
-    mses_test[idx_1,idx_2] =  1.0/(len(y_test_hat_c)) * np.sum((y_test - y_test_hat_c)**2)
+coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
+y_test_hat_c = (reg_multi.intercept_ + np.sum(coef_grid * x_test.reshape(x_test.shape[0], 2, 1, 1), axis=1) )
+mses_test = np.mean((y_test_hat_c- y_test.reshape(-1, 1, 1))**2, axis=0)
 ```
 :::
 
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-X1, X2 = np.meshgrid(coefs, coefs)
-p = plt.scatter(x=reg_multi_noisy.coef_[1], y=reg_multi_noisy.coef_[0], c='red')
-p = plt.contour(X1, X2, mses_test, levels=5);
+p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_test, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w2');
 plt.ylabel('w1');
 ```
 :::
-
 
 
 
@@ -1244,12 +1350,24 @@ The assumptions of the linear model (that the target variable can be predicted a
 
 :::
 
+::: {.cell .markdown}
+
+
+Now suppose we have a process that generates data as
+
+$$y_i = w_0 + w_1 x_{i,1} + w_2 x_{i,2} + w_3 x_{i,1}^2 + w_4 x_{i,2}^2 + w_5 x_{i,1} x_{i,2} + \epsilon_i $$
+
+where $\epsilon_i \sim N(0, \sigma^2)$.
+
+Note that the model is *linear* in $\textbf{w}$.
+
+:::
 
 ::: {.cell .code}
-``` {.python}
+```python
 import itertools
 
-def generate_linear_basis_data(n=100, d=2, coef=[1,1,0.5,0.5,1], intercept=1, sigma=0):
+def generate_linear_basis_data(n=200, d=2, coef=[1,1,0.5,0.5,1], intercept=1, sigma=0):
   x = np.random.randn(n,d)
   x = np.column_stack((x, x**2 ))
   for pair in list(itertools.combinations(range(d), 2)):
@@ -1261,21 +1379,21 @@ def generate_linear_basis_data(n=100, d=2, coef=[1,1,0.5,0.5,1], intercept=1, si
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 x_train, y_train = generate_linear_basis_data(sigma=0.2)
 x_test,  y_test  = generate_linear_basis_data(n=50, sigma=0.2)
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 print(x_train.shape)
 print(y_train.shape)
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 plt.figure(figsize=(10,5));
 plt.subplot(1,2,1);
 plt.scatter(x_train[:,0],  y_train);
@@ -1297,7 +1415,7 @@ plt.ylabel("y");
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 reg_lbf = LinearRegression().fit(x_train, y_train)
 print("Intercept: " , reg_lbf.intercept_)
 print("Coefficient list: ", reg_lbf.coef_)
@@ -1313,13 +1431,47 @@ print("Coefficient list: ", reg_lbf.coef_)
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 y_train_hat = reg_lbf.predict(x_train)
 print("Training MSE: ", metrics.mean_squared_error(y_train, y_train_hat))
 print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
 ```
 :::
 
+::: {.cell .markdown}
+
+### Plot hyperplane
+
+:::
+
+
+::: {.cell .code}
+```python
+def plot_3D(elev=20, azim=-20, X=x_train, y=y_train):
+    plt.figure(figsize=(10,10))
+    ax = plt.subplot(projection='3d')
+
+
+    X1 = np.arange(-4, 4, 0.2)
+    X2 = np.arange(-4, 4, 0.2)
+    X1, X2 = np.meshgrid(X1, X2)
+    Z = X1*reg_lbf.coef_[0] + X2*reg_lbf.coef_[1] + reg_lbf.intercept_
+
+    # Plot the surface.
+    ax.plot_surface(X1, X2, Z, alpha=0.1, color='gray',
+                          linewidth=0, antialiased=False)
+    ax.scatter3D(X[:, 0], X[:, 1], y, s=50)
+
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.set_zlabel('y')
+
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
+         X=fixed(x_train), y=fixed(y_train));
+```
+:::
 
 
 ::: {.cell .markdown}
@@ -1330,16 +1482,20 @@ print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 residual_train = y_train - y_train_hat
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
-_ = sns.scatterplot(x=y_train, y=y_train_hat)
-_ = plt.xlabel('y')
-_ = plt.ylabel('y_hat')
+```python
+lim_hi = np.max(np.concatenate([y_train, y_train_hat]))
+lim_lo = np.min(np.concatenate([y_train, y_train_hat]))
+sns.scatterplot(x=y_train, y=y_train_hat);
+plt.xlabel('y');
+plt.ylabel('y_hat');
+plt.xlim(lim_lo, lim_hi);
+plt.ylim(lim_lo, lim_hi);
 ```
 :::
 
@@ -1350,13 +1506,27 @@ Is the error random? Or does it look systematic?
 :::
 
 ::: {.cell .code}
-``` {.python}
-_ = sns.scatterplot(x=y_train_hat, y=residual_train)
-_ = plt.xlabel('y_hat')
-_ = plt.ylabel('Residual')
+```python
+sns.scatterplot(x=y_train_hat, y=residual_train);
+plt.xlabel('y_hat');
+plt.ylabel('Residual');
 ```
 :::
 
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(10,5));
+plt.subplot(1,2,1);
+plt.scatter(x_train[:,0],  residual_train);
+plt.xlabel("x1");
+plt.ylabel("Residual");
+plt.subplot(1,2,2);
+plt.scatter(x_train[:,1],  residual_train);
+plt.xlabel("x2");
+plt.ylabel("Residual");
+```
+:::
 
 ::: {.cell .markdown}
 
@@ -1365,7 +1535,7 @@ Since there is clearly some non-linearity, we can try to fit a model to a non-li
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 x_train_trans = np.column_stack((x_train, x_train**2))
 
 reg_lbf_trans = LinearRegression().fit(x_train_trans, y_train)
@@ -1382,24 +1552,28 @@ residual_train_trans = y_train - y_train_trans_hat
 
 
 ::: {.cell .code}
-``` {.python}
-_ = sns.scatterplot(x=y_train, y=y_train_trans_hat)
-_ = plt.xlabel('y')
-_ = plt.ylabel('y_hat')
+```python
+lim_hi = np.max(np.concatenate([y_train, y_train_trans_hat]))
+lim_lo = np.min(np.concatenate([y_train, y_train_trans_hat]))
+sns.scatterplot(x=y_train, y=y_train_trans_hat);
+plt.xlabel('y');
+plt.ylabel('y_hat');
+plt.xlim(lim_lo, lim_hi);
+plt.ylim(lim_lo, lim_hi);
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
-_ = sns.scatterplot(x=y_train, y=residual_train_trans)
-_ = plt.xlabel('y')
-_ = plt.ylabel('Residual')
+```python
+sns.scatterplot(x=y_train, y=residual_train_trans);
+plt.xlabel('y');
+plt.ylabel('Residual');
 ```
 :::
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 plt.figure(figsize=(10,5));
 plt.subplot(1,2,1);
 plt.scatter(x_train[:,0],  residual_train_trans);
@@ -1414,7 +1588,7 @@ plt.ylabel("Residual");
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 x_train_inter = np.column_stack((x_train_trans, x_train[:,0]*x_train[:,1]))
 
 reg_lbf_inter = LinearRegression().fit(x_train_inter, y_train)
@@ -1430,24 +1604,28 @@ residual_train_inter = y_train - y_train_inter_hat
 :::
 
 ::: {.cell .code}
-``` {.python}
-_ = sns.scatterplot(x=y_train, y=y_train_inter_hat)
-_ = plt.xlabel('y')
-_ = plt.ylabel('y_hat')
+```python
+lim_hi = np.max(np.concatenate([y_train, y_train_inter_hat]))
+lim_lo = np.min(np.concatenate([y_train, y_train_inter_hat]))
+sns.scatterplot(x=y_train, y=y_train_inter_hat);
+plt.xlabel('y');
+plt.ylabel('y_hat');
+plt.xlim(lim_lo, lim_hi);
+plt.ylim(lim_lo, lim_hi);
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
-_ = sns.scatterplot(x=y_train, y=residual_train_inter)
-_ = plt.xlabel('y')
-_ = plt.ylabel('Residual')
+```python
+sns.scatterplot(x=y_train, y=residual_train_inter);
+plt.xlabel('y');
+plt.ylabel('Residual');
 ```
 :::
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 plt.figure(figsize=(10,5));
 plt.subplot(1,2,1);
 plt.scatter(x_train[:,0],  residual_train_inter);
@@ -1468,7 +1646,7 @@ plt.ylabel("Residual");
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 y_train_hat = reg_lbf_inter.predict(x_train_inter)
 print("Training MSE: ", metrics.mean_squared_error(y_train, y_train_hat))
 print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
@@ -1477,7 +1655,7 @@ print("Training R2:  ", metrics.r2_score(y_train, y_train_hat))
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 x_test_inter = np.column_stack((x_test, x_test**2))
 x_test_inter = np.column_stack((x_test_inter, x_test[:,0]*x_test[:,1]))
 
