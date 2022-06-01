@@ -1434,7 +1434,7 @@ def plot_linear(w0, w1, show_sum):
   plt.figure(figsize=(10,5));
   w = np.array([w0, w1])
   l = ['1', 'x']
-  y = np.sum(w*x_trans[:,0:5], axis=1)
+  y = np.sum(w*x_trans, axis=1)
   if show_sum:
     sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
   for i in range(2):
@@ -1442,6 +1442,8 @@ def plot_linear(w0, w1, show_sum):
   plt.ylim(-2, 2);
   plt.title("Linear basis");
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+  plt.xlabel('x')
+  plt.ylabel('$\phi(x)$')
 ```
 :::
 
@@ -1477,7 +1479,7 @@ x_trans = polynomial_basis(x,10)
 def plot_poly(w0, w1, w2, w3, w4, show_sum):
   plt.figure(figsize=(10,5));
   w = np.array([w0, w1, w2, w3, w4])
-  y = np.sum(w*x_trans[:,0:5], axis=1)
+  y = np.sum(w*x_trans, axis=1)
   if show_sum:
     sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
   for i in range(5):
@@ -1485,6 +1487,8 @@ def plot_poly(w0, w1, w2, w3, w4, show_sum):
   plt.ylim(-2, 2);
   plt.title("Polynomial basis");
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+  plt.xlabel('x')
+  plt.ylabel('$\phi(x)$')
 ```
 :::
 
@@ -1527,14 +1531,16 @@ def plot_radial(w0, w1, w2, w3, w4, show_sum):
   labels = ['$exp(-(x+1)^2)/(' + str(s) + '^2))$', '$exp(-(x+0.5)^2)/(' + str(s) + '^2))$',
             '$exp(-(x)^2)/(' + str(s) + '^2))$', '$exp(-(x-0.5)^2)/(' + str(s) + '^2))$',
             '$exp(-(x-1)^2)/(' + str(s) + '^2))$']
-  y = np.sum(w*x_trans[:,0:5], axis=1)
+  y = np.sum(w*x_trans, axis=1)
   if show_sum:
     sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
   for i in range(5):
     sns.lineplot(x=x.squeeze(), y=w[i]*x_trans[:,i], label=labels[i], alpha=0.5);
-  plt.ylim(-1.5, 2)
+  plt.ylim(-2, 2)
   plt.title("Radial basis");
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+  plt.xlabel('x')
+  plt.ylabel('$\phi(x)$')
 ```
 :::
 
@@ -1572,7 +1578,7 @@ def plot_sigmoid(w0, w1, w2, w3, w4, show_sum):
   labels = ['$\sigma((x+1)/' + str(s) + ')$', '$\sigma((x+0.5)/' + str(s) + ')$', 
             '$\sigma((x)/' + str(s) + ')$', '$\sigma((x-0.5)/' + str(s) + ')$', 
             '$\sigma((x-1)/' + str(s) + ')$']
-  y = np.sum(w*x_trans[:,0:5], axis=1)
+  y = np.sum(w*x_trans, axis=1)
   if show_sum:
     sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
   for i in range(5):
@@ -1580,6 +1586,8 @@ def plot_sigmoid(w0, w1, w2, w3, w4, show_sum):
   plt.ylim(-1.5, 2)
   plt.title("Sigmoidal basis");
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+  plt.xlabel('x')
+  plt.ylabel('$\phi(x)$')
 ```
 :::
 
@@ -1613,7 +1621,7 @@ def plot_fourier(w1, w2, w3, w4, show_sum):
   plt.figure(figsize=(10,5));
   w = np.array([w1, w2, w3, w4])
   labels = ["cos(\pi x)", "sin(\pi x)", "cos(\pi 2 x)", "sin(\pi 2 x)"]
-  y = np.sum(w*x_trans[:,0:5], axis=1)
+  y = np.sum(w*x_trans, axis=1)
   if show_sum:
     sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
   for i in range(4):
@@ -1621,6 +1629,8 @@ def plot_fourier(w1, w2, w3, w4, show_sum):
   plt.ylim(-1.5, 2)
   plt.title("Fourier basis");
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+  plt.xlabel('x')
+  plt.ylabel('$\phi(x)$')
 ```
 :::
 
@@ -1633,11 +1643,13 @@ def plot_fourier(w1, w2, w3, w4, show_sum):
 ::: {.cell .markdown}
 
 
-Now suppose we have a process that generates data as
+Let's consider an example! Now suppose we have a process that generates data as
 
 $$y_i = w_0 + w_1 x_{i,1} + w_2 x_{i,2} + w_3 x_{i,1}^2 + w_4 x_{i,2}^2 + w_5 x_{i,1} x_{i,2} + \epsilon_i $$
 
-where $\epsilon_i \sim N(0, \sigma^2)$.
+where $\epsilon_i \sim N(0, \sigma^2)$. In other words:
+
+$$\mathbf{\phi} = [1, x_1, x_2, x_1^2, x_2^2, x_1 x_2] $$
 
 Note that the model is *linear* in $\textbf{w}$.
 
@@ -1687,6 +1699,53 @@ plt.ylabel("y");
 :::
 
 
+::: {.cell .code}
+```python
+def plot_3D(elev, azim, w0, w1, w2, w3, w4, w5, show_sum, show_basis, show_data, X, y):
+    plt.figure(figsize=(10,10))
+    ax = plt.subplot(projection='3d')
+
+    X1 = np.arange(-4, 4, 0.2)
+    X2 = np.arange(-4, 4, 0.2)
+    X1, X2 = np.meshgrid(X1, X2)
+    Z0 = w0*np.ones(shape=(X1.shape[0], X2.shape[0]))
+    Z1 = w1*X1
+    Z2 = w2*X2
+    Z3 = w3*X1**2
+    Z4 = w4*X2**2
+    Z5 = w5*X1*X2
+
+    # Plot the surfaces.
+    if show_basis:
+      ax.plot_surface(X1, X2, Z0, alpha=0.1, color=sns.color_palette()[1], linewidth=0, antialiased=False)
+      ax.plot_surface(X1, X2, Z1, alpha=0.1, color=sns.color_palette()[2], linewidth=0, antialiased=False)
+      ax.plot_surface(X1, X2, Z2, alpha=0.1, color=sns.color_palette()[3], linewidth=0, antialiased=False)
+      ax.plot_surface(X1, X2, Z3, alpha=0.1, color=sns.color_palette()[4], linewidth=0, antialiased=False)
+      ax.plot_surface(X1, X2, Z4, alpha=0.1, color=sns.color_palette()[5], linewidth=0, antialiased=False)
+      ax.plot_surface(X1, X2, Z5, alpha=0.1, color=sns.color_palette()[6], linewidth=0, antialiased=False)
+    if show_sum:
+      ax.plot_surface(X1, X2, (Z0+Z1+Z2+Z3+Z4+Z5), alpha=0.5, color='white', linewidth=0, antialiased=False)
+    if show_data:
+      ax.scatter3D(X[:, 0], X[:, 1], y, s=50)
+
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.set_zlabel('y')
+    ax.set_zlim(0, 25)
+
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
+          w0 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w1 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w2 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w3 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=0.5),
+          w4 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=0.5),
+          w5 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+         show_sum = False, show_basis = False, show_data = False,
+         X=fixed(x_train), y=fixed(y_train));
+```
+:::
 
 ::: {.cell .markdown}
 
