@@ -1412,7 +1412,7 @@ We're going to look at some examples of basis functions (but not an exhaustive l
 
 ### Linear basis
 
-Transform a feature $x$ using
+Transform a feature $x$ using $\phi_0(x) = 0, \phi_1(x) = x$, i.e.
 
 $$y \approx w_0 + w_1 x $$
 
