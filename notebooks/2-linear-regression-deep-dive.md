@@ -1399,8 +1399,10 @@ $$ \hat{y_i} =  \sum_{j=0}^p w_p \phi_p(\mathbf{x_i}) $$
 :::
 
 ::: {.cell .markdown}
+ 
+We're going to look at some examples of basis functions (but not an exhaustive list...)
 
-### Examples of basis functions
+(Note: it's also possible to mix-and-match basis functions from different "families" in the same model! And, you can apply basis functions to multiple features, too.)
 
 :::
 
@@ -1408,7 +1410,7 @@ $$ \hat{y_i} =  \sum_{j=0}^p w_p \phi_p(\mathbf{x_i}) $$
 
 ::: {.cell .markdown}
 
-#### Linear basis
+### Linear basis
 
 Transform a feature $x$ using
 
@@ -1417,9 +1419,35 @@ $$y \approx w_0 + w_1 x $$
 :::
 
 
+::: {.cell .code}
+```python
+def linear_basis(x):
+  return np.hstack([np.ones(x.shape),x])
+
+x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
+x_trans = linear_basis(x)
+
+@interact(w0 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w1 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          show_sum = False)
+def plot_linear(w0, w1, show_sum):
+  plt.figure(figsize=(10,5));
+  w = np.array([w0, w1])
+  l = ['1', 'x']
+  y = np.sum(w*x_trans[:,0:5], axis=1)
+  if show_sum:
+    sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
+  for i in range(2):
+    sns.lineplot(x=x.squeeze(), y=w[i]*x_trans[:,i], label='$' + l[i] + '$', alpha=0.5);
+  plt.ylim(-2, 2);
+  plt.title("Linear basis");
+  plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+```
+:::
+
 ::: {.cell .markdown}
 
-#### Polynomial basis
+### Polynomial basis
 
 Transform a feature $x$ using $\phi_j(x) = x^0$, i.e.
 
@@ -1432,15 +1460,43 @@ Issue: polynomials are "global" functions - affect the entire range from $-\inft
 :::
 
 
+::: {.cell .code}
+```python
+def polynomial_basis(x, d):
+  return np.hstack([x**i for i in range(d)])
+
+x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
+x_trans = polynomial_basis(x,10)
+
+@interact(w0 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w1 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w2 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w3 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w4 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          show_sum = False)
+def plot_poly(w0, w1, w2, w3, w4, show_sum):
+  plt.figure(figsize=(10,5));
+  w = np.array([w0, w1, w2, w3, w4])
+  y = np.sum(w*x_trans[:,0:5], axis=1)
+  if show_sum:
+    sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
+  for i in range(5):
+    sns.lineplot(x=x.squeeze(), y=w[i]*x_trans[:,i], label='$x^' + str(i) + '$', alpha=0.5);
+  plt.ylim(-2, 2);
+  plt.title("Polynomial basis");
+  plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+```
+:::
+
 ::: {.cell .markdown}
 
-#### Radial basis
+### Radial basis
 
 
-Transform a feature $x$ using $\phi_j(x) = \exp\left(-\frac{(x-\mu_j)^2}{\s^2}\right)$, i.e.
+Transform a feature $x$ using $\phi_j(x) = \exp\left(-\frac{(x-\mu_j)^2}{s^2}\right)$, i.e.
 
 
-$$y \approx w_0 \exp\left(-\frac{(x-\mu_0)^2}{\s^2}\right) + w_1 \exp\left(-\frac{(x-\mu_1)^2}{\s^2}\right) + \ldots + w_p \exp\left(-\frac{(x-\mu_p)^2}{\s^2}\right)$$
+$$y \approx w_0 \exp\left(-\frac{(x-\mu_0)^2}{s^2}\right) + w_1 \exp\left(-\frac{(x-\mu_1)^2}{s^2}\right) + \ldots + w_p \exp\left(-\frac{(x-\mu_p)^2}{s^2}\right)$$
 
 The model is linear in the parameters $\mathbf{w}$, which is what makes it a linear model even though it is not linear in $x$. However, it is not linear in the basis function parameters $\mu_j$ or $s$!  (Those basis function parameters will not be "learned" - they are fixed by you.)
 
@@ -1450,9 +1506,41 @@ Note that in contrast to the polynomials which had "global" effect, each radial 
 :::
 
 
+::: {.cell .code}
+```python
+s = 0.1
+def radial_basis(x, mu_list):
+  return np.hstack([ np.exp(-1*(x-mu)**2/s**2) for mu in mu_list])
+  
+x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
+x_trans = radial_basis(x, [-1, -0.5, 0, 0.5, 1])
+
+@interact(w0 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w1 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w2 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w3 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w4 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          show_sum = False)
+def plot_radial(w0, w1, w2, w3, w4, show_sum):
+  plt.figure(figsize=(10,5));
+  w = np.array([w0, w1, w2, w3, w4])
+  labels = ['$exp(-(x+1)^2)/(' + str(s) + '^2))$', '$exp(-(x+0.5)^2)/(' + str(s) + '^2))$',
+            '$exp(-(x)^2)/(' + str(s) + '^2))$', '$exp(-(x-0.5)^2)/(' + str(s) + '^2))$',
+            '$exp(-(x-1)^2)/(' + str(s) + '^2))$']
+  y = np.sum(w*x_trans[:,0:5], axis=1)
+  if show_sum:
+    sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
+  for i in range(5):
+    sns.lineplot(x=x.squeeze(), y=w[i]*x_trans[:,i], label=labels[i], alpha=0.5);
+  plt.ylim(-1.5, 2)
+  plt.title("Radial basis");
+  plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+```
+:::
+
 ::: {.cell .markdown}
 
-#### Sigmoidal basis
+### Sigmoidal basis
 
 Transform a feature $x$ using $\phi_j(x) = \sigma \left( \frac{(x-\mu_j)}{s}  \right) $ where $\sigma(a) = \frac{1}{1+\exp({-a})}$, i.e.
 
@@ -1462,17 +1550,79 @@ $$y \approx w_0 \sigma \left( \frac{(x-\mu_0)}{s}  \right) + w_1 \sigma \left( \
 
 :::
 
+
+::: {.cell .code}
+```python
+s = 0.05
+def sigmoid_basis(x, mu_list):
+  return np.hstack([((1+np.exp((-x-mu)/s))**-1) for mu in mu_list])
+  
+x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
+x_trans = sigmoid_basis(x, [-1, -0.5, 0, 0.5, 1])
+
+@interact(w0 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w1 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w2 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w3 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w4 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          show_sum = False)
+def plot_sigmoid(w0, w1, w2, w3, w4, show_sum):
+  plt.figure(figsize=(10,5));
+  w = np.array([w0, w1, w2, w3, w4])
+  labels = ['$\sigma((x+1)/' + str(s) + ')$', '$\sigma((x+0.5)/' + str(s) + ')$', 
+            '$\sigma((x)/' + str(s) + ')$', '$\sigma((x-0.5)/' + str(s) + ')$', 
+            '$\sigma((x-1)/' + str(s) + ')$']
+  y = np.sum(w*x_trans[:,0:5], axis=1)
+  if show_sum:
+    sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
+  for i in range(5):
+    sns.lineplot(x=x.squeeze(), y=w[i]*x_trans[:,i], label=labels[i], alpha=0.5);
+  plt.ylim(-1.5, 2)
+  plt.title("Sigmoidal basis");
+  plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+```
+:::
+
 ::: {.cell .markdown}
 
-#### Fourier basis
+### Fourier basis
 
-Transform a feature $x$ using $\phi_j(x) = cos(jx) + sin(jx)$, i.e.
+Transform a feature $x$ using $\phi_j(x) = cos(\pi j x) + sin(\pi j x)$, i.e.
 
-$$y \approx w_0 + w_1 \sin(x) + w_2 \cos(x) + w_3 \sin(2x) + w_4 \cos(2x) + \ldots $$
+$$y \approx w_0 + w_1 \sin(\pi x) + w_2 \cos(\pi x) + w_3 \sin(\pi  2 x) + w_4 \cos(\pi  2 x) + \ldots $$
 
 
 :::
 
+::: {.cell .code}
+```python
+def fourier_basis(x, d):
+  sins = np.hstack([np.sin(np.pi*i*x) for i in range(1,d+1)])
+  coss = np.hstack([np.cos(np.pi*i*x) for i in range(1,d+1)])
+  return np.hstack([sins, coss])
+    
+x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
+x_trans = fourier_basis(x, 2)
+
+@interact(w1 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w2 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w3 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          w4 = widgets.FloatSlider(min=-2, max=2, step=0.1, value=1),
+          show_sum = False)
+def plot_fourier(w1, w2, w3, w4, show_sum):
+  plt.figure(figsize=(10,5));
+  w = np.array([w1, w2, w3, w4])
+  labels = ["cos(\pi x)", "sin(\pi x)", "cos(\pi 2 x)", "sin(\pi 2 x)"]
+  y = np.sum(w*x_trans[:,0:5], axis=1)
+  if show_sum:
+    sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
+  for i in range(4):
+    sns.lineplot(x=x.squeeze(), y=w[i]*x_trans[:,i], label='$' + labels[i] + '$', alpha=0.5);
+  plt.ylim(-1.5, 2)
+  plt.title("Fourier basis");
+  plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+```
+:::
 
 ::: {.cell .markdown}
 
