@@ -189,7 +189,7 @@ print("Coefficient list: ", reg_simple.coef_)
 ```python
 x_line = [np.min(x_train), np.max(x_train)]
 y_line = x_line*reg_simple.coef_ + reg_simple.intercept_
-sns.scatterplot(x=x_test.squeeze(), y=y_test, s=50, color='green');
+sns.scatterplot(x=x_test.squeeze(), y=y_test, s=50, color=sns.color_palette()[3]);
 sns.scatterplot(x=x_train.squeeze(), y=y_train, s=50);
 sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
 plt.xlabel('x');
@@ -371,8 +371,6 @@ metrics.mean_squared_error(y_test, y_test_hat)
 :::
 
 
-
-
 ::: {.cell .code}
 ```python
 coefs = np.arange(2, 8, 0.5)
@@ -526,7 +524,31 @@ MSE for this example is 0, R2 is 1.
 
 :::
 
-
+::: {.cell .code}
+```python
+@interact(intercept_fit = widgets.FloatSlider(min=-8, max=8, step=0.5, value=1),
+   coef_fit = widgets.FloatSlider(min=-8, max=8, step=0.1, value=5),
+   show_residual=True)
+def plot_reg(intercept_fit, coef_fit, show_residual):
+    x_train, y_train = generate_linear_regression_data(n=20000, d=1, coef=5, intercept=1, sigma=0)
+    x_test,  y_test =  generate_linear_regression_data(n=10000, d=1, coef=5, intercept=1, sigma=0)
+    y_test_hat = intercept_fit + coef_fit*x_test
+    r2_test = metrics.r2_score(y_test, y_test_hat)
+    mse_test = metrics.mean_squared_error(y_test, y_test_hat)
+    x_line = np.array([-3, 3])
+    y_line = intercept_fit + coef_fit*x_line
+    plt.axhline(y=np.mean(y_train), color=sns.color_palette()[1]);
+    if show_residual:
+      plt.vlines(x_test[:100,], ymin=y_test[:100,], ymax=y_test_hat[:100,], alpha=0.5, color=sns.color_palette()[3]);
+    sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[2]);
+    sns.scatterplot(x=x_test[:100,].squeeze(), y=y_test[:100], s=50);
+    plt.xlabel('x');
+    plt.ylabel('y');
+    plt.ylim(-20,20)
+    plt.xlim(-3,3)
+    plt.title("MSE: %f\nR2: %f" % (mse_test, r2_test) )
+```
+:::
 
 ::: {.cell .markdown}
 
@@ -646,7 +668,7 @@ mse_noisy
 
 ::: {.cell .markdown}
 
-The MSE is higher than before! 
+The MSE is higher than before! (When it was essentially zero.)
 
 Does this mean our estimate of $w_0$ and $w_1$ is not optimal?
 
@@ -758,9 +780,9 @@ plt.ylabel('MSE');
 ::: {.cell .markdown}
 
 
-In the plot on the left (for training MSE), the red dot (our coefficient estimate) should always have minimum MSE, because we select parameters to minimize MSE on the training set.
+In the plot on the left (for training MSE), the orange dot (our coefficient estimate) should always have minimum MSE, because we select parameters to minimize MSE on the training set.
 
-In the plot on the right (for test MSE), the red dot might not have the minimum MSE, because the best coefficient on the training set might not be the best coefficient on the test set. This gives us some idea of how our model will generalize to new, unseen data. We may suspect that if the coefficient estimate is not perfect for *this* test data, it might have some error on other new, unseen data, too.
+In the plot on the right (for test MSE), the orange dot might not have the minimum MSE, because the best coefficient on the training set might not be the best coefficient on the test set. This gives us some idea of how our model will generalize to new, unseen data. We may suspect that if the coefficient estimate is not perfect for *this* test data, it might have some error on other new, unseen data, too.
 
 If you re-run this notebook many times, you'll get a new random sample of training and test data each time. Sometimes, the "true" coefficients may have smaller MSE on the test set than the estimated coefficients. On other runs, the estimated coefficients might have smaller MSE on the test set.
 
@@ -793,7 +815,7 @@ mean_y
 x_line = [np.min(x_test), np.max(x_test)]
 y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
-plt.vlines(x_test, ymin=mean_y, ymax=y_test, color=sns.color_palette()[3], alpha=0.5);
+plt.vlines(x_test, ymin=mean_y, ymax=y_test, color=sns.color_palette()[4], alpha=0.5);
 sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
 plt.xlabel('x');
 plt.ylabel('y');
@@ -820,10 +842,11 @@ plt.ylabel('y');
 
 Remember: 
 
-* The total variance of $y$ is shown in the first plot, where each vertical line is $y_i - \bar{y}$
-* The *unexplained* variance of $y$ is shown in the second plot, where each vertical line is the error of the model, $y_i - \hat{y}_i$
+The total variance of $y$ is shown in the first plot, where each vertical line is $y_i - \bar{y}$
 
-In the next plot, we'll combine them to get some intuition regarding the *fraction of unexplained variance*. The dark maroon part of each vertical bar is the *unexplained* part, while the red part is *explained* by the linear regression.
+The *unexplained* variance of $y$ is shown in the second plot, where each vertical line is the error of the model, $y_i - \hat{y}_i$
+
+In the next plot, we'll combine them to get some intuition regarding the *fraction of unexplained variance*. The purple part of each vertical bar is the *unexplained* part, while the orange part is *explained* by the linear regression.
 
 :::
 
@@ -836,7 +859,7 @@ y_line = x_line*reg_noisy.coef_ + reg_noisy.intercept_
 
 plt.hlines(mean_y, xmin=np.min(x_test), xmax=np.max(x_test));
 plt.vlines(x_test, ymin=mean_y, ymax=y_test, color=sns.color_palette()[1]);
-plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color=sns.color_palette()[3]);
+plt.vlines(x_test, ymin=y_test, ymax=y_test_hat, color=sns.color_palette()[4]);
 sns.scatterplot(x=x_test.squeeze(), y=y_test, color=sns.color_palette()[2], s=50);
 sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[1]);
 plt.xlabel('x');
@@ -915,15 +938,26 @@ def plot_reg(sigma, coef):
     mse_test = metrics.mean_squared_error(y_test, r_mod.predict(x_test))
     x_line = np.array([-3, 3])
     y_line = r_mod.predict(x_line.reshape(-1,1))
-    sns.scatterplot(x=x_train[:100,].squeeze(), y=y_train[:100], s=50);
-    sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[2]);
     plt.axhline(y=np.mean(y_train), color=sns.color_palette()[1]);
+    sns.lineplot(x=x_line, y=y_line, color=sns.color_palette()[2]);
+    sns.scatterplot(x=x_test[:100,].squeeze(), y=y_test[:100], s=50);
     plt.xlabel('x');
     plt.ylabel('y');
     plt.ylim(-20,20)
     plt.xlim(-3,3)
     plt.title("MSE: %f\nR2: %f" % (mse_test, r2_test) )
 ```
+:::
+
+::: {.cell .markdown}
+
+Remember that in this data, the *only* source of error is the $\epsilon$ in 
+
+$$y_i = w_0 + w_1 x_{i,1} + \ldots + w_d x_{i,d} + \epsilon_i $$
+
+where $\epsilon_i \sim N(0, \sigma^2)$. If not for this, our regression would fit the data perfectly.
+
+
 :::
 
 
@@ -943,10 +977,10 @@ Note that it does not imply any causal relationship!
 
 Interpreting MSE and R2:
 
-* MSE shows us the variance of the data around the regression line.
+* MSE shows us the variance of the data around the regression line (for data with this specific type of "noise").
 * MSE is a measure of the model error, not relative to any baseline. We can use it to compare different models on the same dataset (but not on different datasets). 
 * R2 tells us what fraction of the variance in the data is "explained" by the regression line.
-* R2 is a measure relative to the "prediction by mean" baseline. (Note that if "prediction by mean" is already good, even a closely fitting regression line will not have a high R2.)
+* R2 is a measure relative to the "prediction by mean" baseline. (Note that if "prediction by mean" is already good, even a well fitting regression line will not have a high R2.)
 * Prediction by mean is the same thing as prediction by a line with 
 
 $$w_0 = \overline{y}, w_1 = 0$$ 
@@ -1003,6 +1037,21 @@ print("Dataset II:  ", metrics.r2_score(data_ii['y'], reg_ii.predict(data_ii[['x
 print("Dataset III: ", metrics.r2_score(data_iii['y'],reg_iii.predict(data_iii[['x']])))
 print("Dataset IV:  ", metrics.r2_score(data_iv['y'], reg_iv.predict(data_iv[['x']])))
 ```
+:::
+
+::: {.cell .code}
+```python
+print("Dataset I:   ", metrics.mean_squared_error(data_i['y'],  reg_i.predict(data_i[['x']])))
+print("Dataset II:  ", metrics.mean_squared_error(data_ii['y'], reg_ii.predict(data_ii[['x']])))
+print("Dataset III: ", metrics.mean_squared_error(data_iii['y'],reg_iii.predict(data_iii[['x']])))
+print("Dataset IV:  ", metrics.mean_squared_error(data_iv['y'], reg_iv.predict(data_iv[['x']])))
+```
+:::
+
+::: {.cell .markdown}
+
+All of these models are equally "good" according to our scoring metrics... BUT
+
 :::
 
 ::: {.cell .code}
@@ -1341,8 +1390,89 @@ plt.ylabel('w1');
 
 The assumptions of the linear model (that the target variable can be predicted as a linear combination of the features) can be restrictive. We can capture more complicated relationships using linear basis function regression.
 
+Fundamental idea: with a set of "basis" functions, we represent the "shape" of our data as a weighted sum of basis functions:
+
+$$ \hat{y_i} =  \sum_{j=0}^p w_p \phi_p(\mathbf{x_i}) $$
+
+(We'll revisit this idea again later in the semester, when we talk about kernels; and again, when we talk about activation functions in neural networks.)
 
 :::
+
+::: {.cell .markdown}
+
+### Examples of basis functions
+
+:::
+
+
+
+::: {.cell .markdown}
+
+#### Linear basis
+
+Transform a feature $x$ using
+
+$$y \approx w_0 + w_1 x $$
+
+:::
+
+
+::: {.cell .markdown}
+
+#### Polynomial basis
+
+Transform a feature $x$ using $\phi_j(x) = x^0$, i.e.
+
+$$y \approx w_0 x^0 + w_1 x^1 + \ldots + w_p x^p $$
+
+Note that the model is linear in the parameters $\mathbf{w}$, which is what makes it a linear model even though it is not linear in $x$. 
+
+Issue: polynomials are "global" functions - affect the entire range from $-\infty$ to $\infty$, and changes very quickly outside the range $[-1,1]$.
+
+:::
+
+
+::: {.cell .markdown}
+
+#### Radial basis
+
+
+Transform a feature $x$ using $\phi_j(x) = \exp\left(-\frac{(x-\mu_j)^2}{\s^2}\right)$, i.e.
+
+
+$$y \approx w_0 \exp\left(-\frac{(x-\mu_0)^2}{\s^2}\right) + w_1 \exp\left(-\frac{(x-\mu_1)^2}{\s^2}\right) + \ldots + w_p \exp\left(-\frac{(x-\mu_p)^2}{\s^2}\right)$$
+
+The model is linear in the parameters $\mathbf{w}$, which is what makes it a linear model even though it is not linear in $x$. However, it is not linear in the basis function parameters $\mu_j$ or $s$!  (Those basis function parameters will not be "learned" - they are fixed by you.)
+
+
+Note that in contrast to the polynomials which had "global" effect, each radial basis function has "local" effect. (Think of it as a weighted sum of little "bumps".)
+
+:::
+
+
+::: {.cell .markdown}
+
+#### Sigmoidal basis
+
+Transform a feature $x$ using $\phi_j(x) = \sigma \left( \frac{(x-\mu_j)}{s}  \right) $ where $\sigma(a) = \frac{1}{1+\exp({-a})}$, i.e.
+
+$$y \approx w_0 \sigma \left( \frac{(x-\mu_0)}{s}  \right) + w_1 \sigma \left( \frac{(x-\mu_1)}{s}  \right) + \ldots + w_p \sigma \left( \frac{(x-\mu_p)}{s}  \right)$$
+
+(Similar to the RBF but with "steps" instead of "bumps"...)
+
+:::
+
+::: {.cell .markdown}
+
+#### Fourier basis
+
+Transform a feature $x$ using $\phi_j(x) = cos(jx) + sin(jx)$, i.e.
+
+$$y \approx w_0 + w_1 \sin(x) + w_2 \cos(x) + w_3 \sin(2x) + w_4 \cos(2x) + \ldots $$
+
+
+:::
+
 
 ::: {.cell .markdown}
 
