@@ -16,11 +16,8 @@ _Fraida Fund_
 
 ::: {.cell .code}
 ```python
-from sklearn import datasets
 from sklearn import metrics
-from sklearn import preprocessing
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 
 
 import numpy as np
@@ -1224,11 +1221,11 @@ mses_train = np.mean((y_train_hat_c- y_train.reshape(-1, 1, 1))**2, axis=0)
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.scatter(x=reg_multi.coef_[0], y=reg_multi.coef_[1], c=sns.color_palette()[1])
 p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_train, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
+plt.xlabel('w1');
+plt.ylabel('w2');
 ```
 :::
 
@@ -1246,11 +1243,11 @@ mses_test = np.mean((y_test_hat_c- y_test.reshape(-1, 1, 1))**2, axis=0)
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.scatter(x=reg_multi.coef_[0], y=reg_multi.coef_[1], c=sns.color_palette()[1])
 p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_test, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
+plt.xlabel('w1');
+plt.ylabel('w2');
 ```
 :::
 
@@ -1340,7 +1337,7 @@ interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20),
 coefs = np.arange(3.0, 7.0, 0.05)
 
 coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
-y_train_hat_c = (reg_multi.intercept_ + np.sum(coef_grid * x_train.reshape(x_train.shape[0], 2, 1, 1), axis=1) )
+y_train_hat_c = (reg_multi_noisy.intercept_ + np.sum(coef_grid * x_train.reshape(x_train.shape[0], 2, 1, 1), axis=1) )
 mses_train = np.mean((y_train_hat_c- y_train.reshape(-1, 1, 1))**2, axis=0)
 ```
 :::
@@ -1348,11 +1345,11 @@ mses_train = np.mean((y_train_hat_c- y_train.reshape(-1, 1, 1))**2, axis=0)
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.scatter(x=reg_multi_noisy.coef_[0], y=reg_multi_noisy.coef_[1], c=sns.color_palette()[1])
 p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_train, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
+plt.xlabel('w1');
+plt.ylabel('w2');
 ```
 :::
 
@@ -1362,7 +1359,7 @@ plt.ylabel('w1');
 coefs = np.arange(3.0, 7.0, 0.05)
 
 coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
-y_test_hat_c = (reg_multi.intercept_ + np.sum(coef_grid * x_test.reshape(x_test.shape[0], 2, 1, 1), axis=1) )
+y_test_hat_c = (reg_multi_noisy.intercept_ + np.sum(coef_grid * x_test.reshape(x_test.shape[0], 2, 1, 1), axis=1) )
 mses_test = np.mean((y_test_hat_c- y_test.reshape(-1, 1, 1))**2, axis=0)
 ```
 :::
@@ -1370,11 +1367,11 @@ mses_test = np.mean((y_test_hat_c- y_test.reshape(-1, 1, 1))**2, axis=0)
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(5,5));
-p = plt.scatter(x=reg_multi.coef_[1], y=reg_multi.coef_[0], c=sns.color_palette()[1])
+p = plt.scatter(x=reg_multi_noisy.coef_[0], y=reg_multi_noisy.coef_[1], c=sns.color_palette()[1])
 p = plt.contour(coef_grid[0, 0, :, :], coef_grid[0, 1, :, :], mses_test, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
+plt.xlabel('w1');
+plt.ylabel('w2');
 ```
 :::
 
@@ -1412,7 +1409,7 @@ We're going to look at some examples of basis functions (but not an exhaustive l
 
 ### Linear basis
 
-Transform a feature $x$ using $\phi_0(x) = 0, \phi_1(x) = x$, i.e.
+Transform a feature $x$ using $\phi_0(x) = 1, \phi_1(x) = x$, i.e.
 
 $$y \approx w_0 + w_1 x $$
 
@@ -1451,7 +1448,7 @@ def plot_linear(w0, w1, show_sum):
 
 ### Polynomial basis
 
-Transform a feature $x$ using $\phi_j(x) = x^0$, i.e.
+Transform a feature $x$ using $\phi_j(x) = x^j$, i.e.
 
 $$y \approx w_0 x^0 + w_1 x^1 + \ldots + w_p x^p $$
 
@@ -1468,7 +1465,7 @@ def polynomial_basis(x, d):
   return np.hstack([x**i for i in range(d)])
 
 x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
-x_trans = polynomial_basis(x,10)
+x_trans = polynomial_basis(x,5)
 
 @interact(w0 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
           w1 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
