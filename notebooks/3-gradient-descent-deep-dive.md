@@ -282,13 +282,11 @@ def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs,
     plt.figure(figsize=(10,10))
     ax = plt.subplot(projection='3d')
 
-
     # Plot the surface.
     ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
                           linewidth=0, antialiased=False)
     ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=5, color='black')
     ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
-
 
     ax.view_init(elev=elev, azim=azim)
     ax.set_xlabel('w1')
@@ -381,12 +379,11 @@ plt.subplot(1,3,1);
 
 for n, w in enumerate(w_true):
   plt.axhline(y=w, linestyle='--', color=colors[n]);
-  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
-
+  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n], label='w' + str(n));
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
 
-plt.subplot(1,3, 2);
+plt.subplot(1, 3, 2);
 sns.lineplot(x=np.arange(itr), y=mse_steps);
 #plt.yscale("log")
 plt.xlabel("Iteration");
@@ -513,12 +510,11 @@ plt.subplot(1,3,1);
 
 for n, w in enumerate(w_true):
   plt.axhline(y=w, linestyle='--', color=colors[n]);
-  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
-
+  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n], label='w' + str(n));
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
 
-plt.subplot(1,3, 2);
+plt.subplot(1, 3, 2);
 sns.lineplot(x=np.arange(itr), y=mse_steps);
 #plt.yscale("log")
 plt.xlabel("Iteration");
@@ -584,12 +580,11 @@ plt.subplot(1,3,1);
 
 for n, w in enumerate(w_true):
   plt.axhline(y=w, linestyle='--', color=colors[n]);
-  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
-
+  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n], label='w' + str(n));
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
 
-plt.subplot(1,3, 2);
+plt.subplot(1, 3, 2);
 sns.lineplot(x=np.arange(itr), y=mse_steps);
 #plt.yscale("log")
 plt.xlabel("Iteration");
@@ -616,22 +611,28 @@ plt.suptitle("Estimate after %d iterations with rate %s and batch size %d: %s" %
 
 ## Interactive
 
+You can use this interactive to explore different gradient descent options and see the effect.
+
 :::
 
 
 ::: {.cell .code}
 ```python
-@interact(itr = widgets.IntSlider(min=10, max=200, step=10, value=50),
+n_samples = 100
+w_true = [2, 6, 5]
+x, y = generate_linear_regression_data(n=n_samples, d=2, coef=w_true[1:], intercept=w_true[0], sigma=0)
+X = np.hstack((np.ones((n_samples, 1)), x))
+
+@interact(itr = widgets.IntSlider(min=10, max=200, step=10, value=100),
           lr = widgets.FloatSlider(min=0.05, max=0.95, step=0.05, value=0.1),
           n_batch = widgets.IntSlider(min=1, max=100, step=1, value=100),
-          sigma = widgets.FloatSlider(min=0, max=5, step=0.5, value=1))
-def plot_gd(itr, lr, n_batch, sigma):
+          sigma = widgets.FloatSlider(min=0, max=5, step=0.5, value=1),
+          X = fixed(X), y = fixed(y))
+def plot_gd(itr, lr, n_batch, sigma, X, y):
 
-  w_true = [2, 6, 5]
+  y = y + sigma * np.random.randn(n_samples)
 
-  x, y = generate_linear_regression_data(n=n_samples, d=2, coef=w_true[1:], intercept=w_true[0], sigma=sigma)
-  X = np.hstack((np.ones((n_samples, 1)), x))
-
+  w_init = [w_true[0], 3, 7]
   w_steps = np.zeros((itr, len(w_init)))
   mse_steps = np.zeros(itr)
 
@@ -646,12 +647,11 @@ def plot_gd(itr, lr, n_batch, sigma):
 
   for n, w in enumerate(w_true):
     plt.axhline(y=w, linestyle='--', color=colors[n]);
-    sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
-
+    sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n], label='w' + str(n));
   plt.xlabel("Iteration");
   plt.ylabel("Coefficient Value");
 
-  plt.subplot(1,3, 2);
+  plt.subplot(1, 3, 2);
   sns.lineplot(x=np.arange(itr), y=mse_steps);
   #plt.yscale("log")
   plt.xlabel("Iteration");
@@ -669,8 +669,6 @@ def plot_gd(itr, lr, n_batch, sigma):
 
   plt.suptitle("Estimate after %d iterations with rate %s and batch size %d: %s" % 
               (itr, "{0:0.4f}".format(lr), n_batch, ["{0:0.4f}".format(w) for w in w_star]));
-
-
 ```
 :::
 
@@ -779,31 +777,44 @@ for i in range(itr):
 
 ::: {.cell .code}
 ```python
+plt.figure(figsize=(18,5))
+plt.subplot(1,3,1);
+
 for n, w in enumerate(w_true):
   plt.axhline(y=w, linestyle='--', color=colors[n]);
-  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
-
+  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n], label='w' + str(n));
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
-```
-:::
 
-::: {.cell .code}
-```python
-plt.figure(figsize=(5,5));
+plt.subplot(1, 3, 2);
+sns.lineplot(x=np.arange(itr), y=mse_steps);
+#plt.yscale("log")
+plt.xlabel("Iteration");
+plt.ylabel("Training MSE");
+
+
+plt.subplot(1, 3, 3);
 X1, X2 = np.meshgrid(coefs, coefs);
-p = plt.contour(X1, X2, mses_coefs, levels=10);
+p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w1');
 plt.ylabel('w2');
-sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', alpha=0.5, sort=False);
+sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
 plt.scatter(w_true[1], w_true[2], c='black', marker='*');
 
+plt.suptitle("Estimate after %d iterations with rate %s: %s" % 
+          (itr, "{0:0.4f}".format(lr), ["{0:0.4f}".format(w) for w in w_star]));
 ```
 :::
 
 
+::: {.cell .markdown}
+### Other things to try
+
+-   What happens if we increase the learning rate (try e.g. 0.9)?
+-   What happens if we change the initial "guess"?
+:::
 
 ::: {.cell .markdown}
 ### Momentum
@@ -860,26 +871,34 @@ for i in range(itr):
 
 ::: {.cell .code}
 ```python
+plt.figure(figsize=(18,5))
+plt.subplot(1,3,1);
+
 for n, w in enumerate(w_true):
   plt.axhline(y=w, linestyle='--', color=colors[n]);
-  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
-
+  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n], label='w' + str(n));
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
-```
-:::
 
-::: {.cell .code}
-```python
-plt.figure(figsize=(5,5));
+plt.subplot(1, 3, 2);
+for n, w in enumerate(w_true):
+  sns.lineplot(x=np.arange(itr), y=v_steps[:,n], color=colors[n]);
+plt.xlabel("Iteration");
+plt.ylabel("Velocity");
+
+
+plt.subplot(1, 3, 3);
 X1, X2 = np.meshgrid(coefs, coefs);
-p = plt.contour(X1, X2, mses_coefs, levels=10);
+p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w1');
 plt.ylabel('w2');
-sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', alpha=0.5, sort=False);
+sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
 plt.scatter(w_true[1], w_true[2], c='black', marker='*');
+
+plt.suptitle("Estimate after %d iterations with rate %s: %s" % 
+          (itr, "{0:0.4f}".format(lr), ["{0:0.4f}".format(w) for w in w_star]));
 
 ```
 :::
