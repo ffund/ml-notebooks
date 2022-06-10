@@ -128,6 +128,13 @@ def gd_step(w, X, y, lr):
 ```
 :::
 
+
+::: {.cell .markdown}
+
+Note: in the update rule, the signs are different from the expression above because we switched the order of the terms in the error expression: we used $\hat{y} - y$. 
+
+:::
+
 ::: {.cell .markdown}
 ### Perform gradient descent
 :::
