@@ -21,7 +21,7 @@ import seaborn as sns
 sns.set()
 
 # for 3d interactive plots
-from ipywidgets import interact, fixed
+from ipywidgets import interact, fixed, widgets
 from mpl_toolkits import mplot3d
 
 from IPython.core.interactiveshell import InteractiveShell
@@ -124,8 +124,8 @@ With a mean squared error loss function
 
 $$ 
 \begin{aligned}
-L(w) &= \frac{1}{2} \sum_{i=1}^n (y_i - \langle w,x_i \rangle)^2 \\
-     &= \frac{1}{2} \|y - Xw\|^2 
+L(w) &= \frac{1}{n} \sum_{i=1}^n (y_i - \langle w,x_i \rangle)^2 \\
+     &= \frac{1}{n} \|y - Xw\|^2 
 \end{aligned}
 $$
 
@@ -133,8 +133,8 @@ we will compute the weights at each step as
 
 $$
 \begin{aligned} 
-w^{t+1} &= w^t + \alpha^t \sum_{i=1}^n (y_i - \langle w^t,x_i \rangle) x_i \\
-        &= w^t + \alpha^t X^T (y - X w^t)                  
+w^{t+1} &= w^t + \frac{\alpha^t}{n} \sum_{i=1}^n (y_i - \langle w^t,x_i \rangle) x_i \\
+        &= w^t + \frac{\alpha^t}{n} X^T (y - X w^t)                  
 \end{aligned}
 $$
 
@@ -146,14 +146,15 @@ $$
 def gd_step(w, X, y, lr):
   # use current parameters to get y_hat
   y_hat = np.dot(X,w)
+  error = y_hat-y
   # compute gradient for this y_hat
-  grad = np.matmul(X.T, y_hat-y)
+  grad = np.matmul(X.T, error)
   # update weights
-  w_new = w - lr*grad
+  w_new = w - (lr/X.shape[0])*grad
 
   # we don't have to actually compute MSE
   # but I want to, for visualization 
-  mse = 1.0/len(y)*np.sum((y_hat - y)**2)
+  mse = np.mean(error**2, axis=0)
 
   return (w_new, mse, grad)
 ```
@@ -166,7 +167,7 @@ def gd_step(w, X, y, lr):
 ::: {.cell .code}
 ```python
 itr = 50
-lr = 0.001
+lr = 0.1
 w_init = np.random.randn(len(w_true))
 print(w_init)
 ```
@@ -207,13 +208,13 @@ plt.subplot(1,3,1);
 
 for n in range(len(w_true)):
   plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
-  sns.lineplot(np.arange(itr), w_steps[:,n], color=colors[n]);
+  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
 
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
 
 plt.subplot(1,3, 2);
-sns.lineplot(np.arange(itr), mse_steps);
+sns.lineplot(x=np.arange(itr), y=mse_steps);
 #plt.yscale("log")
 plt.xlabel("Iteration");
 plt.ylabel("Mean Squared Error");
@@ -221,7 +222,7 @@ plt.ylabel("Mean Squared Error");
 
 plt.subplot(1, 3, 3);
 for n in range(len(coef)+1):
-  sns.lineplot(np.arange(itr), grad_steps[:,n], color=colors[n]);
+  sns.lineplot(x=np.arange(itr), y=grad_steps[:,n], color=colors[n]);
 plt.xlabel("Iteration");
 plt.ylabel("Gradient");
 ```
@@ -276,12 +277,10 @@ x, y = generate_linear_regression_data(n=n_samples, d=2, coef=coef, intercept=in
 ::: {.cell .code}
 ```python
 coefs = np.arange(2, 8, 0.05)
-mses_coefs = np.zeros((len(coefs), len(coefs)))
 
-for idx_1, c_1 in enumerate(coefs):
-  for idx_2, c_2 in enumerate(coefs):
-    y_hat_c = (intercept + np.dot(x,[c_1, c_2])).squeeze()
-    mses_coefs[idx_1,idx_2] =  1.0/(len(y_hat_c)) * np.sum((y - y_hat_c)**2)
+coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
+y_hat_c = (intercept + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
+mses_coefs = np.mean((y.reshape(-1, 1, 1)- y_hat_c)**2,axis=0)
 ```
 :::
 
@@ -291,8 +290,8 @@ plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
+plt.xlabel('w1');
+plt.ylabel('w2');
 ```
 :::
 
@@ -311,7 +310,7 @@ X.shape
 ::: {.cell .code}
 ```python
 itr = 50
-lr = 0.001
+lr = 0.1
 w_init = [intercept, 2, 8]
 ```
 :::
@@ -354,10 +353,10 @@ plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
-sns.lineplot(x=w_steps[:,2], y=w_steps[:,1], color='black', sort=False, alpha=0.5);
-sns.scatterplot(x=w_steps[:,2], y=w_steps[:,1], hue=np.arange(itr), edgecolor=None);
+plt.xlabel('w1');
+plt.ylabel('w2');
+sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
+sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
 ```
 :::
 
@@ -398,14 +397,16 @@ def sgd_step(w, X, y, lr, n):
 
   # use current parameters to get y_hat
   y_hat = np.dot(X_sample,w)
+  error = y_hat-y_sample
   # compute gradient for this y_hat
-  grad = np.matmul(X_sample.T, y_hat-y_sample)
+  grad = np.matmul(X_sample.T, error)
   # update weights
-  w_new = w - lr*grad
+  w_new = w - (lr/n)*grad
 
   # we don't have to actually compute MSE
   # but I want to, for visualization 
-  mse = 1.0/len(y)*np.sum((y-np.dot(X, w))**2)
+  # note: MSE is computed on entire data, not sample
+  mse = np.mean((y-np.dot(X, w))**2, axis=0)
 
   return (w_new, mse, grad)
 ```
@@ -418,7 +419,7 @@ def sgd_step(w, X, y, lr, n):
 ::: {.cell .code}
 ```python
 itr = 50
-lr = 0.05
+lr = 0.1
 n = 1
 w_init = [intercept, 2, 8]
 ```
@@ -469,10 +470,10 @@ plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
-sns.lineplot(x=w_steps[:,2], y=w_steps[:,1], color='black', sort=False, alpha=0.5);
-sns.scatterplot(x=w_steps[:,2], y=w_steps[:,1], hue=np.arange(itr), edgecolor=None);
+plt.xlabel('w1');
+plt.ylabel('w2');
+sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
+sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
 ```
 :::
 
@@ -532,12 +533,10 @@ x, y = generate_linear_regression_data(n=n_samples, d=2, coef=coef, intercept=in
 ::: {.cell .code}
 ```python
 coefs = np.arange(2, 8, 0.05)
-mses_coefs = np.zeros((len(coefs), len(coefs)))
 
-for idx_1, c_1 in enumerate(coefs):
-  for idx_2, c_2 in enumerate(coefs):
-    y_hat_c = (intercept + np.dot(x,[c_1, c_2])).squeeze()
-    mses_coefs[idx_1,idx_2] =  1.0/(len(y_hat_c)) * np.sum((y - y_hat_c)**2)
+coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
+y_hat_c = (intercept + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
+mses_coefs = np.mean((y.reshape(-1, 1, 1)- y_hat_c)**2,axis=0)
 ```
 :::
 
@@ -547,8 +546,8 @@ plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
+plt.xlabel('w1');
+plt.ylabel('w2');
 ```
 :::
 
@@ -570,7 +569,7 @@ X.shape
 ::: {.cell .code}
 ```python
 itr = 50
-lr = 0.0002
+lr = 0.1
 w_init = [intercept, 2, 8]
 ```
 :::
@@ -611,10 +610,10 @@ plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
-sns.lineplot(x=w_steps[:,2], y=w_steps[:,1], color='black', sort=False, alpha=0.5);
-sns.scatterplot(x=w_steps[:,2], y=w_steps[:,1], hue=np.arange(itr), edgecolor=None);
+plt.xlabel('w1');
+plt.ylabel('w2');
+sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
+sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
 ```
 :::
 
@@ -625,7 +624,7 @@ w_star
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs, 
             w_steps=w_steps, mse_steps=mse_steps):
 
@@ -636,16 +635,17 @@ def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs,
     # Plot the surface.
     ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
                           linewidth=0, antialiased=False)
-    ax.scatter3D(w_steps[:, 2], w_steps[:, 1], mse_steps, s=5, color='black')
-    ax.plot(w_steps[:, 2], w_steps[:, 1], mse_steps, color='gray')
+    ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=5, color='black')
+    ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
 
 
     ax.view_init(elev=elev, azim=azim)
-    ax.set_xlabel('w2')
-    ax.set_ylabel('w1')
+    ax.set_xlabel('w1')
+    ax.set_ylabel('w2')
     ax.set_zlabel('MSE')
 
-interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
          X1=fixed(X1), X2=fixed(X2), mses_coefs=fixed(mses_coefs),
          w_steps=fixed(w_steps), mse_steps=fixed(mse_steps));
 ```
@@ -663,8 +663,8 @@ With data that does not perfectly fit the linear model, the stochastic gradient 
 
 ::: {.cell .code}
 ```python
-itr = 200
-lr = 0.05
+itr = 100
+lr = 0.1
 w_init = [intercept, 2, 8]
 ```
 :::
@@ -705,10 +705,10 @@ plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
-sns.lineplot(x=w_steps[:,2], y=w_steps[:,1], color='black', sort=False, alpha=0.5);
-sns.scatterplot(x=w_steps[:,2], y=w_steps[:,1], hue=np.arange(itr), edgecolor=None);
+plt.xlabel('w1');
+plt.ylabel('w2');
+sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
+sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
 ```
 :::
 
@@ -720,7 +720,7 @@ w_star
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs, 
             w_steps=w_steps, mse_steps=mse_steps):
 
@@ -731,16 +731,17 @@ def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs,
     # Plot the surface.
     ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
                           linewidth=0, antialiased=False)
-    ax.scatter3D(w_steps[:, 2], w_steps[:, 1], mse_steps, s=5, color='black')
-    ax.plot(w_steps[:, 2], w_steps[:, 1], mse_steps, color='gray')
+    ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=5, color='black')
+    ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
 
 
     ax.view_init(elev=elev, azim=azim)
-    ax.set_xlabel('w2')
-    ax.set_ylabel('w1')
+    ax.set_xlabel('w1')
+    ax.set_ylabel('w2')
     ax.set_zlabel('MSE')
 
-interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
          X1=fixed(X1), X2=fixed(X2), mses_coefs=fixed(mses_coefs),
          w_steps=fixed(w_steps), mse_steps=fixed(mse_steps));
 
@@ -755,7 +756,7 @@ interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 w_true = [2, 5, 5]
 intercept = w_true[0]
 coef = w_true[1:]
@@ -765,7 +766,7 @@ print(intercept, coef)
 
 
 ::: {.cell .code}
-``` {.python}
+```python
 n_samples = 1000
 d = 1
 sigma = 1
@@ -781,10 +782,10 @@ X = np.column_stack((np.ones((n_samples, 1)), x))
 :::
 
 ::: {.cell .code}
-``` {.python}
-_ = sns.scatterplot(x=x1.squeeze(), y=x2.squeeze())
-_ = plt.xlabel('x1')
-_ = plt.ylabel('x2')
+```python
+sns.scatterplot(x=x1.squeeze(), y=x2.squeeze());
+plt.xlabel('x1');
+plt.ylabel('x2');
 ```
 :::
 
@@ -795,25 +796,23 @@ _ = plt.ylabel('x2')
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 coefs = np.arange(3, 7, 0.02)
-mses_coefs = np.zeros((len(coefs), len(coefs)))
 
-for idx_1, c_1 in enumerate(coefs):
-  for idx_2, c_2 in enumerate(coefs):
-    y_hat_c = (intercept + np.dot(x,[c_1, c_2])).squeeze()
-    mses_coefs[idx_1,idx_2] =  1.0/(len(y_hat_c)) * np.sum((y - y_hat_c)**2)
+coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
+y_hat_c = (intercept + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
+mses_coefs = np.mean((y.reshape(-1, 1, 1)- y_hat_c)**2,axis=0)
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contour(X1, X2, mses_coefs, levels=15);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
+plt.xlabel('w1');
+plt.ylabel('w2');
 ```
 :::
 
@@ -824,16 +823,16 @@ plt.ylabel('w1');
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 itr = 50
-lr = 0.002
+lr = 0.1
 n = 1
 w_init = [intercept, 3, 7]
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 w_steps = np.zeros((itr, len(w_init)))
 mse_steps = np.zeros(itr)
 grad_steps = np.zeros((itr, len(w_init)))
@@ -854,7 +853,7 @@ for i in range(itr):
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 colors = sns.color_palette("hls", len(w_true))
 
 for n in range(len(w_true)):
@@ -867,20 +866,20 @@ plt.ylabel("Coefficient Value");
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 plt.figure(figsize=(5,5));
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=10);
 plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w2');
-plt.ylabel('w1');
-sns.lineplot(x=w_steps[:,2], y=w_steps[:,1], color='black', alpha=0.5, sort=False);
-sns.scatterplot(x=w_steps[:,2], y=w_steps[:,1], hue=np.arange(itr), edgecolor=None);
+plt.xlabel('w1');
+plt.ylabel('w2');
+sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', alpha=0.5, sort=False);
+sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
 ```
 :::
 
 ::: {.cell .code}
-``` {.python}
+```python
 def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs, 
             w_steps=w_steps, mse_steps=mse_steps):
 
@@ -891,17 +890,75 @@ def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs,
     # Plot the surface.
     ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
                           linewidth=0, antialiased=False)
-    ax.scatter3D(w_steps[:, 2], w_steps[:, 1], mse_steps, s=50, color='black')
-    ax.plot(w_steps[:, 2], w_steps[:, 1], mse_steps, color='gray')
+    ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=50, color='black')
+    ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
 
 
     ax.view_init(elev=elev, azim=azim)
-    ax.set_xlabel('w2')
-    ax.set_ylabel('w1')
+    ax.set_xlabel('w1')
+    ax.set_ylabel('w2')
     ax.set_zlabel('MSE')
 
-interact(plot_3D, elev=np.arange(-90,90,10), azim=np.arange(-90,90,10),
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
          X1=fixed(X1), X2=fixed(X2), mses_coefs=fixed(mses_coefs),
          w_steps=fixed(w_steps), mse_steps=fixed(mse_steps));
+
+```
+:::
+
+
+
+
+::: {.cell .markdown}
+### Momentum
+:::
+
+
+::: {.cell .code}
+```python
+def gd_step_momentum(w, X, y, lr, eta, v):
+  # use current parameters to get y_hat, error
+  y_hat = np.dot(X,w)
+  error = y_hat-y
+  # compute gradient and velocity
+  grad = np.matmul(X.T, error)
+  v_new = eta*v - (lr/X.shape[0])*grad
+  # update weights
+  w_new = w - (lr/X.shape[0])*grad + eta*v_new
+
+  # we don't have to actually compute MSE
+  # but I want to, for visualization 
+  mse = np.mean(error**2, axis=0)
+
+  return (w_new, mse, grad, v_new)
+```
+:::
+
+
+::: {.cell .code}
+```python
+itr = 50
+lr = 0.1
+eta = 0.9
+w_init = [intercept, 3, 7]
+```
+:::
+
+::: {.cell .code}
+```python
+w_steps = np.zeros((itr, len(w_init)))
+mse_steps = np.zeros(itr)
+grad_steps = np.zeros((itr, len(w_init)))
+v_steps = np.zeros((itr, len(w_init)))
+
+w_star = w_init
+velocity = np.zeros(len(w_init))
+for i in range(itr):
+  w_star, mse, gradient, velocity = gd_step_momentum(w_star, X, y, lr, eta, velocity)
+  w_steps[i] = w_star
+  mse_steps[i] = mse
+  grad_steps[i] = gradient
+  v_steps[i] = velocity
 ```
 :::
