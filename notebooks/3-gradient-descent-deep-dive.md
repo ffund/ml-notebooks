@@ -19,7 +19,7 @@ from matplotlib import cm
 import pandas as pd
 import seaborn as sns
 sns.set()
-colors = sns.color_palette("hls", len(w_true))
+colors = sns.color_palette("hls", 4)
 
 # for 3d interactive plots
 from ipywidgets import interact, fixed, widgets
@@ -137,7 +137,7 @@ def gd_step(w, X, y, lr):
 # gradient descent settings: number of iterations, learning rate, starting point
 itr = 50
 lr = 0.1
-w_init = np.random.randn(len(w_true))
+w_init = np.random.uniform(3,7,len(w_true))
 print(w_init)
 ```
 :::
@@ -164,11 +164,10 @@ for i in range(itr):
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(18,5))
-plt.title("After %d iterations with rate %f: %s" % (itr, lr, w_star))
 plt.subplot(1,3,1);
 
-for n in range(len(w_true)):
-  plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
+for n, w in enumerate(w_true):
+  plt.axhline(y=w, linestyle='--', color=colors[n]);
   sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
 
 plt.xlabel("Iteration");
@@ -178,16 +177,17 @@ plt.subplot(1,3, 2);
 sns.lineplot(x=np.arange(itr), y=mse_steps);
 #plt.yscale("log")
 plt.xlabel("Iteration");
-plt.ylabel("Mean Squared Error");
+plt.ylabel("Training MSE");
 
 
 plt.subplot(1, 3, 3);
-for n in range(len(coef)+1):
+for n, w in enumerate(w_true):
   sns.lineplot(x=np.arange(itr), y=grad_steps[:,n], color=colors[n]);
 plt.xlabel("Iteration");
 plt.ylabel("Gradient");
 
-plt.suptitle("Estimate after %d iterations with rate %s: %s" % (itr, "{0:0.4f}".format(lr), ["{0:0.4f}".format(w) for w in w_star]));
+plt.suptitle("Estimate after %d iterations with rate %s: %s" % 
+          (itr, "{0:0.4f}".format(lr), ["{0:0.4f}".format(w) for w in w_star]));
 ```
 :::
 
@@ -204,25 +204,54 @@ plt.suptitle("Estimate after %d iterations with rate %s: %s" % (itr, "{0:0.4f}".
 
 :::
 
-
 ::: {.cell .markdown}
-### MSE contour
+Generating data for a multiple regression (with two features):
 :::
+
+::: {.cell .code}
+```python
+w_true = [2, 6, 5]
+n_samples = 100
+x, y = generate_linear_regression_data(n=n_samples, d=2, coef=w_true[1:], intercept=w_true[0])
+X = np.hstack((np.ones((n_samples, 1)), x))
+X.shape
+```
+:::
+
+
+::: {.cell .code}
+```python
+# gradient descent settings: number of iterations, learning rate, starting point
+itr = 50
+lr = 0.1
+w_init = np.random.uniform(3, 7, len(w_true))
+print(w_init)
+```
+:::
+
+::: {.cell .code}
+```python
+w_steps = np.zeros((itr, len(w_init)))
+mse_steps = np.zeros(itr)
+grad_steps = np.zeros((itr, len(w_init)))
+
+w_star = w_init
+for i in range(itr):
+  w_star, mse, gradient = gd_step(w_star, X, y, lr)
+  w_steps[i] = w_star
+  mse_steps[i] = mse
+  grad_steps[i] = gradient
+```
+:::
+
 
 ::: {.cell .code}
 ```python
 coefs = np.arange(2, 8, 0.05)
 
 coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
-y_hat_c = (intercept + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
+y_hat_c = (w_true[0] + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
 mses_coefs = np.mean((y.reshape(-1, 1, 1)- y_hat_c)**2,axis=0)
-
-plt.figure(figsize=(5,5));
-X1, X2 = np.meshgrid(coefs, coefs)
-p = plt.contour(X1, X2, mses_coefs, levels=5);
-plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w1');
-plt.ylabel('w2');
 ```
 :::
 
@@ -237,8 +266,39 @@ plt.xlabel('w1');
 plt.ylabel('w2');
 sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
+plt.scatter(w_true[1], w_true[2], c='black', marker='*');
 plt.title("Estimate after %d iterations with rate %s: %s" % (itr, "{0:0.4f}".format(lr), ["{0:0.4f}".format(w) for w in w_star]));
 
+```
+:::
+
+
+
+::: {.cell .code}
+```python
+def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs, 
+            w_steps=w_steps, mse_steps=mse_steps):
+
+    plt.figure(figsize=(10,10))
+    ax = plt.subplot(projection='3d')
+
+
+    # Plot the surface.
+    ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
+                          linewidth=0, antialiased=False)
+    ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=5, color='black')
+    ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
+
+
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('w1')
+    ax.set_ylabel('w2')
+    ax.set_zlabel('MSE')
+
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
+         X1=fixed(X1), X2=fixed(X2), mses_coefs=fixed(mses_coefs),
+         w_steps=fixed(w_steps), mse_steps=fixed(mse_steps));
 ```
 :::
 
@@ -254,7 +314,7 @@ For stochastic gradient descent, we will compute the gradient and update the wei
 :::
 
 ::: {.cell .markdown}
-### Define a descent step
+### Define a stochastic descent step
 :::
 
 ::: {.cell .code}
@@ -284,15 +344,16 @@ def sgd_step(w, X, y, lr, n):
 :::
 
 ::: {.cell .markdown}
-### Perform gradient descent 
+### Perform stochastic gradient descent 
 :::
 
 ::: {.cell .code}
 ```python
+# now we have another gradient descent option: how many samples in a "batch" 
 itr = 50
 lr = 0.1
-n = 1
-w_init = [intercept, 2, 8]
+n_batch = 1
+w_init = [w_true[0], 2, 8]
 ```
 :::
 
@@ -303,15 +364,9 @@ mse_steps = np.zeros(itr)
 
 w_star = w_init
 for i in range(itr):
-  w_star, mse, grad = sgd_step(w_star, X, y, lr, n)
+  w_star, mse, grad = sgd_step(w_star, X, y, lr, n_batch)
   w_steps[i] = w_star
   mse_steps[i] = mse
-```
-:::
-
-::: {.cell .code}
-```python
-w_star
 ```
 :::
 
@@ -321,23 +376,24 @@ w_star
 
 ::: {.cell .code}
 ```python
-colors = sns.color_palette("hls", len(coef) + 1)
+plt.figure(figsize=(18,5))
+plt.subplot(1,3,1);
 
-plt.axhline(y=intercept, linestyle='--', color=colors[0]);
-sns.lineplot(x=np.arange(itr), y=w_steps[:,0], color=colors[0]);
-
-for n in range(len(coef)):
-  plt.axhline(y=coef[n], linestyle='--', color=colors[n+1]);
-  sns.lineplot(x=np.arange(itr), y=w_steps[:,n+1], color=colors[n+1]);
+for n, w in enumerate(w_true):
+  plt.axhline(y=w, linestyle='--', color=colors[n]);
+  sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
 
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
-```
-:::
 
-::: {.cell .code}
-```python
-plt.figure(figsize=(5,5));
+plt.subplot(1,3, 2);
+sns.lineplot(x=np.arange(itr), y=mse_steps);
+#plt.yscale("log")
+plt.xlabel("Iteration");
+plt.ylabel("Training MSE");
+
+
+plt.subplot(1, 3, 3);
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
@@ -345,16 +401,49 @@ plt.xlabel('w1');
 plt.ylabel('w2');
 sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
+plt.scatter(w_true[1], w_true[2], c='black', marker='*');
+
+plt.suptitle("Estimate after %d iterations with rate %s and batch size %d: %s" % 
+            (itr, "{0:0.4f}".format(lr), n_batch, ["{0:0.4f}".format(w) for w in w_star]));
+```
+:::
+
+::: {.cell .code}
+```python
+def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs, 
+            w_steps=w_steps, mse_steps=mse_steps):
+
+    plt.figure(figsize=(10,10))
+    ax = plt.subplot(projection='3d')
+
+
+    # Plot the surface.
+    ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
+                          linewidth=0, antialiased=False)
+    ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=5, color='black')
+    ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
+
+
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('w1')
+    ax.set_ylabel('w2')
+    ax.set_zlabel('MSE')
+
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
+         X1=fixed(X1), X2=fixed(X2), mses_coefs=fixed(mses_coefs),
+         w_steps=fixed(w_steps), mse_steps=fixed(mse_steps));
+
 ```
 :::
 
 ::: {.cell .markdown}
 ### Other things to try 
 
+-   Increase number of samples used in each iteration?
 -   Increase learning rate?
 -   Decrease learning rate?
--   Use decaying learning rate $\alpha^t = \frac{C}{t}$?
--   Increase number of samples used in each iteration?
+-   Use decaying learning rate $\alpha^t = \frac{\alpha_0}{1 + kt}$?
 :::
 
 
@@ -368,80 +457,32 @@ sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=No
 ::: {.cell .markdown}
 
 
-### Generate data
+### Generate noisy data
 
 This time, we will use the `sigma` argument in our `generate_linear_regression_data` function to generate data that does not 
-perfectly fit a linear model. 
+perfectly fit a linear model. (Using the same coefficients as the previous example.)
 
 :::
 
 ::: {.cell .code}
 ```python
-w_true = [2, 6, 5]
-intercept = w_true[0]
-coef = w_true[1:]
-print(intercept, coef)
-```
-:::
-
-::: {.cell .code}
-```python
-n_samples = 1000
-```
-:::
-
-::: {.cell .code}
-```python
-x, y = generate_linear_regression_data(n=n_samples, d=2, coef=coef, intercept=intercept, sigma=1)
-```
-:::
-
-
-::: {.cell .markdown}
-### MSE contour
-:::
-
-::: {.cell .code}
-```python
-coefs = np.arange(2, 8, 0.05)
-
-coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
-y_hat_c = (intercept + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
-mses_coefs = np.mean((y.reshape(-1, 1, 1)- y_hat_c)**2,axis=0)
-```
-:::
-
-::: {.cell .code}
-```python
-plt.figure(figsize=(5,5));
-X1, X2 = np.meshgrid(coefs, coefs)
-p = plt.contour(X1, X2, mses_coefs, levels=5);
-plt.clabel(p, inline=1, fontsize=10);
-plt.xlabel('w1');
-plt.ylabel('w2');
-```
-:::
-
-::: {.cell .markdown}
-
-### Perform gradient descent 
-
-This time, the gradient descent may not necessarily arrive at the "true" coefficient values. That's not because it does not find the coefficients with minimum MSE; it's because the coefficients with minimum MSE on the noisy training data are not necessarily the "true" coefficients.
-
-:::
-
-::: {.cell .code}
-```python
+x, y = generate_linear_regression_data(n=n_samples, d=2, coef=w_true[1:], intercept=w_true[0], sigma=3)
 X = np.column_stack((np.ones((n_samples, 1)), x))
-X.shape
 ```
+:::
+
+
+::: {.cell .markdown}
+
+### Perform gradient descent  on noisy data
+
 :::
 
 ::: {.cell .code}
 ```python
 itr = 50
 lr = 0.1
-w_init = [intercept, 2, 8]
+w_init = [w_true[0], 2, 8]
 ```
 :::
 
@@ -459,25 +500,31 @@ for i in range(itr):
 :::
 
 ::: {.cell .markdown}
-### Visualize gradient descent
+### Visualize gradient descent on noisy data
+
+This time, the gradient descent may not necessarily arrive at the "true" coefficient values. That's not because it does not find the coefficients with minimum MSE; it's because the coefficients with minimum MSE on the noisy training data are not necessarily the "true" coefficients.
+
 :::
 
 ::: {.cell .code}
 ```python
-colors = sns.color_palette("hls", len(w_true))
+plt.figure(figsize=(18,5))
+plt.subplot(1,3,1);
 
-for n in range(len(w_true)):
-  plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
+for n, w in enumerate(w_true):
+  plt.axhline(y=w, linestyle='--', color=colors[n]);
   sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
 
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
-```
-:::
 
-::: {.cell .code}
-```python
-plt.figure(figsize=(5,5));
+plt.subplot(1,3, 2);
+sns.lineplot(x=np.arange(itr), y=mse_steps);
+#plt.yscale("log")
+plt.xlabel("Iteration");
+plt.ylabel("Training MSE");
+
+plt.subplot(1, 3, 3);
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
@@ -485,40 +532,10 @@ plt.xlabel('w1');
 plt.ylabel('w2');
 sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
-```
-:::
+plt.scatter(w_true[1], w_true[2], c='black', marker='*');
 
-::: {.cell .code}
-```python
-w_star
-```
-:::
-
-::: {.cell .code}
-```python
-def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs, 
-            w_steps=w_steps, mse_steps=mse_steps):
-
-    plt.figure(figsize=(10,10))
-    ax = plt.subplot(projection='3d')
-
-
-    # Plot the surface.
-    ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
-                          linewidth=0, antialiased=False)
-    ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=5, color='black')
-    ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
-
-
-    ax.view_init(elev=elev, azim=azim)
-    ax.set_xlabel('w1')
-    ax.set_ylabel('w2')
-    ax.set_zlabel('MSE')
-
-interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
-          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
-         X1=fixed(X1), X2=fixed(X2), mses_coefs=fixed(mses_coefs),
-         w_steps=fixed(w_steps), mse_steps=fixed(mse_steps));
+plt.suptitle("Estimate after %d iterations with rate %s: %s" % 
+          (itr, "{0:0.4f}".format(lr), ["{0:0.4f}".format(w) for w in w_star]));
 ```
 :::
 
@@ -526,9 +543,8 @@ interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20),
 
 ::: {.cell .markdown}
 
-### Perform stochastic gradient descent 
+### Perform stochastic gradient descent on noisy data
 
-With data that does not perfectly fit the linear model, the stochastic gradient descent converges to a "noise ball" around the optimal solution.
 
 :::
 
@@ -536,7 +552,8 @@ With data that does not perfectly fit the linear model, the stochastic gradient 
 ```python
 itr = 100
 lr = 0.1
-w_init = [intercept, 2, 8]
+n_batch = 1
+w_init = [w_true[0], 2, 8]
 ```
 :::
 
@@ -547,7 +564,7 @@ mse_steps = np.zeros(itr)
 
 w_star = w_init
 for i in range(itr):
-  w_star, mse, grad = sgd_step(w_star, X, y, lr, n) 
+  w_star, mse, grad = sgd_step(w_star, X, y, lr, n_batch) 
   w_steps[i] = w_star
   mse_steps[i] = mse
 ```
@@ -555,24 +572,30 @@ for i in range(itr):
 
 ::: {.cell .markdown}
 ### Visualize stochastic gradient descent
+
+Note the "noise ball"!
+
 :::
 
 ::: {.cell .code}
 ```python
-colors = sns.color_palette("hls", len(w_true))
+plt.figure(figsize=(18,5))
+plt.subplot(1,3,1);
 
-for n in range(len(w_true)):
-  plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
+for n, w in enumerate(w_true):
+  plt.axhline(y=w, linestyle='--', color=colors[n]);
   sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
 
 plt.xlabel("Iteration");
 plt.ylabel("Coefficient Value");
-```
-:::
 
-::: {.cell .code}
-```python
-plt.figure(figsize=(5,5));
+plt.subplot(1,3, 2);
+sns.lineplot(x=np.arange(itr), y=mse_steps);
+#plt.yscale("log")
+plt.xlabel("Iteration");
+plt.ylabel("Training MSE");
+
+plt.subplot(1, 3, 3);
 X1, X2 = np.meshgrid(coefs, coefs);
 p = plt.contour(X1, X2, mses_coefs, levels=5);
 plt.clabel(p, inline=1, fontsize=10);
@@ -580,44 +603,77 @@ plt.xlabel('w1');
 plt.ylabel('w2');
 sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
+plt.scatter(w_true[1], w_true[2], c='black', marker='*');
+
+plt.suptitle("Estimate after %d iterations with rate %s and batch size %d: %s" % 
+            (itr, "{0:0.4f}".format(lr), n_batch, ["{0:0.4f}".format(w) for w in w_star]));
+
 ```
 :::
+
+
+::: {.cell .markdown}
+
+## Interactive
+
+:::
+
 
 ::: {.cell .code}
 ```python
-w_star
+@interact(itr = widgets.IntSlider(min=10, max=200, step=10, value=50),
+          lr = widgets.FloatSlider(min=0.05, max=0.95, step=0.05, value=0.1),
+          n_batch = widgets.IntSlider(min=1, max=100, step=1, value=100),
+          sigma = widgets.FloatSlider(min=0, max=5, step=0.5, value=1))
+def plot_gd(itr, lr, n_batch, sigma):
+
+  w_true = [2, 6, 5]
+
+  x, y = generate_linear_regression_data(n=n_samples, d=2, coef=w_true[1:], intercept=w_true[0], sigma=sigma)
+  X = np.hstack((np.ones((n_samples, 1)), x))
+
+  w_steps = np.zeros((itr, len(w_init)))
+  mse_steps = np.zeros(itr)
+
+  w_star = w_init
+  for i in range(itr):
+    w_star, mse, grad = sgd_step(w_star, X, y, lr, n_batch)
+    w_steps[i] = w_star
+    mse_steps[i] = mse
+
+  plt.figure(figsize=(18,5))
+  plt.subplot(1,3,1);
+
+  for n, w in enumerate(w_true):
+    plt.axhline(y=w, linestyle='--', color=colors[n]);
+    sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
+
+  plt.xlabel("Iteration");
+  plt.ylabel("Coefficient Value");
+
+  plt.subplot(1,3, 2);
+  sns.lineplot(x=np.arange(itr), y=mse_steps);
+  #plt.yscale("log")
+  plt.xlabel("Iteration");
+  plt.ylabel("Training MSE");
+
+  plt.subplot(1, 3, 3);
+  X1, X2 = np.meshgrid(coefs, coefs);
+  p = plt.contour(X1, X2, mses_coefs, levels=5);
+  plt.clabel(p, inline=1, fontsize=10);
+  plt.xlabel('w1');
+  plt.ylabel('w2');
+  sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', sort=False, alpha=0.5);
+  sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
+  plt.scatter(w_true[1], w_true[2], c='black', marker='*');
+
+  plt.suptitle("Estimate after %d iterations with rate %s and batch size %d: %s" % 
+              (itr, "{0:0.4f}".format(lr), n_batch, ["{0:0.4f}".format(w) for w in w_star]));
+
+
 ```
 :::
 
-
-::: {.cell .code}
-```python
-def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs, 
-            w_steps=w_steps, mse_steps=mse_steps):
-
-    plt.figure(figsize=(10,10))
-    ax = plt.subplot(projection='3d')
-
-
-    # Plot the surface.
-    ax.plot_surface(X1, X2, mses_coefs, alpha=0.5, cmap=cm.coolwarm,
-                          linewidth=0, antialiased=False)
-    ax.scatter3D(w_steps[:, 1], w_steps[:, 2], mse_steps, s=5, color='black')
-    ax.plot(w_steps[:, 1], w_steps[:, 2], mse_steps, color='gray')
-
-
-    ax.view_init(elev=elev, azim=azim)
-    ax.set_xlabel('w1')
-    ax.set_ylabel('w2')
-    ax.set_zlabel('MSE')
-
-interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
-          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
-         X1=fixed(X1), X2=fixed(X2), mses_coefs=fixed(mses_coefs),
-         w_steps=fixed(w_steps), mse_steps=fixed(mse_steps));
-
-```
-:::
 
 ::: {.cell .markdown}
 
@@ -629,9 +685,6 @@ interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20),
 ::: {.cell .code}
 ```python
 w_true = [2, 5, 4]
-intercept = w_true[0]
-coef = w_true[1:]
-print(intercept, coef)
 ```
 :::
 
@@ -645,7 +698,7 @@ sigma = 1
 x1 = np.random.randn(n_samples,d)
 x2 = x1 + (sigma/5)*np.random.randn(n_samples,1)
 x = np.column_stack([x1, x2])
-y = (np.dot(x, coef) + intercept).squeeze() + sigma * np.random.randn(n_samples)
+y = (np.dot(x, w_true[1:]) + w_true[0]).squeeze() + sigma * np.random.randn(n_samples)
 
 
 X = np.column_stack((np.ones((n_samples, 1)), x))
@@ -671,7 +724,7 @@ plt.ylabel('x2');
 coefs = np.arange(3, 7, 0.02)
 
 coef_grid = np.array(np.meshgrid(coefs, coefs)).reshape(1, 2, coefs.shape[0], coefs.shape[0])
-y_hat_c = (intercept + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
+y_hat_c = (w_true[0] + np.sum(coef_grid * x.reshape(x.shape[0], 2, 1, 1), axis=1) )
 mses_coefs = np.mean((y.reshape(-1, 1, 1)- y_hat_c)**2,axis=0)
 ```
 :::
@@ -684,6 +737,8 @@ p = plt.contour(X1, X2, mses_coefs, levels=15);
 plt.clabel(p, inline=1, fontsize=10);
 plt.xlabel('w1');
 plt.ylabel('w2');
+plt.scatter(w_true[1], w_true[2], c='black', marker='*');
+
 ```
 :::
 
@@ -697,7 +752,7 @@ plt.ylabel('w2');
 ```python
 itr = 100
 lr = 0.1
-w_init = [intercept, 3, 7]
+w_init = [w_true[0], 3, 7]
 ```
 :::
 
@@ -724,10 +779,8 @@ for i in range(itr):
 
 ::: {.cell .code}
 ```python
-colors = sns.color_palette("hls", len(w_true))
-
-for n in range(len(w_true)):
-  plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
+for n, w in enumerate(w_true):
+  plt.axhline(y=w, linestyle='--', color=colors[n]);
   sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
 
 plt.xlabel("Iteration");
@@ -745,6 +798,8 @@ plt.xlabel('w1');
 plt.ylabel('w2');
 sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', alpha=0.5, sort=False);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
+plt.scatter(w_true[1], w_true[2], c='black', marker='*');
+
 ```
 :::
 
@@ -781,7 +836,7 @@ def gd_step_momentum(w, X, y, lr, eta, v):
 itr = 100
 lr = 0.1
 eta = 0.9
-w_init = [intercept, 3, 7]
+w_init = [w_true[0], 3, 7]
 ```
 :::
 
@@ -805,10 +860,8 @@ for i in range(itr):
 
 ::: {.cell .code}
 ```python
-colors = sns.color_palette("hls", len(w_true))
-
-for n in range(len(w_true)):
-  plt.axhline(y=w_true[n], linestyle='--', color=colors[n]);
+for n, w in enumerate(w_true):
+  plt.axhline(y=w, linestyle='--', color=colors[n]);
   sns.lineplot(x=np.arange(itr), y=w_steps[:,n], color=colors[n]);
 
 plt.xlabel("Iteration");
@@ -826,5 +879,7 @@ plt.xlabel('w1');
 plt.ylabel('w2');
 sns.lineplot(x=w_steps[:,1], y=w_steps[:,2], color='black', alpha=0.5, sort=False);
 sns.scatterplot(x=w_steps[:,1], y=w_steps[:,2], hue=np.arange(itr), edgecolor=None);
+plt.scatter(w_true[1], w_true[2], c='black', marker='*');
+
 ```
 :::
