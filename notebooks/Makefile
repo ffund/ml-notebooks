@@ -11,8 +11,9 @@ SOURCES += 2-regression-r2.md
 SOURCES += 2-linear-regression-deep-dive.md
 SOURCES += 2-linear-regression-case-study.md
 SOURCES += 3-gradient-descent-deep-dive.md
+SOURCES += 3-linear-regression-case-study-part-2.md
 SOURCES += 2-advertising-hw.md
-SOURCES += 3-bias-variance-model-selection-deep-dive.md
+SOURCES += 3-bias-variance-deep-dive.md
 SOURCES += 3-regularization-deep-dive.md
 SOURCES += 3-neural-model-selection-hw.md
 SOURCES += 4-logistic-regression-in-depth.md
@@ -41,12 +42,13 @@ NBS := $(patsubst %.md,%.ipynb,$(SOURCES))
 # The ones to also execute and generate PDFs
 EXECS := 1-python-numpy-tutorial.md
 EXECS += 1-exploratory-data-analysis.md
-EXECS += 1-data-detective.md
 EXECS += 2-compute-by-hand.md
 EXECS += 2-regression-r2.md
 EXECS += 2-linear-regression-deep-dive.md
 EXECS += 2-linear-regression-case-study.md
 EXECS += 3-gradient-descent-deep-dive.md
+EXECS += 3-bias-variance-deep-dive.md
+EXECS += 3-linear-regression-case-study-part-2.md
 EXECS += 2-advertising-hw.md
 EXECS += 3-bias-variance-model-selection-deep-dive.md
 EXECS += 3-regularization-deep-dive.md
@@ -72,7 +74,7 @@ PANDOCFLAGS=--pdf-engine=xelatex\
 	 -H style/listings-setup.tex -H style/keystroke-setup.tex -H style/includes.tex
 
 %.ipynb: %.md
-	pandoc  --self-contained  $^ -o $@
+	pandoc  --self-contained --wrap=none  $^ -o $@
 
 %.nbconvert.ipynb: %.ipynb
 	jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_errors=True --ExecutePreprocessor.timeout=360 $^

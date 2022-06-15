@@ -425,7 +425,7 @@ order, fits a model and measures the MSE.
 
 ::: {.cell .code}
 ```python
-dtest_list = np.arange(1,15)
+dtest_list = np.arange(1,20)
 mse_tr = np.zeros(len(dtest_list))
 mse_test = np.zeros(len(dtest_list))
 
