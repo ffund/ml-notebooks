@@ -1,5 +1,5 @@
 ---
-title:  'Bias-variance and model selection in depth'
+title:  'Bias-variance tradeoff in depth'
 author: 'Fraida Fund'
 ---
 
@@ -270,7 +270,7 @@ We can compute the error on the training set and on the test set:
 ::: {.cell .code}
 ```python
 mse_poly3_train = metrics.mean_squared_error(y_train, reg_poly3.predict(x_train_d3))
-mse_poly3_train/np.var(y_train)
+mse_poly3_train
 ```
 :::
 
@@ -278,7 +278,7 @@ mse_poly3_train/np.var(y_train)
 ```python
 x_test_d3 = np.column_stack( [x_test**d for d in np.arange(1,4)])
 mse_poly3 = metrics.mean_squared_error(y_test, reg_poly3.predict(x_test_d3))
-mse_poly3/np.var(y_test)
+mse_poly3
 ```
 :::
 
@@ -327,14 +327,14 @@ We can compute the error of this model, too:
 ::: {.cell .code}
 ```python
 mse_poly1_train = metrics.mean_squared_error(y_train, reg_poly1.predict(x_train))
-mse_poly1_train/np.var(y_train)
+mse_poly1_train
 ```
 :::
 
 ::: {.cell .code}
 ```python
 mse_poly1 = metrics.mean_squared_error(y_test, reg_poly1.predict(x_test))
-mse_poly1/np.var(y_test)
+mse_poly1
 ```
 :::
 
@@ -388,7 +388,7 @@ too. But, the training error is smaller!
 ::: {.cell .code}
 ```python
 mse_poly10_train = metrics.mean_squared_error(y_train, reg_poly10.predict(x_train_d10))
-mse_poly10_train/np.var(y_train)
+mse_poly10_train
 ```
 :::
 
@@ -396,7 +396,7 @@ mse_poly10_train/np.var(y_train)
 ```python
 x_test_d10 = np.column_stack( [x_test**d for d in np.arange(1,11)])
 mse_poly10 = metrics.mean_squared_error(y_test, reg_poly10.predict(x_test_d10))
-mse_poly10/np.var(y_test)
+mse_poly10
 ```
 :::
 
@@ -441,11 +441,11 @@ for didx, dtest in enumerate(dtest_list):
     
     # measure MSE on training data
     y_hat = reg_dtest.predict(x_train_dtest)
-    mse_tr[didx] = metrics.mean_squared_error(y_train, y_hat)/np.var(y_train)
+    mse_tr[didx] = metrics.mean_squared_error(y_train, y_hat)
 
     # measure MSE on test data
     y_hat_test = reg_dtest.predict(x_test_dtest)
-    mse_test[didx] = metrics.mean_squared_error(y_test, y_hat_test)/np.var(y_test)
+    mse_test[didx] = metrics.mean_squared_error(y_test, y_hat_test)
 ```
 :::
 
@@ -454,7 +454,7 @@ for didx, dtest in enumerate(dtest_list):
 sns.lineplot(x=dtest_list,y=mse_tr, marker="o", label="Training");
 sns.lineplot(x=dtest_list,y=mse_test, marker="o", label="Test");
 plt.xlabel('Model order');
-plt.ylabel('MSE/var');
+plt.ylabel('MSE');
 ```
 :::
 
