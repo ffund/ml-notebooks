@@ -201,14 +201,19 @@ for i, idx in enumerate(idx_split):
 The outer loop can be used to divide the data into training and validation, but then we'll also need 
 an inner loop to train and validate each model for this particular fold. 
 
-In this case, suppose we want to evaluate polynomial models with different model orders from $d=1$ ($\hat{y} = w_0 + w_1 x$) to $d=10$ ($\hat{y} = w_0 + w_1 x + w_2 x^2 + \ldots + w_10 x^10$).
+In this case, suppose we want to evaluate polynomial models with different model orders from 
+
+$$d=1, \quad \hat{y} = w_0 + w_1 x$$
+
+to 
+
+$$d=10, \quad \hat{y} = w_0 + w_1 x + w_2 x^2 + \ldots + w_{10} x^{10}$$
 
 We could do something like this:
 
 :::
 
-
-::: {.cell.code}
+::: {.cell .code}
 ```python
 # create a k-fold object
 nfold = 5
@@ -247,7 +252,7 @@ Instead, we should compute the entire set of transformed features in advance, th
 
 :::
 
-::: {.cell.code}
+::: {.cell .code}
 ```python
 # create a k-fold object
 nfold = 5
@@ -288,7 +293,7 @@ That's much better! Let's look at what this is doing - we'll run it again with s
 :::
 
 
-::: {.cell.code}
+::: {.cell .code}
 ```python
 # create a k-fold object
 nfold = 5
