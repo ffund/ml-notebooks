@@ -11,10 +11,11 @@ SOURCES += 2-regression-r2.md
 SOURCES += 2-linear-regression-deep-dive.md
 SOURCES += 2-linear-regression-case-study.md
 SOURCES += 3-gradient-descent-deep-dive.md
-SOURCES += 3-linear-regression-case-study-part-2.md
 SOURCES += 2-advertising-hw.md
 SOURCES += 3-bias-variance-deep-dive.md
-SOURCES += 3-regularization-deep-dive.md
+SOURCES += 4-model-selection.md
+SOURCES += 4-linear-regression-case-study-part-2.md
+SOURCES += 4-regularization-deep-dive.md
 SOURCES += 3-neural-model-selection-hw.md
 SOURCES += 4-logistic-regression-in-depth.md
 SOURCES += 4-logistic-regression-digits.md
@@ -42,16 +43,20 @@ NBS := $(patsubst %.md,%.ipynb,$(SOURCES))
 # The ones to also execute and generate PDFs
 EXECS := 1-python-numpy-tutorial.md
 EXECS += 1-exploratory-data-analysis.md
+
 EXECS += 2-compute-by-hand.md
 EXECS += 2-regression-r2.md
 EXECS += 2-linear-regression-deep-dive.md
 EXECS += 2-linear-regression-case-study.md
+EXECS += 2-advertising-hw.md
+
 EXECS += 3-gradient-descent-deep-dive.md
 EXECS += 3-bias-variance-deep-dive.md
-EXECS += 3-linear-regression-case-study-part-2.md
-EXECS += 2-advertising-hw.md
-EXECS += 3-bias-variance-model-selection-deep-dive.md
-EXECS += 3-regularization-deep-dive.md
+
+EXECS += 4-model-selection.md
+EXECS += 4-linear-regression-case-study-part-2.md
+EXECS += 4-regularization-deep-dive.md
+
 EXECS += 4-logistic-regression-in-depth.md
 EXECS += 4-logistic-regression-digits.md
 EXECS += 4-compas-case-study.md
