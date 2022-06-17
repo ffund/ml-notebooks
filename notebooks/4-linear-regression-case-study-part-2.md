@@ -548,7 +548,7 @@ photograph - should influence the ratings of students in the instructor's class.
 (These students did not even see the photograph.)
 
 
-In the next cell, write code to
+In the next cell, we will write code to
 
 * create a new `features` array that
 drops the `score` variable, all of the individual attractiveness 
@@ -622,8 +622,9 @@ df.loc[df['cls_credits']=='one credit']
 
 ::: {.cell .markdown}
 
-We observe that 10 out of 27 one-credit courses are taught by what seems to be the same instructor - we don't know his name, but let's call him John. John is 
-a teaching-track professor, minority ethnicity, 
+We observe that 10 out of 27 one-credit courses are taught by what seems to 
+be the same instructor - we don't know his name, but let's call him John. 
+John is a teaching-track professor, minority ethnicity, 
 male, English-language trained, 50 years old, average attractiveness 3.333, 
 and whose photograph is in color and not formal. 
 
@@ -634,6 +635,11 @@ Certain variables may be used by the model to identify the instructor, and then
 learn a relationship between the _individual instructor_ and his or her 
 typical evaluation score, instead of learning a true relationship between 
 the _variable_ and the evaluation score. 
+
+In other words: the model learns "an instructor who is teaching-track, minority,
+male, English-language-trained, 50 years old, has average attractiveness 3.333,
+and whose photograph is in color and not formal typically scores X" - but it's
+really just learning "John typically scores X".
 
 :::
 
@@ -811,7 +817,7 @@ np.mean(metrics_gs, axis=0)
 
 ::: {.cell .markdown}
 
-With the second approach to splitting the data, the model has no predictive value on the test set.
+With the second approach to splitting the data, we can see that the model has no predictive value on the test set.
 
 :::
 
