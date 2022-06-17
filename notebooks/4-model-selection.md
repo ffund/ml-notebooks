@@ -147,6 +147,200 @@ def plot_poly_fit(d, show_train, show_test,
 ```
 :::
 
+
+::: {.cell .markdown}
+### Cross validation
+:::
+
+::: {.cell .markdown}
+
+Splitting a data set for K-fold cross validation is conceptually very simple. The basic idea is:
+
+* We get a list of indices of training data, and decide how many "folds" we will use. The number of validation samples in each fold $N_{val}$ wil be the total number of training samples, divided by the number of folds.
+* Then, we iterate over the number of folds. In the first fold, we put the first $N_{val}$ samples in the validation set and exclude them from the training set. In the second fold, we put the second batch of $N_{val}$ samples in the validation set, and exclude them from the training set. Continue until $K$ folds.
+
+In most circumstances, we will shuffle the list of training data indices first.
+
+The `scikit-learn` library provides a `KFold` that does this for us:
+
+:::
+
+
+::: {.cell .code}
+```python
+nfold = 5
+kf = KFold(n_splits=nfold,shuffle=True)
+
+for isplit, idx in enumerate(kf.split(x_train)):     
+    idx_tr, idx_val = idx 
+```
+:::
+
+::: {.cell .markdown}
+
+although it's also easy to do this ourselves:
+
+:::
+
+::: {.cell .code}
+```python
+nfold = 5                                   # number of folds (you choose!)
+nval = x_train.shape[0]//nfold              # number of validation samples per fold
+idx_split = [i*nval for i in range(nfold)]  
+idx_list = np.arange(x_train.shape[0])      # list of training data indices
+np.random.shuffle(idx_list)                 # shuffle list of indices
+
+for i, idx in enumerate(idx_split):
+  idx_val = idx_list[idx:idx+nval]
+  idx_tr = np.delete(idx_list, idx_val)
+```
+:::
+
+::: {.cell .markdown}
+
+The outer loop can be used to divide the data into training and validation, but then we'll also need 
+an inner loop to train and validate each model for this particular fold. 
+
+In this case, suppose we want to evaluate polynomial models with different model orders from $d=1$ ($\hat{y} = w_0 + w_1 x$) to $d=10$ ($\hat{y} = w_0 + w_1 x + w_2 x^2 + \ldots + w_10 x^10$).
+
+We could do something like this:
+
+:::
+
+
+::: {.cell.code}
+```python
+# create a k-fold object
+nfold = 5
+kf = KFold(n_splits=nfold,shuffle=True)
+
+# model orders to be tested
+dmax = 10
+dtest_list = np.arange(1,dmax+1)
+nd = len(dtest_list)
+
+for isplit, idx in enumerate(kf.split(x_train)):     
+  idx_tr, idx_val = idx 
+
+  for dtest in dtest_list:
+    # get "transformed" training and validation data
+    x_train_dtest =  x_train[idx_tr]**np.arange(1,dtest+1)
+    y_train_kfold =  y_train[idx_tr]
+    x_val_dtest   =  x_train[idx_val]**np.arange(1,dtest+1)
+    y_val_kfold   =  y_train[idx_val]
+
+    # fit model on training data
+    reg_dtest = LinearRegression().fit(x_train_dtest, y_train_kfold)
+    
+    # measure MSE on validation data
+    y_hat   = reg_dtest.predict(x_val_dtest)
+    mse_val = metrics.mean_squared_error(y_val_kfold, y_hat)
+    r2_val  = metrics.r2_score(y_val_kfold, y_hat)
+```
+::: 
+
+
+::: {.cell .markdown}
+
+Notice, however, that there was a lot of wasted computation there. We computed the same polynomial features multiple times in different folds. 
+Instead, we should compute the entire set of transformed features in advance, then just select the ones we need in each iteration over model order.
+
+:::
+
+::: {.cell.code}
+```python
+# create a k-fold object
+nfold = 5
+kf = KFold(n_splits=nfold,shuffle=True)
+
+# model orders to be tested
+dmax = 10
+dtest_list = np.arange(1,dmax+1)
+nd = len(dtest_list)
+
+# create transformed features up to d_max
+x_train_trans = x_train**np.arange(1,dmax+1)
+
+for isplit, idx in enumerate(kf.split(x_train)):     
+  idx_tr, idx_val = idx 
+
+  for dtest in dtest_list:
+    # get "transformed" training and validation data for this model order
+    x_train_dtest =  x_train_trans[idx_tr,  :dtest]
+    y_train_kfold = y_train[idx_tr]
+    x_val_dtest   =  x_train_trans[idx_val, :dtest]
+    y_val_kfold   = y_train[idx_val]
+
+    # fit model on training data
+    reg_dtest = LinearRegression().fit(x_train_dtest, y_train_kfold)
+    
+    # measure MSE on validation data
+    y_hat   = reg_dtest.predict(x_val_dtest)
+    mse_val = metrics.mean_squared_error(y_val_kfold, y_hat)
+    r2_val  = metrics.r2_score(y_val_kfold, y_hat)
+```
+::: 
+
+::: {.cell .markdown}
+
+That's much better! Let's look at what this is doing - we'll run it again with some extra visualization:
+
+:::
+
+
+::: {.cell.code}
+```python
+# create a k-fold object
+nfold = 5
+kf = KFold(n_splits=nfold,shuffle=True)
+
+# model orders to be tested
+dmax = 10
+dtest_list = np.arange(1,dmax+1)
+nd = len(dtest_list)
+
+# create transformed features up to d_max
+x_train_trans = x_train**np.arange(1,dmax+1)
+
+# create a big figure
+fig, axs = plt.subplots(nfold, nd, sharex=True, sharey=True)
+fig.set_figheight(nfold+1);
+fig.set_figwidth(nd+1);
+
+for isplit, idx in enumerate(kf.split(x_train)):     
+  idx_tr, idx_val = idx 
+
+  for didx, dtest in enumerate(dtest_list):
+    # get "transformed" training and validation data for this model order
+    x_train_dtest =  x_train_trans[idx_tr,  :dtest]
+    y_train_kfold = y_train[idx_tr]
+    x_val_dtest   =  x_train_trans[idx_val, :dtest]
+    y_val_kfold   = y_train[idx_val]
+
+    # fit model on training data
+    reg_dtest = LinearRegression().fit(x_train_dtest, y_train_kfold)
+    
+    # measure MSE on validation data
+    y_hat   = reg_dtest.predict(x_val_dtest)
+    mse_val = metrics.mean_squared_error(y_val_kfold, y_hat)
+    r2_val  = metrics.r2_score(y_val_kfold, y_hat)
+
+    # this is just for visualization/understanding - in a "real" problem you would not include this
+    p = sns.lineplot(x = x_train_dtest[:,0].squeeze(), y = reg_dtest.predict(x_train_dtest), color='red', ax=axs[isplit, didx]);
+    p = sns.scatterplot(x = x_val_dtest[:, 0].squeeze(), y = y_val_kfold,  ax=axs[isplit, didx]);
+
+plt.tight_layout()
+
+```
+::: 
+
+::: {.cell .markdown}
+
+Finally, we'll add some arrays in which to save the validation performance from each fold, so that we can average them afterward.
+
+:::
+
+
 ::: {.cell .code}
 ```python
 # create a k-fold object
@@ -164,44 +358,40 @@ r2_val  = np.zeros((nd,nfold))
 # create transformed features up to d_max
 x_train_trans = x_train**np.arange(1,dmax+1)
 
-fig, axs = plt.subplots(nfold, nd, sharex=True, sharey=True)
-fig.set_figheight(nfold+1);
-fig.set_figwidth(nd+1);
-
 # loop over the folds
 # the first loop variable tells us how many out of nfold folds we have gone through
 # the second loop variable tells us how to split the data
 for isplit, idx in enumerate(kf.split(x_train)):
         
-    # these are the indices for the training and validation indices
-    # for this iteration of the k folds
-    idx_tr, idx_val = idx 
+  # these are the indices for the training and validation indices
+  # for this iteration of the k folds
+  idx_tr, idx_val = idx 
 
-    x_train_kfold = x_train_trans[idx_tr]
-    y_train_kfold = y_train[idx_tr]
-    x_val_kfold = x_train_trans[idx_val]
-    y_val_kfold = y_train[idx_val]
+  x_train_kfold = x_train_trans[idx_tr]
+  y_train_kfold = y_train[idx_tr]
+  x_val_kfold = x_train_trans[idx_val]
+  y_val_kfold = y_train[idx_val]
 
-    for didx, dtest in enumerate(dtest_list):
+  for didx, dtest in enumerate(dtest_list):
 
-      # get transformed features
-      x_train_dtest =  x_train_kfold[:, :dtest]
-      x_val_dtest   =  x_val_kfold[:, :dtest]
+    # get transformed features
+    x_train_dtest =  x_train_kfold[:, :dtest]
+    x_val_dtest   =  x_val_kfold[:, :dtest]
 
-      # fit data
-      reg_dtest = LinearRegression().fit(x_train_dtest, y_train_kfold)
-      
-      # measure MSE on validation data
-      y_hat = reg_dtest.predict(x_val_dtest)
-      mse_val[didx, isplit] = metrics.mean_squared_error(y_val_kfold, y_hat)
-      r2_val[didx, isplit] = metrics.r2_score(y_val_kfold, y_hat)
-
-      # this is just for visualization/learning - in a "real" problem you would not include this
-      p = sns.lineplot(x = x_train_kfold[:,0].squeeze(), y = reg_dtest.predict(x_train_dtest), color='red', ax=axs[isplit, didx]);
-      p = sns.scatterplot(x = x_val_dtest[:, 0].squeeze(), y = y_val_kfold,  ax=axs[isplit, didx]);
-
-plt.tight_layout();
+    # fit data
+    reg_dtest = LinearRegression().fit(x_train_dtest, y_train_kfold)
+    
+    # measure MSE on validation data
+    y_hat = reg_dtest.predict(x_val_dtest)
+    mse_val[didx, isplit] = metrics.mean_squared_error(y_val_kfold, y_hat)
+    r2_val[didx, isplit] = metrics.r2_score(y_val_kfold, y_hat)
 ```
+:::
+
+::: {.cell .markdown}
+
+Here is the mean (across K folds) validation error for each model order:
+
 :::
 
 ::: {.cell .code}
@@ -511,7 +701,7 @@ for isplit, idx in enumerate(idxval):
     y_val_kfold = df_tr.deathIncrease.values[idx:idx+10]
 
     p = sns.scatterplot(x=x_train_kfold[:,0], y=y_train_kfold, ax=axs[isplit]);
-    p = sns.scatterplot(x=x_val_kfold[:,0], y=y_val_kfold, ax=axs[isplit]);```
+    p = sns.scatterplot(x=x_val_kfold[:,0], y=y_val_kfold, ax=axs[isplit]);
 ```
 :::
 
