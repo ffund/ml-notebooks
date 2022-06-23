@@ -598,7 +598,6 @@ For example:
 :::
 
 ::: {.cell .markdown }
-#### Pre-process the image
 
 The images in MNIST have been pre-processed - they are converted to
 grayscale, and centered in a 28x28 image by computing the center of mass
@@ -815,4 +814,104 @@ the model misclassifies some samples.
 the digit and the white background, and have a small margin around the
 edge of the writing, i.e. it should also "look like" the MNIST
 samples.)
+:::
+
+
+
+::: {.cell .markdown}
+### Regularization
+:::
+
+
+::: {.cell .markdown}
+
+For the handwritten digit recognition task, many of the pixels (especially those near the outer border of the image) are not relevant. We can use L1 regularization to do feature selection, i.e. encourage a zero coefficient for features that are not relevant.
+
+:::
+
+
+::: {.cell .markdown}
+However, the classifier still fits a non-zero coefficient for those pixels. In the following images, any pixel with a zero coefficient is marked in black:
+:::
+
+
+::: {.cell .code }
+```python
+zeros = np.ma.masked_where(clf.coef_ != 0, clf.coef_)
+
+scale = np.max(np.abs(clf.coef_))
+
+p = plt.figure(figsize=(25, 3));
+
+for i in range(nclasses):
+    p = plt.subplot(2, nclasses, i + 1)
+    p = plt.imshow(clf.coef_[i].reshape(28, 28),
+                  cmap=plt.cm.RdBu, vmin=-scale, vmax=scale);
+    p = plt.imshow((zeros[i]).reshape(28, 28),
+                  cmap=plt.cm.gray, vmin=0, vmax=1);
+    p = plt.title('Class %i' % i);
+    p = plt.axis('off')
+
+```
+:::
+
+
+::: {.cell .markdown}
+L1 regularization will encourage more zero coefficients. To fit a logistic regression with regularization, we specify the penalty and the regularization strength. 
+
+The parameter `C` is actually the *inverse* of the regularization strength, so a small value means stronger regularization and more coefficients zeroed.
+:::
+
+
+::: {.cell .code}
+```python
+clf_l1 = LogisticRegression(penalty='l1', C=1,
+                      tol=0.1, solver='saga',
+                      multi_class='multinomial').fit(X_train_scaled, y_train)
+```
+:::
+
+
+::: {.cell .markdown}
+The coefficients for the regularized model are shown in the bottom row below. 
+
+With the L1 penalty, many more coefficients are zeroed.
+:::
+
+
+::: {.cell .code }
+```python
+
+zeros = np.ma.masked_where(clf.coef_ != 0, clf.coef_)
+zeros_l1 = np.ma.masked_where(clf_l1.coef_ != 0, clf.coef_)
+
+scale = np.max(np.abs(clf.coef_))
+
+p = plt.figure(figsize=(25, 5));
+
+for i in range(nclasses):
+    p = plt.subplot(2, nclasses, i + 1)
+    p = plt.imshow(clf.coef_[i].reshape(28, 28),
+                  cmap=plt.cm.RdBu, vmin=-scale, vmax=scale);
+    p = plt.imshow((zeros[i]).reshape(28, 28),
+                  cmap=plt.cm.gray, vmin=0, vmax=1);
+    p = plt.title('Class %i' % i);
+    p = plt.axis('off')
+
+for i in range(nclasses):
+    p = plt.subplot(2, nclasses, nclasses + i + 1)
+    p = plt.imshow(clf_l1.coef_[i].reshape(28, 28),
+                  cmap=plt.cm.RdBu, vmin=-scale, vmax=scale);
+    p = plt.imshow((zeros_l1[i]).reshape(28, 28),
+                  cmap=plt.cm.gray, vmin=0, vmax=1);
+    p = plt.title('Class %i' % i);
+    p = plt.axis('off')
+```
+:::
+
+
+::: {.cell .markdown}
+Things to try:
+
+* What happens if you increase C? decrease C?
 :::
