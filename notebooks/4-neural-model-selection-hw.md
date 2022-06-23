@@ -678,7 +678,7 @@ for i, idx_split in enumerate(kf.split(Xdly)):
 
 ::: {.cell .markdown }
 Write code to find the delay that has the best mean validation R2. Get the
-best delay according to the "best R2" rule, and save it in `rsq_opt`.
+best delay according to the "best R2" rule, and save it in `d_opt`.
 :::
 
 ::: {.cell .code }
@@ -691,7 +691,7 @@ best delay according to the "best R2" rule, and save it in `rsq_opt`.
 Now write code to find the best delay using the one SE rule (i.e. find
 the simplest model whose validation R2 is within one SE of the model
 with the best R2). Get the best delay according to the "one SE
-rule", and save it in `rsq_one_se`.
+rule", and save it in `d_one_se`.
 :::
 
 ::: {.cell .code }
@@ -714,8 +714,6 @@ section of the demo notebook. Label each axes.
 ```
 :::
 
-<!--
-::: {.cell .markdown }
 ## Fitting the selected model
 :::
 
@@ -729,7 +727,7 @@ best delay according to the one SE rule.
 
 ::: {.cell .code }
 ```python
-# TODO 15
+# TODO: Fit model on all of Xdly, ydly
 ```
 :::
 
@@ -739,12 +737,11 @@ Then, define a test set using data that was not used to train the model:
 
 ::: {.cell .code }
 ```python
-# TODO 16
-# if dopt_one_se is the optimal model order, you can use
-# Xts = X[nred+1:nred+1001+dopt_one_se]
-# yts = y[nred+1:nred+1001+dopt_one_se]
+# if d_one_se is the optimal model order, you can use
+Xts = X[nred+1:nred+1001+d_one_se]
+yts = y[nred+1:nred+1001+d_one_se]
 # and then use 
-# Xts_dly, yts_dly = create_dly_data(Xts,yts,dopt_one_se)
+Xts_dly, yts_dly = create_dly_data(Xts,yts,dopt_one_se)
 ```
 :::
 
@@ -754,20 +751,22 @@ Use your fitted model to find the R2 score on the test set.
 
 ::: {.cell .code }
 ```python
-# TODO 17
+# TODO: Fit model on all of Xdly, ydly (continued) 
 ```
 :::
 
 ::: {.cell .markdown }
 Also plot the actual and predicted values over time for the first 1000
 samples of the *test* data (similar to your plots in the previous
-sections). Comment on this plot - does the model predict the hand
-velocity well?
+sections). 
+
+Comment on this plot - does the model predict the hand
+velocity well, compared to the previous models?
 :::
 
 ::: {.cell .code }
 ```python
-# TODO 18
+# TODO: Visulization
 ```
 :::
 
