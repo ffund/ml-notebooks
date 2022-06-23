@@ -721,13 +721,15 @@ section of the demo notebook. Label each axes.
 Now that we have selected a model order, we can fit the (reduced) data
 to that model.
 
-Use your `Xdly` and `ydly` to fit a linear regression model using the
+Use all rows of `Xdly` and `ydly` (but select appropriate columns)
+to fit a linear regression model using the
 best delay according to the one SE rule.
 :::
 
 ::: {.cell .code }
 ```python
-# TODO: Fit model on all of Xdly, ydly
+# TODO: Fit a linear model with `dly=d_one_se`
+# Fit model on all rows of Xdly, ydly (select appropriate columns!)
 ```
 :::
 
@@ -741,17 +743,19 @@ Then, define a test set using data that was not used to train the model:
 Xts = X[nred+1:nred+1001+d_one_se]
 yts = y[nred+1:nred+1001+d_one_se]
 # and then use 
-Xts_dly, yts_dly = create_dly_data(Xts,yts,dopt_one_se)
+Xts_dly, yts_dly = create_dly_data(Xts,yts,d_one_se)
 ```
 :::
 
 ::: {.cell .markdown }
-Use your fitted model to find the R2 score on the test set.
+Use your fitted model to find the R2 score on this test set.
 :::
 
 ::: {.cell .code }
 ```python
-# TODO: Fit model on all of Xdly, ydly (continued) 
+# TODO: Fit a linear model with `dly=d_one_se` (continued) 
+yhat = ...
+rsq = ...
 ```
 :::
 
@@ -766,7 +770,7 @@ velocity well, compared to the previous models?
 
 ::: {.cell .code }
 ```python
-# TODO: Visulization
+# TODO: Predicted and true values over time for dly=d_one_se visualization
 ```
 :::
 
