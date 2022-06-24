@@ -302,7 +302,8 @@ Print the `rsq` value. You should get `rsq` of around `0.45`.
 
 ::: {.cell .code}
 ```python
-rsq```
+rsq
+```
 :::
 
 
