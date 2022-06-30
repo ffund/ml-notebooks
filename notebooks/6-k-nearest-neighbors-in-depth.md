@@ -3,7 +3,6 @@ title: 'K Nearest Neighbors in Depth'
 author: 'Fraida Fund'
 jupyter:
   colab:
-    name: '5-k-nearest-neighbors-in-depth.ipynb'
     toc_visible: true
   kernelspec:
     display_name: Python 3
@@ -948,7 +947,7 @@ validation.
 :::
 
 ::: {.cell .markdown }
-In this section, we demonstrate the use of `sklearn`\'s
+In this section, we demonstrate the use of the `sklearn`
 `validation_curve` function for this purpose.
 :::
 
@@ -990,7 +989,8 @@ n_fold = 10
 train_scores, valid_scores = validation_curve(
                             KNeighborsClassifier(), 
                             X_train, y_train, 
-                            "n_neighbors", np.arange(1, max_k, 2),
+                            param_name="n_neighbors", 
+                            param_range=np.arange(1, max_k, 2),
                             cv=n_fold)
 ```
 :::

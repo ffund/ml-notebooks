@@ -521,7 +521,7 @@ would modify the last two steps:
 idx_min = np.argmin(mse_val.mean(axis=1))
 target = mse_val[idx_min,:].mean() + mse_val[idx_min,:].std()/np.sqrt(nfold-1)
 # np.where returns indices of values where condition is satisfied
-idx_one_se = np.where(mse_val.mean(axis=1) < target)
+idx_one_se = np.where(mse_val.mean(axis=1) <= target)
 d_one_se = np.min(dtest_list[idx_one_se])
 d_one_se
 ```
@@ -543,7 +543,7 @@ plt.ylabel("K-fold MSE");
 idx_max = np.argmax(r2_val.mean(axis=1))
 target_r2 = r2_val[idx_max,:].mean() - r2_val[idx_max,:].std()/np.sqrt(nfold-1)
 # np.where returns indices of values where condition is satisfied
-idx_one_se_r2 = np.where(r2_val.mean(axis=1) > target_r2)
+idx_one_se_r2 = np.where(r2_val.mean(axis=1) >= target_r2)
 d_one_se_r2 = np.min(dtest_list[idx_one_se_r2])
 d_one_se_r2
 ```
