@@ -23,6 +23,7 @@ SOURCES += 5-compas-case-study.md
 SOURCES += 5-hw-logistic-regression.md
 SOURCES += 6-k-nearest-neighbors-in-depth.md
 SOURCES += 6-decision-trees.md
+SOURCES += 6-knn-tree-bias-variance.md
 
 SOURCES += 5-trees-ensembles-in-depth.md
 SOURCES += 5-demo-adaboost.md
@@ -65,6 +66,7 @@ EXECS += 5-compas-case-study.md
 
 EXECS += 6-k-nearest-neighbors-in-depth.md
 EXECS += 6-decision-trees.md
+EXECS += 6-knn-tree-bias-variance.md
 
 EXECS += 5-trees-ensembles-in-depth.md
 EXECS += 5-demo-adaboost.md
