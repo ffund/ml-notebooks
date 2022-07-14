@@ -691,7 +691,7 @@ y_test_bin = y_test[np.isin(y_test, ['5','6'])]
 :::
 
 ::: {.cell .markdown }
-We'l fit an SVC classifier on the 5s and 6s:
+We'll fit an SVC classifier on the 5s and 6s:
 :::
 
 ::: {.cell .code }
