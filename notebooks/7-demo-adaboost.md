@@ -3,7 +3,6 @@ title: 'Demo: AdaBoost Classifier'
 author: 'Fraida Fund'
 jupyter:
   colab:
-    name: '5-demo-adaboost.ipynb'
     toc_visible: true
   kernelspec:
     display_name: Python 3

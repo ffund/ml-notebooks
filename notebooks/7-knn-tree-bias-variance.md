@@ -3,7 +3,6 @@ title: 'Bias and variance of non-parametric models'
 author: 'Fraida Fund'
 jupyter:
   colab:
-    name: '5-knn-tree-bias-variance.ipynb'
     toc_visible: true
   kernelspec:
     display_name: Python 3

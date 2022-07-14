@@ -2,8 +2,6 @@
 title: 'Handwritten digits classification'
 author: 'Fraida Fund'
 jupyter:
-  colab:
-    name: '6-demo-digits-classifiers.ipynb'
   kernelspec:
     display_name: Python 3
     name: python3

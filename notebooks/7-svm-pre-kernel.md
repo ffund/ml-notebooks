@@ -2,8 +2,6 @@
 title: 'Support vector classifiers'
 author: 'Fraida Fund'
 jupyter:
-  colab:
-    name: '6-svm-pre-kernel.ipynb'
   kernelspec:
     display_name: Python 3
     language: python

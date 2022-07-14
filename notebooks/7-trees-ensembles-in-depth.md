@@ -3,7 +3,6 @@ title: 'Demo: Decision trees and ensembles'
 author: 'Fraida Fund'
 jupyter:
   colab:
-    name: '5-trees-ensembles-in-depth.ipynb'
     toc_visible: true
   kernelspec:
     display_name: Python 3
