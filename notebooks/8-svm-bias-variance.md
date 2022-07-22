@@ -3,7 +3,6 @@ title: 'Bias and variance of SVMs'
 author: 'Fraida Fund'
 jupyter:
   colab:
-    name: '7-svm-bias-variance.ipynb'
     toc_visible: true
   kernelspec:
     display_name: Python 3

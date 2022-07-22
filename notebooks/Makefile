@@ -67,10 +67,14 @@ EXECS += 7-svm-pre-kernel.md
 EXECS += 7-demo-digits-classifiers.md
 
 SOURCES += 8-svm-with-kernel.md
+SOURCES += 8-svm-bias-variance.md
+SOURCES += 8-demo-backprop.md
+SOURCES += 8-neural-net-demo-draw.md
 
-SOURCES += 7-svm-bias-variance.md
-SOURCES += 7-demo-backprop.md
-SOURCES += 7-neural-net-demo-draw.md
+EXECS += 8-svm-with-kernel.md
+EXECS += 8-svm-bias-variance.md
+EXECS += 8-demo-backprop.md
+
 SOURCES += 7-lab-neural-net-music-classification.md
 SOURCES += 8-slash-dataset.md
 SOURCES += 8-convolutional-neural-networks.md
@@ -80,12 +84,6 @@ SOURCES += 8-fine-tune-rock-paper-scissors.md
 # into a list of output files
 NBS := $(patsubst %.md,%.ipynb,$(SOURCES))
 
-
-
-
-
-EXECS += 7-svm-bias-variance.md
-EXECS += 7-demo-backprop.md
 
 NBSEXEC := $(patsubst %.md,%.nbconvert.ipynb,$(EXECS))
 PDFS := $(patsubst %.md,%.pdf,$(EXECS))

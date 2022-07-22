@@ -2,8 +2,6 @@
 title: 'Demo: Backpropagation'
 author: 'Fraida Fund'
 jupyter:
-  colab:
-    name: '7-demo-backprop.ipynb'
   kernelspec:
     display_name: Python 3
     language: python
@@ -49,7 +47,7 @@ from sklearn.model_selection import train_test_split
 :::
 
 ::: {.cell .markdown }
-For this demo, we will use synthetic data which relates an individual\'s
+For this demo, we will use synthetic data which relates an individual's
 income to the number of years of education they have, and their
 seniority in their position.
 

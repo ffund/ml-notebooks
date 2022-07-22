@@ -2,8 +2,6 @@
 title: 'Draw a classification boundary for a neural network'
 author: 'Fraida Fund'
 jupyter:
-  colab:
-    name: '7-neural-net-demo-draw.ipynb'
   kernelspec:
     display_name: Python 3
     name: python3
