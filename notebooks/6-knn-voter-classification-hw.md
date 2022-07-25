@@ -458,6 +458,13 @@ enc_ord.category_mapping
 
 ::: {.cell .code}
 ```python
+df_enc_ord = enc_ord.transform(df[['AGE', 'EDUC12R']])
+```
+:::
+
+
+::: {.cell .code}
+```python
 df_enc_ord['EDUC12R'].value_counts()
 ```
 :::
