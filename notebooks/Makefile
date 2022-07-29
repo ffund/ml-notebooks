@@ -70,15 +70,20 @@ SOURCES += 8-svm-with-kernel.md
 SOURCES += 8-svm-bias-variance.md
 SOURCES += 8-demo-backprop.md
 SOURCES += 8-neural-net-demo-draw.md
+SOURCES += 8-lab-neural-net-music-classification.md
 
 EXECS += 8-svm-with-kernel.md
 EXECS += 8-svm-bias-variance.md
 EXECS += 8-demo-backprop.md
 
-SOURCES += 7-lab-neural-net-music-classification.md
-SOURCES += 8-slash-dataset.md
-SOURCES += 8-convolutional-neural-networks.md
-SOURCES += 8-fine-tune-rock-paper-scissors.md
+SOURCES += 9-slash-dataset.md
+SOURCES += 9-convolutional-neural-networks.md
+SOURCES += 9-fine-tune-rock-paper-scissors.md
+
+EXECS += 9-slash-dataset.md
+EXECS += 9-convolutional-neural-networks.md
+
+
 
 # Convert the list of source files (Markdown files )
 # into a list of output files

@@ -3,7 +3,6 @@ title: 'Learning the Slash dataset'
 author: 'Fraida Fund'
 jupyter:
   colab:
-    name: '8-slash-dataset.ipynb'
     toc_visible: true
   kernelspec:
     display_name: Python 3
