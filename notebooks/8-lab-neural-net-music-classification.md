@@ -4,27 +4,19 @@ author: 'Fraida Fund'
 jupyter:
   anaconda-cloud: {}
   colab:
-    name: '7-lab-neural-net-music-classification.ipynb'
   kernelspec:
     display_name: Python 3
     language: python
     name: python3
-  language_info:
-    codemirror_mode:
-      name: ipython
-      version: 3
-    file_extension: .py
-    mimetype: 'text/x-python'
-    name: python
-    nbconvert_exporter: python
-    pygments_lexer: ipython3
-    version: 3.6.7
   nbformat: 4
   nbformat_minor: 0
 ---
 
 ::: {.cell .markdown }
 # Assignment: Neural Networks for Music Classification
+
+_Fraida Fund_
+
 :::
 
 ::: {.cell .markdown }
@@ -222,10 +214,25 @@ Write some code to find these values and print them.
 
 ::: {.cell .code }
 ```python
-# TODO 1 Print basic details of the data
+# TODO -  get basic details of the data
+# compute these values from the data, don't hard-code them
+n_tr    = ...
+n_ts    = ...
+n_feat  = ...
+n_class = ...
 ```
 :::
 
+
+::: {.cell .code }
+```python
+# now print those details
+print("Num training= %d" % n_tr)
+print("Num test=     %d" % n_ts)
+print("Num features= %d" % n_feat)
+print("Num classes=  %d" % n_class)
+```
+:::
 ::: {.cell .markdown }
 Then, standardize the training and test data, `Xtr` and `Xts`, by
 removing the mean of each feature and scaling to unit variance.
@@ -235,6 +242,10 @@ You can do this manually, or using `sklearn`\'s
 (For an example showing how to use a `StandardScaler`, you can refer to
 the notebook on regularization.)
 
+Although you will scale both the training and test data, you should make sure that 
+both are scaled according to the mean and variance statistics from the
+*training data only*.
+
 `<small>`{=html}Standardizing the input data can make the gradient
 descent work better, by making the loss function "easier" to
 descend.`</small>`{=html}
@@ -242,7 +253,10 @@ descend.`</small>`{=html}
 
 ::: {.cell .code }
 ```python
-# TODO 2 Standardize the training and test data
+# TODO - Standardize the training and test data
+Xtr_scale = ...
+Xts_scale = ...
+
 ```
 :::
 
@@ -253,10 +267,15 @@ Following the example in the demos you have seen, clear the keras
 session. Then, create a neural network `model` with:
 
 -   `nh=256` hidden units in a single dense hidden layer
--   `sigmoid` activation
+-   `sigmoid` activation at hidden units
 -   select the input and output shapes, and output activation, according
-    to the problem requirements
--   print the model summary
+    to the problem requirements. Use the variables you defined earlier 
+    (`n_tr`, `n_ts`, `n_feat`, `n_class`) as applicable, rather than 
+    hard-coding numbers.
+
+
+Print the model summary.
+
 :::
 
 ::: {.cell .code }
@@ -268,15 +287,34 @@ import tensorflow.keras.backend as K
 ```
 :::
 
+
+
+
 ::: {.cell .code }
 ```python
-# TODO 3 construct the model
+# TODO - construct the model
+nh = 256
 # model =  ...
 # model.add( ...
  
-# make sure to print the model summary
 ```
 :::
+
+::: {.cell .code}
+```python
+# show the model summary
+model.summary()
+```
+:::
+
+
+::: {.cell .code}
+```python
+# you can also visualize the model with 
+tf.keras.utils.plot_model(model, show_shapes=True)
+```
+:::
+
 
 ::: {.cell .markdown }
 Create an optimizer and compile the model. Select the appropriate loss
@@ -287,21 +325,30 @@ learning rate of 0.001
 
 ::: {.cell .code }
 ```python
-# TODO 4
+# TODO - create optimizer and compile the model
 # opt = ...
 # model.compile(...)
 ```
 :::
 
 ::: {.cell .markdown }
-Fit the model for 10 epochs using the scaled data for both the training
-and validation. Use the `validation_data` option to pass the *test*
-data. Use a batch size of 128. Your final accuracy should be \>99%.
+Fit the model for 10 epochs using the scaled data for both training
+and validation, and save the training history in `hist.
+
+Use the `validation_data` option to pass the *test*
+data. (This is OK because we are not going to use this data
+as part of the training process, such as for early stopping - 
+we're just going to compute the accuracy on the data so that 
+we can see how training and test loss changes as the model is 
+trained.)
+
+
+Use a batch size of 128. Your final accuracy should be greater than 99%.
 :::
 
 ::: {.cell .code }
 ```python
-# TODO 5
+# TODO - fit model and save training history
 # hist = 
 ```
 :::
@@ -313,12 +360,12 @@ You should see that the validation accuracy saturates around 99%. After
 that it may "bounce around" a little due to the noise in the
 stochastic mini-batch gradient descent.
 
-Make sure to label each axis, and each series (training vs. validation).
+Make sure to label each axis, and each series (training vs. validation/test).
 :::
 
 ::: {.cell .code }
 ```python
-# TODO 6A
+# TODO - plot the training and validation accuracy in one plot
 ```
 :::
 
@@ -329,12 +376,12 @@ steadily decreasing. Use the [`semilogy`
 plot](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.semilogy.html)
 so that the y-axis is log scale.
 
-Make sure to label each axis, and each series (training vs. validation).
+Make sure to label each axis, and each series (training vs. validation/test).
 :::
 
 ::: {.cell .code }
 ```python
-# TODO 6B
+# TODO - plot the training and validation loss in one plot
 ```
 :::
 
@@ -346,7 +393,7 @@ learning rate. Repeat your model preparation and fitting code, but try
 four learning rates as shown in the vector `rates`. In each iteration of
 the loop:
 
--   clear the session with `K.clear_session()` to free up memory from
+-   use `K.clear_session()` to free up memory from
     models that are no longer in scope
 -   construct the network
 -   select the optimizer. Use the Adam optimizer with the learning rate
@@ -360,7 +407,7 @@ the loop:
 ```python
 rates = [0.1, 0.01,0.001,0.0001]
 
-# TODO 7
+# TODO - iterate over learning rates
 ```
 :::
 
@@ -373,56 +420,12 @@ towards weights that decrease the loss function.
 
 Make sure to label each axis, and each series.
 
-**Comment on the results.**
+**Comment on the results.** What is the effect of learning rate on the training process?
+
 :::
 
 ::: {.cell .code }
 ```python
-# TODO 8
-```
-:::
-
-::: {.cell .markdown }
-## Hidden layer size
-
-The size of the hidden layer controls the network\'s ability to learn
-complicated feature representations.
-
-Repeat your model preparation and fitting code, but loop over a range of
-hidden layer sizes: try all powers of 2 from 4 to 1024. In each
-iteration of the loop:
-
--   clear the session with `K.clear_session()` to free up memory from
-    models that are no longer in scope
--   construct the network with the hidden layer size specific to this
-    iteration.
--   select the optimizer. Use the Adam optimizer with a 0.001 learning
-    rate.
--   train the model for **40** epochs
--   save the history of training and validation accuracy and losses for
-    this model
-:::
-
-::: {.cell .code }
-```python
-# TODO 9
-```
-:::
-
-::: {.cell .markdown }
-Plot the training loss vs. the epoch number for all of the hidden layer
-sizes on one graph (use `semilogy` again).
-
-Then, plot the validation loss vs. the epoch number for all of the
-hidden layer sizes on a second graph (use `semilogy` again).
-
-Make sure to label each axis, and each series.
-
-**Comment on the results.**
-:::
-
-::: {.cell .code }
-```python
-# TODO 10
+# TODO - plot showing the training process for different learning rates
 ```
 :::
