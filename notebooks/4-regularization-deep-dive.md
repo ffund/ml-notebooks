@@ -188,7 +188,7 @@ We can clearly see the collinearity in the pairplot.
 :::
 
 ::: {.cell .markdown }
-Then, we'l compute the matrix of correlation coefficients for the five
+Then, we'll compute the matrix of correlation coefficients for the five
 features. An element of this matrix that is large (close to 1) indicates
 a pair of highly correlated variables.
 :::

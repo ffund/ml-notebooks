@@ -152,7 +152,7 @@ as the optimal model. Support vector machines are an example of such a
 Let's see the result of an actual fit to this data: we will use
 Scikit-Learn\'s support vector classifier to train an SVM model on this
 data. For the time being, we will use a linear kernel and set the `C`
-parameter to a very large number (we'l discuss the meaning of these in
+parameter to a very large number (we'll discuss the meaning of these in
 more depth momentarily).
 :::
 

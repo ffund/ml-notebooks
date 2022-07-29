@@ -96,8 +96,8 @@ the "SopSax.Vib.pp.C6Eb6.aiff" file appear there.
 :::
 
 ::: {.cell .markdown }
-In order to listen to this file, we'l first convert it into the `wav`
-format. Again, we'l use a magic command to run a basic command-line
+In order to listen to this file, we'll first convert it into the `wav`
+format. Again, we'll use a magic command to run a basic command-line
 utility: `ffmpeg`, a powerful tool for working with audio and video
 files.
 :::

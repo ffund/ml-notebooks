@@ -2,6 +2,7 @@
 title:  'Homework: Classifying your own handwritten digit'
 author: 'Fraida Fund'
 jupyter:
+  colab:
     toc_visible: true
   kernelspec:
     display_name: Python 3
@@ -23,7 +24,7 @@ week.
 ::: {.cell .markdown }
 #### Train your classifier
 
-First, we'l repeat the steps from the demo notebook to train a
+First, we'll repeat the steps from the demo notebook to train a
 logistic regression for classification of handwritten digits. This code
 is provided for you.
 

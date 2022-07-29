@@ -531,7 +531,7 @@ param_grid
 :::
 
 ::: {.cell .markdown }
-Now we'l set up the grid search. We can use `fit` on it, just like any
+Now we'll set up the grid search. We can use `fit` on it, just like any
 other `sklearn` model.
 
 I added `return_train_score=True` to my `GridSearchSV` so that it will
@@ -715,8 +715,8 @@ isn't a better value if we go lower/higher.)
 We know that to find the best validation accuracy for the RBF kernel, we
 should make sure our search space includes $\gamma$ values around `1e-6`
 and `1e-7` when $C=1000$. For larger values of $C$, we expect that
-we'l get better results with smaller values of $\gamma$. For smaller
-values of $C$, we expect that we'l get better results with larger
+we'll get better results with smaller values of $\gamma$. For smaller
+values of $C$, we expect that we'll get better results with larger
 values of $\gamma$. I chose to vary $C$ from `1` to `1e6` and $\gamma$
 from `1e-4` to `1e-11`.
 

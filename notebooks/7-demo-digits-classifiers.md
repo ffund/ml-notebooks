@@ -670,8 +670,8 @@ cls_log.score(X_train[idx_support], y_train[idx_support])
 ::: {.cell .markdown }
 It's easier to understand the decisions of the SVC for a binary
 classification problem, so to dig deeper into the interpretability,
-we'l consider the the binary classification problem of distinguishing
-between \'5\' and \'6\' digits.
+we'll consider the the binary classification problem of distinguishing
+between '5' and '6' digits.
 :::
 
 ::: {.cell .code }

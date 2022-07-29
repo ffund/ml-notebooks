@@ -20,7 +20,7 @@ jupyter:
 :::
 
 ::: {.cell .markdown }
-In this demo, we'l look at an example of a task that is difficult for
+In this demo, we'll look at an example of a task that is difficult for
 "classical" machine learning models, and difficult for fully connected
 neural networks, but easy for convolutional neural networks.
 :::
@@ -147,7 +147,7 @@ x.min(), x.max()
 :::
 
 ::: {.cell .markdown }
-Next, we'l try to train some classic ML models on this dataset.
+Next, we'll try to train some classic ML models on this dataset.
 :::
 
 ::: {.cell .code }

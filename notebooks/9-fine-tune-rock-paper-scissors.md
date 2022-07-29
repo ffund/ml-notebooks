@@ -58,7 +58,7 @@ print('Keras version:', tf.keras.__version__)
 
 ::: {.cell .markdown }
 The "rock paper scissors" dataset is available directly from the
-Tensorflow package. In the cells that follow, we'l get the data, plot
+Tensorflow package. In the cells that follow, we'll get the data, plot
 a few examples, and also do some preprocessing.
 :::
 
@@ -640,7 +640,7 @@ model.compile(
 :::
 
 ::: {.cell .markdown }
-Also, we'l use data augmentation:
+Also, we'll use data augmentation:
 :::
 
 ::: {.cell .code }
