@@ -715,6 +715,8 @@ section of the demo notebook. Label each axes.
 ```
 :::
 
+::: {.cell .markdown }
+
 ## Fitting the selected model
 :::
 
@@ -741,15 +743,13 @@ Then, define a test set using data that was not used to train the model:
 ::: {.cell .code }
 ```python
 # if d_one_se is the optimal model order, you can use
-Xts = X[nred+1:nred+1001+d_one_se]
-yts = y[nred+1:nred+1001+d_one_se]
-# and then use 
+Xtr, Xts, ytr, yts = train_test_split(X, y, test_size=0.33, shuffle=False)
 Xts_dly, yts_dly = create_dly_data(Xts,yts,d_one_se)
 ```
 :::
 
 ::: {.cell .markdown }
-Use your fitted model to find the R2 score on this test set.
+Use your fitted model to find the R2 score on this test set. It should be slightly higher than before.
 :::
 
 ::: {.cell .code }
@@ -766,7 +766,9 @@ samples of the *test* data (similar to your plots in the previous
 sections). 
 
 Comment on this plot - does the model predict the hand
-velocity well, compared to the previous models?
+velocity well, compared to the previous models? See if you can identify a few points in the first 
+1000 samples where this model does noticeably better.
+
 :::
 
 ::: {.cell .code }
