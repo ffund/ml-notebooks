@@ -320,7 +320,7 @@ you should make two subplots,
 -   one of predicted Y direction vs. actual Y direction
 
 Make sure both axes use the same scale (the range of the vertical axis should be
-the same as the range of the vertical axis) *and* that all 
+the same as the range of the horizontal axis) *and* that all 
 subplots use the same scale. Label each axes, and each plot 
 (indicate which plot shows the velocity in the X direction and 
 which shows the velocity in the Y direction!)
