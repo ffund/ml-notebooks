@@ -1295,14 +1295,14 @@ plt.figure(figsize=(12,6));
 plt.subplot(1,2,1)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_a, levels=50, cmap='Spectral');
-plt.scatter(coefs_a[1], coefs_a[0], marker='*', color='white', s=100)
+plt.scatter(coefs_a[0], coefs_a[1], marker='*', color='white', s=100)
 plt.xlabel('w2');
 plt.ylabel('w1');
 
 plt.subplot(1,2,2)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_b, levels=50, cmap='Spectral');
-plt.scatter(coefs_b[1], coefs_b[0], marker='*', color='white', s=100)
+plt.scatter(coefs_b[0], coefs_b[1], marker='*', color='white', s=100)
 plt.xlabel('w2');
 plt.ylabel('w1');
 ```
@@ -1326,7 +1326,7 @@ plt.subplot(1,2,1)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_a, levels=50, cmap='Spectral');
 p = plt.contour(X1, X2, l1_penalty_coefs, cmap='binary');
-plt.scatter(coefs_a[1], coefs_a[0], marker='*', color='white', s=100)
+plt.scatter(coefs_a[0], coefs_a[1], marker='*', color='white', s=100)
 plt.xlabel('w2');
 plt.ylabel('w1');
 
@@ -1334,7 +1334,7 @@ plt.subplot(1,2,2)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_b, levels=50, cmap='Spectral');
 p = plt.contour(X1, X2, l1_penalty_coefs, cmap='binary');
-plt.scatter(coefs_b[1], coefs_b[0], marker='*', color='white', s=100)
+plt.scatter(coefs_b[0], coefs_b[1], marker='*', color='white', s=100)
 plt.xlabel('w2');
 plt.ylabel('w1');
 ```
@@ -1379,8 +1379,8 @@ plt.subplot(1,2,1)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_a, levels=50, cmap='Spectral');
 p = plt.contour(X1, X2, l1_penalty_coefs, cmap='binary');
-plt.plot(coefs_lasso[:,1,0], coefs_lasso[:,0,0], marker='.', color='black', markersize=10, alpha=0.2)
-plt.scatter(coefs_a[1], coefs_a[0], marker='*', color='white', s=100)
+plt.plot(coefs_lasso[:,0,0], coefs_lasso[:,1,0], marker='.', color='black', markersize=10, alpha=0.2)
+plt.scatter(coefs_a[0], coefs_a[1], marker='*', color='white', s=100)
 plt.xlabel('w2');
 plt.ylabel('w1');
 
@@ -1388,8 +1388,8 @@ plt.subplot(1,2,2)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_b, levels=50, cmap='Spectral');
 p = plt.contour(X1, X2, l1_penalty_coefs, cmap='binary');
-plt.plot(coefs_lasso[:,1,1], coefs_lasso[:,0,1], marker='.', color='black', markersize=10, alpha=0.2)
-plt.scatter(coefs_b[1], coefs_b[0], marker='*', color='white', s=100)
+plt.plot(coefs_lasso[:,0,1], coefs_lasso[:,1,1], marker='.', color='black', markersize=10, alpha=0.2)
+plt.scatter(coefs_b[0], coefs_b[1], marker='*', color='white', s=100)
 plt.xlabel('w2');
 plt.ylabel('w1');
 ```
@@ -1422,16 +1422,16 @@ plt.figure(figsize=(12,6));
 plt.subplot(1,2,1)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_a + 10*l1_penalty_coefs, levels=50, cmap='Spectral');
-plt.scatter(coefs_a[1], coefs_a[0], marker='*', color='white', s=100)
-plt.plot(coefs_lasso[:,1,0], coefs_lasso[:,0,0], marker='.', color='black', markersize=15, alpha=0.2)
+plt.scatter(coefs_a[0], coefs_a[1], marker='*', color='white', s=100)
+plt.plot(coefs_lasso[:,0,0], coefs_lasso[:,1,0], marker='.', color='black', markersize=15, alpha=0.2)
 plt.xlabel('w2');
 plt.ylabel('w1');
 
 plt.subplot(1,2,2)
 X1, X2 = np.meshgrid(coefs, coefs)
 p = plt.contourf(X1, X2, mses_b + 10*l1_penalty_coefs, levels=50, cmap='Spectral');
-plt.scatter(coefs_b[1], coefs_b[0], marker='*', color='white', s=100)
-plt.plot(coefs_lasso[:,1,1], coefs_lasso[:,0,1], marker='.', color='black', markersize=15, alpha=0.2)
+plt.scatter(coefs_b[0], coefs_b[1], marker='*', color='white', s=100)
+plt.plot(coefs_lasso[:,0,1], coefs_lasso[:,1,1], marker='.', color='black', markersize=15, alpha=0.2)
 plt.xlabel('w2');
 plt.ylabel('w1');
 ```
