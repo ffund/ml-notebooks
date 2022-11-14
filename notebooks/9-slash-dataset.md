@@ -341,7 +341,7 @@ Let's generate data with heavier background noise, and longer slashes:
 
 ::: {.cell .code }
 ```python
-noise_scale = 0.9
+noise_scale = 0.65
 s_pattern = 15
 def gen_example_different(size=20, label=0):
 
