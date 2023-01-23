@@ -1166,6 +1166,50 @@ print(a[a > 2])
 :::
 
 ::: {.cell .markdown}
+When working with numpy arrays, it's often helpful to get the *indices* (not only the values)
+of array elements that meet certain conditions. There are a few numpy 
+functions that you'll definitely want to remember:
+
+* [`argmax`](https://numpy.org/doc/stable/reference/generated/numpy.argmax.html) (get index of maximum element in array)
+* [`argmin`](https://numpy.org/doc/stable/reference/generated/numpy.argmin.html) (get index of minimum element in array)
+* [`argsort`](https://numpy.org/doc/stable/reference/generated/numpy.argsort.html) (get sorted list of indices, by element value, in ascending order)
+* [`where`](https://numpy.org/doc/stable/reference/generated/numpy.where.html) (get indices of elements that meet some condition)
+
+:::
+
+
+::: {.cell .code}
+``` {.python}
+a = np.array([1, 8, 9, -3, 2, 4, 7, 9])
+
+# Get the index of the maximum element in a
+print(np.argmax(a))
+
+# Get the index of the minimum element in a
+# (this array has two elements with the maximum value - 
+# only one index is returned)
+print(np.argmin(a))
+
+# Get sorted list of indices
+print(np.argsort(a))
+
+# Get sorted list of indices in descending order
+# [::-1] is a special slicing index that returns the reversed list
+print(np.argsort(a)[::-1])
+
+# Get indices of elements that meet some condition
+# this returns a tuple, the list of indices is the first entry
+# so we use [0] to get it
+print(np.where(a > 5)[0])
+
+# Get indices of elements that meet some condition
+# this example shows how to get the index of *all* the max values
+print(np.where(a >= a[np.argmax(a)])[0])
+```
+:::
+
+
+::: {.cell .markdown}
 For brevity we have left out a lot of details about numpy array
 indexing; if you want to know more you should read the documentation.
 :::
