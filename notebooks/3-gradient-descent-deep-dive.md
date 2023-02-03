@@ -838,7 +838,7 @@ def gd_step_momentum(w, X, y, lr, eta, v):
   grad = np.matmul(X.T, error)
   v_new = eta*v - (lr/X.shape[0])*grad
   # update weights
-  w_new = w - (lr/X.shape[0])*grad + eta*v_new
+  w_new = w + v_new
 
   # we don't have to actually compute MSE
   # but I want to, for visualization 
