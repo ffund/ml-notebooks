@@ -1807,7 +1807,12 @@ Feature selection has another added benefit - if you use fewer features, than yo
 
 ::: {.cell .markdown}
 
-There are many options for feature selection or feature weighting, and you can choose anything that seems reasonable to you - there isn't one right answer here! But, you will have to explain and justify your choice. 
+There are many options for feature selection or feature weighting, and you can choose anything that seems reasonable to you - there isn't one right answer here! But, you will have to explain and justify your choice. In our lesson on feature selection/weighting, we discussed two parts to the problem of identifying the best subset of features:
+
+* **Search**: you will have to describe the search strategy you use to determine the features or feature subsets to evaluate.
+* **Evaluate**: you will have to describe the approach you use to evaluate the "goodness" of a feature or feature subset. Since this dataset has the added complication of missing values, you should also make sure to explain how you handle missing values in your evaluation. 
+
+And, you will have to describe the approach you used to select the best **number** of features to include or best **size** of feature subset (if you are using feature selection, not feature weighting).
 
 For full credit, you will have to convince me that the approach you selected is a good match for (1) the data, and (2) the learning model.
 
@@ -1826,6 +1831,7 @@ Some important notes:
 
 * The goal is to write code to find the feature selection or feature weighting, not to find it by manual inspection! Don't hard-code any values.
 * Although `X_trans` will include all rows of the data, you should not use the test data in the process of finding `feat_inc` or `feat_wt`! Feature selection and feature weighting are considered part of model fitting, and so only the training data may be used in this process.
+* For the "search" part of the optimization, you should not use any `sklearn` function or equivalent from another library - write pure Python+numpy code to implement the search yourself. For the "evaluate" part of the optimization, you are free to use an `sklearn` function, but make sure you understand what it does and are sure it is a good fit for the data and the model!
 
 :::
 
@@ -1864,11 +1870,13 @@ X_trans.describe()
 
 
 ::: {.cell .markdown}
-In a text cell, answer the following questions:
+In a text cell, describe **in detail** the approach you used for feature selection or feature weighting. Your answer should include the following parts, in paragraph form:
 
-* Describe **in detail** the approach you used for feature selection or feature weighting.
-* Consider your approach in the context of our lecture discussion on feature selection/weighting. Is the one you used a wrapper method, a filter method, or an embedded method? Does your take into account redundancy between features, or does it consider each feature to be independent? Explain.
-* Why is the approach you chose well suited for *this data* and *this model*?
+* **Part 1: Search**: describe the search strategy you use to determine the features or feature subsets to evaluate. Is the approach you chose guaranteed to evaluate the optimal feature subset? How many feature subsets do you need to consider as part of your approach?
+* **Part 2: Evaluate**: describe the approach you use to evaluate the "goodness" of a feature or feature subset. Did you use a filter method or a wrapper method? What was the scoring function or model you used to evaluate the "goodness" of a feature or feature subset, and why? And since this dataset has the added complication of missing values, you should also make sure to explain how you handle missing values in your evaluation. 
+* **Part 3: Number/size**: if you are using feature selection, not feature weighting: Describe the approach you used to select the best **number** of features to include or best **size** of feature subset.
+
+Also explain: Why is the approach you chose well suited for *this data* and *this model*? And, what are some disadvantages or limitations of the approach you chose?
 
 :::
 
