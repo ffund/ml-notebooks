@@ -38,7 +38,7 @@ In the first few sections of this notebook, I will show you how to prepare the d
 * getting the data and loading it into the workspace.
 * preparing the data: dealing with missing data, encoding categorical data in numeric format, and splitting into training and test.
 
-In the last few sections of the notebook, you will have to improve the basic model for better performance, using a  custom distance metric and using feature selection or feature weighting.
+In the last few sections of the notebook, you will have to improve the basic model for better performance, using a  custom distance metric and using feature selection or feature weighting. In these sections, you will have specific criteria to satisfy for each task. **However, you should also make sure your overall solution is good!** An excellent solution to this problem will achieve greater than 80% validation accuracy. A great solution will achieve 75% or higher.
 
 :::
 
