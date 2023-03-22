@@ -38,8 +38,9 @@ In the first few sections of this notebook, I will show you how to prepare the d
 * getting the data and loading it into the workspace.
 * preparing the data: dealing with missing data, encoding categorical data in numeric format, and splitting into training and test.
 
-In the last few sections of the notebook, you will have to improve the basic model for better performance, using a  custom distance metric and using feature selection or feature weighting. In these sections, you will have specific criteria to satisfy for each task. **However, you should also make sure your overall solution is good!** An excellent solution to this problem will achieve greater than 80% validation accuracy. A great solution will achieve 75% or higher.
+In the last few sections of the notebook, you will have to improve the basic model for better performance, using a custom distance metric and using feature selection or feature weighting. In these sections, you will have specific criteria to satisfy for each task. 
 
+**However, you should also make sure your overall solution is good!** An excellent solution to this problem will achieve greater than 80% validation accuracy. A great solution will achieve 75% or higher.
 :::
 
 
@@ -62,23 +63,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 
 np.set_printoptions(suppress=True)
-```
-:::
-
-
-::: {.cell .markdown}
-We will need to use a library that is not in the default Colab environment, which we can install with `pip`:
-:::
-
-::: {.cell .code}
-```python
-!pip install category_encoders
-```
-:::
-
-::: {.cell .code}
-```python
-import category_encoders as ce
 ```
 :::
 
@@ -338,40 +322,46 @@ What if we transform the `AGE` column using four binary columns: `AGE_18-29`, `A
 
 If we did this, we would lose meaningful information about the distance between ages; a respondent whose age is 18-29 would have the same distance to one whose age is 45-65 as to one whose age is 65+. Logically, we expect that a respondent whose age is 18-29 is most similar to the other 18-29 respondents, less similar to the 30-44 respondents, even less similar to the 45-65 respondents, and least similar to the 65+ respondents. 
 
-To realize this, we will use [ordinal encoding](https://contrib.scikit-learn.org/category_encoders/ordinal.html), which will represent `AGE` in a single column with *ordered* integer values.
+To realize this, we will use **ordinal encoding**, which will represent `AGE` in a single column with *ordered* integer values.
+
 :::
 
 
 ::: {.cell .markdown}
 
-First, we create an `OrdinalEncoder`. Then, we `fit` it by passing the columns that we wish to encode as ordinal values:
+First, we define a dictionary that maps each possible value to an integer. 
 
 :::
 
 
 ::: {.cell .code}
 ```python
-enc_ord = ce.OrdinalEncoder(handle_missing='return_nan', handle_unknown='return_nan')
-enc_ord.fit(df['AGE'])
+mapping_dict_age = {'18-29': 1, 
+                 '30-44': 2,
+                 '45-65': 3,
+                 '65+': 4}
 ```
 :::
 
 
 ::: {.cell .markdown}
-Finally, we use the "fitted" encoder to `transform` the data, and we save the result in `df_enc_ord`.
+
+Then we can create a new data frame, `df_enc_ord`, by calling `map` on the original `df['AGE']` and passing this mapping dictionary. We will also specify that the index should be the same as the original data frame:
+
 :::
 
 
 ::: {.cell .code}
 ```python
-df_enc_ord = enc_ord.transform(df['AGE'])
-df_enc_ord['AGE'].value_counts()
+df_enc_ord = pd.DataFrame( {'AGE': df['AGE'].map( mapping_dict_age) },
+    index = df.index
+)
 ```
 :::
 
 
 ::: {.cell .markdown}
-We can pass more than one feature to our encoder, and it will encode all features. For example, let us consider the column `EDUC12R`, which includes the respondent's answer to the question:
+We can extend this approach to encode more than one ordinal feature. For example, let us consider the column `EDUC12R`, which includes the respondent’s answer to the question:
 
 > Which best describes your education?
 >
@@ -389,84 +379,35 @@ df['EDUC12R'].value_counts()
 :::
 
 ::: {.cell .markdown}
-We encode using both `AGE` and `EDUC12R`:
+We can map both `AGE` and `EDUC12R` to ordinal-encoded columns in a new data frame:
+
 :::
 
 
 ::: {.cell .code}
 ```python
-enc_ord = ce.OrdinalEncoder(handle_missing='return_nan', handle_unknown='return_nan')
-enc_ord.fit(df[['AGE', 'EDUC12R']])
-df_enc_ord = enc_ord.transform(df[['AGE', 'EDUC12R']])
-```
-:::
-
-
-::: {.cell .markdown}
-But, look at the mapping between education values and integer encoding:
-:::
-
-
-::: {.cell .code}
-```python
-enc_ord.category_mapping
-```
-:::
-
-
-::: {.cell .markdown}
-For this column, the order that the encoder "guesses" is not the desired order - the "High school or less" answer should have the smallest value, followed by "Some college/assoc. degree", then "College graduate", then "Postgraduate study".
-
-To address this, we will pass a dictionary that tells the encoder exactly how to map these columns so that they are in the desired order:
-
-(Even if the order that the encoder "guesses" is the order you want, you should pass an explicit mapping so that the result is robust against library version updates that may change the order.)
-:::
-
-
-::: {.cell .code}
-```python
-mapping_dict = {'col': 'AGE', 'mapping': 
-                {'18-29': 1, 
+mapping_dict_age = {'18-29': 1, 
                  '30-44': 2,
                  '45-65': 3,
                  '65+': 4}
-                }, {'col': 'EDUC12R', 'mapping':  
-                  {'High school or less': 1,
+mapping_dict_educ12r =  {'High school or less': 1,
                    'Some college/assoc. degree': 2,
                    'College graduate': 3,
-                   'Postgraduate study': 4}
-                    }
-
-features = ['EDUC12R', 'AGE']
-
-enc_ord = ce.OrdinalEncoder(handle_missing='return_nan', handle_unknown='return_nan', 
-                            mapping=mapping_dict)
-enc_ord.fit(df[features])
+                   'Postgraduate study': 4} 
+df_enc_ord = pd.DataFrame( {
+    'AGE': df['AGE'].map( mapping_dict_age) ,
+    'EDUC12R': df['EDUC12R'].map( mapping_dict_educ12r) 
+    },
+    index = df.index
+)
 ```
 :::
 
 
 ::: {.cell .markdown}
-Now, the mapping should be just what we expect:
-:::
 
-::: {.cell .code}
-```python
-enc_ord.category_mapping
-```
-:::
+Note that the order matters - the “High school or less” answer should have the smallest value, followed by “Some college/assoc. degree”, then “College graduate”, then “Postgraduate study”.
 
-::: {.cell .code}
-```python
-df_enc_ord = enc_ord.transform(df[['AGE', 'EDUC12R']])
-```
-:::
-
-
-::: {.cell .code}
-```python
-df_enc_ord['EDUC12R'].value_counts()
-```
 :::
 
 
@@ -500,7 +441,7 @@ So, we will re-scale our encoded features to the unit interval. We can do this w
 scaler = MinMaxScaler()
  
 # first scale in numpy format, then convert back to pandas df
-df_scaled = scaler.fit_transform(df_enc_ord.to_numpy())
+df_scaled = scaler.fit_transform(df_enc_ord)
 df_enc_ord = pd.DataFrame(df_scaled, columns=df_enc_ord.columns)
 ```
 :::
@@ -537,9 +478,10 @@ Later, you'll design a model with more ordinal features. For this initial demo, 
 ::: {.cell .markdown}
 In the previous section, we encoded features that have a logical ordering.
 
-Other categorical features, such as `RACE`, have no logical ordering. It would be wrong to assign an ordered mapping to these features. These should be encoded using [one-hot encoding](https://contrib.scikit-learn.org/category_encoders/onehot.html), which will create a new column for each unique value, and then put a 1 or 0 in each column to indicate the respondent's answer.
+Other categorical features, such as `RACE`, have no logical ordering. It would be wrong to assign an ordered mapping to these features. These should be encoded using **one-hot encoding**, which will create a new column for each unique value, and then put a 1 or 0 in each column to indicate the respondent's answer.
 
 (Note: for features that have two possible values - binary features - either categorical encoding or one-hot encoding would be valid in this case!)
+
 
 :::
 
@@ -551,22 +493,47 @@ df['RACE'].value_counts()
 :::
 
 
+::: {.cell .markdown}
+
+We can one-hot encode this column using the `get_dummies` function in `pandas`.
+
+:::
+
 ::: {.cell .code}
 ```python
-enc_oh = ce.OneHotEncoder(use_cat_names=True, handle_missing='return_nan')
-enc_oh.fit(df['RACE'])
-
+df_enc_oh = pd.get_dummies(df['RACE'], prefix='RACE' )
 ```
 :::
 
 ::: {.cell .code}
 ```python
-df_enc_oh = enc_oh.transform(df['RACE'])
+df_enc_oh.describe()
 ```
 :::
 
 ::: {.cell .markdown}
-Note that we have some respondents for which this feature is not available. These respondents have a NaN in all `RACE` columns:
+
+Note that we added a `RACE` prefix to each column name - this prevents overlap between columns, e.g. if we also encoded another feature where "Other" was a possible answer. And, it helps us relate the new columns back to the original survey question that they answer.
+
+:::
+
+
+::: {.cell .markdown}
+For this survey data, we want to preserve information about missing values - if a sample did not have a value for the `RACE` feature, we want it to have a NaN in all `RACE` columns. We can assign NaN to those rows as follows:
+:::
+
+
+::: {.cell .code}
+```python
+df_enc_oh.loc[df['RACE'].isnull(), df_enc_oh.columns.str.startswith("RACE_")] = float("NaN")
+```
+:::
+
+
+::: {.cell .markdown}
+
+Now, for respondents where this feature is not available, we have a NaN in all `RACE` columns:
+
 :::
 
 
@@ -575,6 +542,7 @@ Note that we have some respondents for which this feature is not available. Thes
 df_enc_oh.isnull().sum()
 ```
 :::
+
 
 
 ::: {.cell .markdown}
@@ -1036,7 +1004,9 @@ accuracy_score(y.iloc[idx_ts], y_pred)
 
 
 ::: {.cell .markdown}
-This classifier seems to improve over the "prediction by mode" classifier... but only *barely* does so.
+
+That is... not great.
+
 :::
 
 
@@ -1680,7 +1650,7 @@ Also:
 
 * Save the ordinal-encoded columnns in a data frame called `df_enc_ord`.
 * You should explicitly specify the mappings for these, so that you can be sure that they are encoded using the correct logical order.
-* For some questions, there is also an "Omit" answer - if a respondent left that question blank on the questionnaire, the value for that question will be "Omit". Since "Omit" has no logical place in the order, we're going to treat these as missing values: use `handle_unknown='return_nan'` in your `OrdinalEncoder` (as in the example), and don't include "Omit" in your `mapping_ord` dictionary. Then these Omit values will be encoded as NaN.
+* For some questions, there is also an "Omit" answer - if a respondent left that question blank on the questionnaire, the value for that question will be "Omit". Since "Omit" has no logical place in the order, we're going to treat these as missing values: don't include "Omit" in your `mapping_ord` dictionary, and then these Omit values will be encoded as NaN.
 * Make sure to scale each column to the range 0-1, as demonstrated in the "Prepare data > Encode ordinal features" section earlier in this notebook.
 
 :::
@@ -1691,13 +1661,8 @@ Also:
 # TODO - encode ordinal features
 
 # set up mapping dictionary and list of features to encode with ordinal encoding
-mapping_ord = ...
-features_ord = ...
 
-# create an OrdinalEncoder and fit it
-...
-
-# use transform to get the encoded columns, save in df_enc_ord
+# use map to get the encoded columns, save in df_enc_ord
 df_enc_ord = ...
 
 # scale each column to the range 0-1
@@ -1737,7 +1702,7 @@ Use at least four features that are encoded using an categorical encoder. (You c
 Also:
 
 * Save the categorical-encoded columnns in a data frame called `df_enc_oh`.
-* For some questions, there is also an "Omit" answer - if a respondent left that question blank on the questionnaire, the value for that question will be "Omit". We're going to treat these as missing values, and will drop the column corresponding to the "Omit" value from the data frame (as shown below).
+* For some questions, there is also an "Omit" answer - if a respondent left that question blank on the questionnaire, the value for that question will be "Omit". We're going to treat these as missing values. Before encoding the NaN values, you should drop the column corresponding to the "Omit" value from the data frame.
 
 :::
 
@@ -1746,18 +1711,15 @@ Also:
 ```python
 # TODO - encode categorical features
 
-# set up list of features to encode using one-hot encoding
-features_oh = ...
 
-# create a OneHotEncoder and fit it
-...
-
-# use transform to get the encoded columns, save in df_enc_oh
+# use get_dummies to get the encoded columns, stack and save in df_enc_oh
 df_enc_oh = ...
 
 # drop the Omit columns, if any of these are in the data frame
 df_enc_oh.drop(['ISSUE16_Omit', 'QLT16_Omit', 'TRACK_Omit','IMMWALL_Omit','GOVTDO10_Omit'], 
                 axis=1, inplace=True, errors='ignore')
+
+# if a respondent did not answer a question, make sure they have NaN in all the columns corresonding to that question
 ```
 :::
 
