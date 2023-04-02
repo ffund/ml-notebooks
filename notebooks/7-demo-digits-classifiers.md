@@ -85,7 +85,7 @@ learning data and experiments.
 
 ::: {.cell .code }
 ```python
-X, y = fetch_openml('mnist_784', version=1, return_X_y=True)
+X, y = fetch_openml('mnist_784', version=1, return_X_y=True, as_frame=False)
 ```
 :::
 
