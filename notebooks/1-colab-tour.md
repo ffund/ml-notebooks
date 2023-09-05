@@ -4,7 +4,6 @@
 
 _Fraida Fund_
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ffund/ml-notebooks/blob/master/notebooks/1-colab-tour.ipynb)
 
 :::
 
