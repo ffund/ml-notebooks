@@ -1411,8 +1411,8 @@ arrays, such as `min()`, `max()`, `sum()`, and others:
 ``` {.python}
 x = np.array([[1, 2], [3, 4], [5, 6]])
 
-print(np.max(x))  # Compute sum of all elements; prints "21"
-print(np.min(x))  # Compute sum of all elements; prints "21"
+print(np.max(x))  # Compute max of all elements; prints "6"
+print(np.min(x))  # Compute min of all elements; prints "1"
 print(np.sum(x))  # Compute sum of all elements; prints "21"
 ```
 :::
