@@ -567,6 +567,8 @@ def plot_3D(elev=30, azim=30, X=X, y=y):
     ax.set_ylabel('y')
     ax.set_zlabel('r')
 
+    plt.show()
+
 interact(plot_3D, 
          elev=widgets.IntSlider(min=-90, max=90, step=10, value=30),
          azim=widgets.IntSlider(min=-90, max=90, step=10, value=30),
@@ -675,6 +677,7 @@ def plot_3D(elev=30, azim=30, sv=[], use_alpha=False, X=X, y=y, gamma=gamma):
     surf = ax.plot_surface(X1, X2, Z, cmap='autumn', alpha=0.1, vmin=-1, vmax=1,
                       linewidth=0, antialiased=False)
 
+    plt.show()
 
 interact(plot_3D, 
          elev=widgets.IntSlider(min=-90, max=90, step=10, value=30),

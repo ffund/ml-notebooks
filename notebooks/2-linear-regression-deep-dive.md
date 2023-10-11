@@ -1197,6 +1197,7 @@ def plot_3D(elev=20, azim=-20, X=x_train, y=y_train):
     ax.set_xlabel('x1')
     ax.set_ylabel('x2')
     ax.set_zlabel('y')
+    plt.show()
 
 interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
           azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
@@ -1320,6 +1321,7 @@ def plot_3D(elev=20, azim=-20, X=x_train, y=y_train):
     ax.set_xlabel('x1')
     ax.set_ylabel('x2')
     ax.set_zlabel('y')
+    plt.show()
 
 interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
           azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
@@ -1730,6 +1732,7 @@ def plot_3D(elev, azim, w0, w1, w2, w3, w4, w5, show_sum, show_basis, show_data,
     ax.set_ylabel('x2')
     ax.set_zlabel('y')
     ax.set_zlim(0, 25)
+    plt.show()
 
 interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
           azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
@@ -1802,6 +1805,7 @@ def plot_3D(elev=20, azim=-20, X=x_train, y=y_train):
     ax.set_xlabel('x1')
     ax.set_ylabel('x2')
     ax.set_zlabel('y')
+    plt.show()
 
 interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
           azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),

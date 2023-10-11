@@ -1509,7 +1509,7 @@ def plot_3D(elev=20, azim=20, a=0.001, reg='L2',
     ax.set_zlim(0, 200)
     ax.set_xlim(np.min(X2), np.max(X2))
     ax.set_ylim(np.min(X1), np.max(X1))
-
+    plt.show()
 
 interact(plot_3D, elev=widgets.FloatSlider(min=-90,max=90,step=1, value=20), 
          azim=widgets.FloatSlider(min=-90,max=90,step=1, value=20), 

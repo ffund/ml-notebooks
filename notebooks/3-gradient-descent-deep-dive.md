@@ -299,6 +299,7 @@ def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs,
     ax.set_xlabel('w1')
     ax.set_ylabel('w2')
     ax.set_zlabel('MSE')
+    plt.show()
 
 interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
           azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
@@ -432,6 +433,7 @@ def plot_3D(elev=20, azim=-20, X1=X1, X2=X2, mses_coefs=mses_coefs,
     ax.set_xlabel('w1')
     ax.set_ylabel('w2')
     ax.set_zlabel('MSE')
+    plt.show()
 
 interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
           azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),

@@ -1183,6 +1183,8 @@ def plot_3D(elev=20, azim=-20, X=X, y=y, x_test=x_test):
     # Plot test point
     ax.scatter3D(x_test[0], x_test[1], x_test[2], s=200, color=plot_colors[2])
 
+    plt.show()
+
 interact(plot_3D, elev=widgets.FloatSlider(min=-90,max=90,step=1, value=20), 
          azim=widgets.FloatSlider(min=-90,max=90,step=1, value=20), 
          X=fixed(X), y=fixed(y), x_test=fixed(x_test));
