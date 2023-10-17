@@ -678,6 +678,7 @@ def plot_gd(itr, lr, n_batch, sigma, X, y):
 
   plt.suptitle("Estimate after %d iterations with rate %s and batch size %d: %s" % 
               (itr, "{0:0.4f}".format(lr), n_batch, ["{0:0.4f}".format(w) for w in w_star]));
+  plt.show()
 ```
 :::
 
