@@ -1443,6 +1443,7 @@ def plot_linear(w0, w1, show_sum):
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
   plt.xlabel('x')
   plt.ylabel('$\phi(x)$')
+  plt.show()
 ```
 :::
 
@@ -1488,6 +1489,7 @@ def plot_poly(w0, w1, w2, w3, w4, show_sum):
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
   plt.xlabel('x')
   plt.ylabel('$\phi(x)$')
+  plt.show()
 ```
 :::
 
@@ -1540,6 +1542,7 @@ def plot_radial(w0, w1, w2, w3, w4, show_sum):
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
   plt.xlabel('x')
   plt.ylabel('$\phi(x)$')
+  plt.show()
 ```
 :::
 
@@ -1587,6 +1590,7 @@ def plot_sigmoid(w0, w1, w2, w3, w4, show_sum):
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
   plt.xlabel('x')
   plt.ylabel('$\phi(x)$')
+  plt.show()
 ```
 :::
 
@@ -1630,6 +1634,7 @@ def plot_fourier(w1, w2, w3, w4, show_sum):
   plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
   plt.xlabel('x')
   plt.ylabel('$\phi(x)$')
+  plt.show()
 ```
 :::
 
