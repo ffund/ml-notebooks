@@ -48,8 +48,8 @@ In the last few sections of the notebook, you will have to improve the basic mod
 
 #### 📝 Grading note
 
-* For full credit, you should achieve 75% or higher accuracy overall in this notebook (i.e. when running your solution notebook from beginning to end).
-* If your solution is in the top 3 for accuracy (relative to your classmates), you'll also earn extra credit toward your overall course grade.
+* For full credit, you should achieve 75% or higher test accuracy overall in this notebook (i.e. when running your solution notebook from beginning to end).
+* If your solution is in the top 3 for test accuracy (relative to your classmates), you'll also earn extra credit toward your overall course grade.
 
 :::
 
