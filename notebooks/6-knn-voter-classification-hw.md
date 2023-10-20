@@ -45,7 +45,8 @@ In the last few sections of the notebook, you will have to improve the basic mod
 
 
 ::: {.cell .markdown}
-### Grading note
+
+#### 📝 Grading note
 
 * For full credit, you should achieve 75% or higher accuracy overall in this notebook (i.e. when running your solution notebook from beginning to end).
 * If your solution is in the top 3 for accuracy (relative to your classmates), you'll also earn extra credit toward your overall course grade.
@@ -1777,11 +1778,23 @@ Feature selection has another added benefit - if you use fewer features, than yo
 
 :::
 
+::: {.cell .markdown}
 
+#### 📝 Grading note
+
+For full credit,
+
+* Your solution should not select *all* of the features (if using feature selection). Or, your solution should not assign the same weight to all features (if using feature weighting).
+* Your solution should not select/weight highly the features that are least useful for predicting the target variable.
+* Your solution *should* select/weight highly the features are are most useful for predicting the target variable.
+* Your implementation should satisfy the requirements above generally, not only for this specific data. (It will be evaluated on other data.)
+* Your solution must be well justified.
+
+:::
 
 ::: {.cell .markdown}
 
-There are many options for feature selection or feature weighting, and you can choose anything that seems reasonable to you - there isn't one right answer here! But, you will have to explain and justify your choice. In our lesson on feature selection/weighting, we discussed two parts to the problem of identifying the best subset of features:
+There are many options for feature selection or feature weighting, and you can choose anything that seems reasonable to you and meets the requirements above - there isn't one right answer here! But, you will have to explain and justify your choice. In our lesson on feature selection/weighting, we discussed two parts to the problem of identifying the best subset of features:
 
 * **Search**: you will have to describe the search strategy you use to determine the features or feature subsets to evaluate.
 * **Evaluate**: you will have to describe the approach you use to evaluate the "goodness" of a feature or feature subset. Since this dataset has the added complication of missing values, you should also make sure to explain how you handle missing values in your evaluation. 
