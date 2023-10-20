@@ -45,6 +45,14 @@ In the last few sections of the notebook, you will have to improve the basic mod
 
 
 ::: {.cell .markdown}
+### Grading note
+
+* For full credit, you should achieve 75% or higher accuracy overall in this notebook (i.e. when running your solution notebook from beginning to end).
+* If your solution is in the top 3 for accuracy (relative to your classmates), you'll also earn extra credit toward your overall course grade.
+
+:::
+
+::: {.cell .markdown}
 ## Import libraries
 :::
 
@@ -123,13 +131,17 @@ To get the data into Colab, run the following cell. Upload the CSV file you just
 
 ::: {.cell .code}
 ```python
-from google.colab import files
+try:
+  from google.colab import files
 
-uploaded = files.upload()
+  uploaded = files.upload()
 
-for fn in uploaded.keys():
-  print('User uploaded file "{name}" with length {length} bytes'.format(
-      name=fn, length=len(uploaded[fn])))
+  for fn in uploaded.keys():
+    print('User uploaded file "{name}" with length {length} bytes'.format(
+        name=fn, length=len(uploaded[fn])))
+
+except:
+  pass # not running in Colab
 ```
 :::
 
