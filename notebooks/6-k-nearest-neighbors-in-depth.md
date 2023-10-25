@@ -187,7 +187,7 @@ k = 3
 distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
 nn = np.argsort(distances)[:k]
 
-y_pred = stats.mode(y[nn]).mode[0]
+y_pred = stats.mode(y[nn], keepdims=True).mode[0]
 ```
 :::
 
@@ -231,7 +231,7 @@ for idx, x in enumerate(X_test):
   distances = np.array([np.linalg.norm(x - x_train, ord=2) for x_train in X])
   nn = np.argsort(distances)[:k]
 
-  y_pred[idx] = stats.mode(y[nn]).mode[0]
+  y_pred[idx] = stats.mode(y[nn], keepdims=True).mode[0]
   y_pred_prob[idx] = np.mean(y[nn]==y_pred[idx])
 ```
 :::
@@ -264,7 +264,7 @@ y_pred = np.zeros(n_samples)
 for idx, x_sample in enumerate(X):
   distances = np.array([np.linalg.norm(x_sample - x_train, ord=2) for x_train in X])
   nn = np.argsort(distances)[:k]
-  y_pred[idx] = stats.mode(y[nn]).mode[0]
+  y_pred[idx] = stats.mode(y[nn], keepdims=True).mode[0]
 ```
 :::
 
@@ -371,7 +371,7 @@ k = 5
 distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
 nn = np.argsort(distances)[:k]
 
-y_pred = stats.mode(y[nn]).mode[0]
+y_pred = stats.mode(y[nn], keepdims=True).mode[0]
 ```
 :::
 
@@ -404,7 +404,7 @@ x_test[:,0] = 100*x_test[:,0]
 distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
 nn = np.argsort(distances)[:k]
 
-y_pred = stats.mode(y[nn]).mode[0]
+y_pred = stats.mode(y[nn], keepdims=True).mode[0]
 ```
 :::
 
