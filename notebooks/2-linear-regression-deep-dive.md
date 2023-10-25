@@ -1563,7 +1563,7 @@ $$y \approx w_0 \sigma \left( \frac{(x-\mu_0)}{s}  \right) + w_1 \sigma \left( \
 ```python
 s = 0.05
 def sigmoid_basis(x, mu_list):
-  return np.hstack([((1+np.exp((-x-mu)/s))**-1) for mu in mu_list])
+  return np.hstack([((1+np.exp((-x+mu)/s))**-1) for mu in mu_list])
   
 x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
 x_trans = sigmoid_basis(x, [-1, -0.5, 0, 0.5, 1])
