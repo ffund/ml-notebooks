@@ -596,7 +596,7 @@ model.fit(Xtr_scale, ytr, epochs=100, validation_split = 0.2, callbacks=[TrainTo
 
 Your model shouldn't *really* train for 100 epochs - it should stop training as soon as 95% validation accuracy is achieved for 5 epochs in a row! (Your "test" is not graded, you may change the `threshold` and `patience` values in this "test" call to `model.fit` in order to check your work.)
 
-Note that since we are now using the validation set performance to *decide* when to stop training the model, we are no longer "allowed" to pass the test set as `validation_data`. The test set must never be used to make decisions during the model training process - only for evaluation of the final model. Instead, we specify that 20% of the training data should be held out as a validation set, and that is the 
+Note that since we are now using the validation set performance to *decide* when to stop training the model, we are no longer "allowed" to pass the test set as `validation_data`. The test set must never be used to make decisions during the model training process - only for evaluation of the final model. Instead, we specify that 20% of the training data should be held out as a validation set, and that is the validation accuracy that is used to determine when to stop training.
 
 :::
 
