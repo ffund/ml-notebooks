@@ -40,7 +40,7 @@ from sklearn import ensemble, neighbors, linear_model, svm
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Dense, Activation, Conv2D, Flatten, BatchNormalization, InputLayer, AvgPool2D, MaxPool2D, GlobalAvgPool2D
 import tensorflow.keras.backend as K
-from keras.utils.vis_utils import plot_model
+from keras.utils import plot_model
 ```
 :::
 
