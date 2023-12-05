@@ -47,7 +47,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 from keras.datasets import mnist     
-from keras.utils.vis_utils import plot_model
+from keras.utils import plot_model
 ```
 :::
 
