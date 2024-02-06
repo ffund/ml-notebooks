@@ -212,6 +212,18 @@ yts = np.load('uiowa_test_labels.npy')
 ```
 :::
 
+::: {.cell .code }
+```python
+# shuffle the training set 
+# (when loaded in, samples are ordered by class)
+p = np.random.permutation(n_tr)
+Xtr = Xtr[p,:]
+ytr = ytr[p]
+```
+:::
+
+
+
 ::: {.cell .markdown }
 Examine the data you have just loaded in:
 
