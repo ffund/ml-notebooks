@@ -544,6 +544,8 @@ def plot_reg(intercept_fit, coef_fit, show_residual):
     plt.ylim(-20,20)
     plt.xlim(-3,3)
     plt.title("MSE: %f\nR2: %f" % (mse_test, r2_test) )
+    plt.show()
+
 ```
 :::
 
@@ -943,6 +945,7 @@ def plot_reg(sigma, coef):
     plt.ylim(-20,20)
     plt.xlim(-3,3)
     plt.title("MSE: %f\nR2: %f" % (mse_test, r2_test) )
+    plt.show()
 ```
 :::
 
