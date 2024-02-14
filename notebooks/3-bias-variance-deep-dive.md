@@ -683,7 +683,7 @@ for didx, dtest in enumerate(dtest_list):
 ```python
 sns.lineplot(x=dtest_list,y=r2_tr, label="Training");
 sns.lineplot(x=dtest_list,y=r2_test, label="Test");
-plt.xlabel('Model order');
+plt.xlabel('Number of features in model');
 plt.ylabel('R2');
 ```
 :::
