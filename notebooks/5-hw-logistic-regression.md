@@ -78,7 +78,7 @@ X_test_scaled = X_test/255.0
 
 ::: {.cell .code }
 ```python
-clf = LogisticRegression(penalty='none', 
+clf = LogisticRegression(penalty=None, 
                          tol=0.01, solver='saga',
                          multi_class='multinomial').fit(X_train_scaled, y_train)
 ```

@@ -358,7 +358,7 @@ also get the conditional probabilities using `predict_proba()`.
 
 ::: {.cell .code }
 ```python
-clf = LogisticRegression(penalty='none', 
+clf = LogisticRegression(penalty=None, 
                          tol=0.01, solver='saga')
 clf.fit(X, y)
 print(clf.intercept_, clf.coef_)
@@ -470,7 +470,7 @@ do very well on this data:
 
 ::: {.cell .code }
 ```python
-clf = LogisticRegression(penalty='none', 
+clf = LogisticRegression(penalty=None, 
                          tol=0.01, solver='saga')
 clf.fit(X, y)
 clf.score(X, y)
@@ -483,6 +483,9 @@ clf.score(X, y)
 xx, yy = np.mgrid[-1:1:.01, -1:1:.01]
 grid = np.c_[xx.ravel(), yy.ravel()]
 probs = clf.predict_proba(grid)[:, 1].reshape(xx.shape)
+
+# Figure formatting stuff
+fig = plt.figure()
 
 # Plot conditional probabilities
 contours = plt.contourf(xx, yy, probs, 25, cmap="RdBu_r",
@@ -545,7 +548,7 @@ transformed features:
 
 ::: {.cell .code }
 ```python
-clf_trans = LogisticRegression(penalty='none', 
+clf_trans = LogisticRegression(penalty=None, 
                          tol=0.01, solver='saga')
 clf_trans.fit(X_trans, y)
 clf_trans.score(X_trans, y)

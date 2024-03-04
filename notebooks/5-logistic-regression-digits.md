@@ -193,7 +193,7 @@ tolerance will finish faster, but may not find the optimal solution.
 
 ::: {.cell .code }
 ```python
-clf = LogisticRegression(penalty='none', 
+clf = LogisticRegression(penalty=None, 
                          tol=0.1, solver='saga',
                          multi_class='multinomial').fit(X_train_scaled, y_train)
 ```

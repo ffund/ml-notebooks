@@ -185,7 +185,7 @@ execute each of these three commands. It will tell us:
 
 ::: {.cell .code }
 ```python
-cls_log = LogisticRegression(penalty='none', 
+cls_log = LogisticRegression(penalty=None, 
                          tol=0.1, solver='saga',
                          multi_class='multinomial')
 %time cls_log.fit(X_train, y_train)
