@@ -561,7 +561,7 @@ X, y = generate_polynomial_classifier_data(n=n_samples, xrange=xrange, coefs=coe
 
 ::: {.cell .code }
 ```python
-sns.scatterplot(x=X[:,0], y=X[:,1], hue=y, label="Training data");
+sns.scatterplot(x=X[:,0], y=X[:,1], hue=y);
 
 # Plot true function
 xtrue = np.linspace(-1, 2)
@@ -602,7 +602,7 @@ Z_prob = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])
 sns.scatterplot(x=xx.ravel(), y=yy.ravel(), hue=Z.ravel(), 
                 size=Z_prob.max(axis=1), 
                 sizes=(20,40),
-                legend='full', alpha=0.7, label="Predicted class");
+                legend='full', alpha=0.7);
 
 plt.xlabel("x1");
 plt.ylabel("x2");
@@ -1148,7 +1148,6 @@ Finally, the 3D equivalent:
 
 ::: {.cell .code }
 ```python
-np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)                 
 def plot_3D(elev=20, azim=-20, X=X, y=y, x_test=x_test):
     # Figure formatting stuff
     plt.figure(figsize=(10,10))
