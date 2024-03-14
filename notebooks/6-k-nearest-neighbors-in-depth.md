@@ -113,7 +113,7 @@ applied as the prediction for the test sample:
 ::: {.cell .code }
 ```python
 k = 1
-distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
+distances = np.linalg.norm(x_test - X, ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 y_pred = y[nn]
 ```
@@ -148,7 +148,7 @@ since each training sample\'s nearest neighbor is itself:
 k = 1
 y_pred = np.zeros(n_samples)
 for idx, x_sample in enumerate(X):
-  distances = np.array([np.linalg.norm(x_sample - x_train, ord=2) for x_train in X])
+  distances = np.linalg.norm(x_sample - X, ord=2, axis=1) 
   nn = np.argsort(distances)[:k]
   y_pred[idx] = y[nn]
 ```
@@ -184,7 +184,7 @@ sample.
 ::: {.cell .code }
 ```python
 k = 3
-distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
+distances = np.linalg.norm(x_test - X, ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 
 y_pred = stats.mode(y[nn], keepdims=True).mode[0]
@@ -227,8 +227,8 @@ X_test = np.random.uniform(0, 1, size=(n_test,2))
 y_pred = np.zeros(n_test)
 y_pred_prob = np.zeros(n_test)
 
-for idx, x in enumerate(X_test):
-  distances = np.array([np.linalg.norm(x - x_train, ord=2) for x_train in X])
+for idx, x_test in enumerate(X_test):
+  distances = np.linalg.norm(x_test - X, ord=2, axis=1)
   nn = np.argsort(distances)[:k]
 
   y_pred[idx] = stats.mode(y[nn], keepdims=True).mode[0]
@@ -262,7 +262,7 @@ a different label than its $k$ closest neighbors.
 ```python
 y_pred = np.zeros(n_samples)
 for idx, x_sample in enumerate(X):
-  distances = np.array([np.linalg.norm(x_sample - x_train, ord=2) for x_train in X])
+  distances = np.linalg.norm(x_sample - X, ord=2, axis=1)
   nn = np.argsort(distances)[:k]
   y_pred[idx] = stats.mode(y[nn], keepdims=True).mode[0]
 ```
@@ -368,7 +368,7 @@ x_test = np.array([[0.5,0.5]])
 ::: {.cell .code }
 ```python
 k = 5
-distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
+distances = np.linalg.norm(x_test - X, ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 
 y_pred = stats.mode(y[nn], keepdims=True).mode[0]
@@ -401,7 +401,7 @@ x_test[:,0] = 100*x_test[:,0]
 
 ::: {.cell .code }
 ```python
-distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
+distances = np.linalg.norm(x_test - X, ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 
 y_pred = stats.mode(y[nn], keepdims=True).mode[0]
@@ -686,7 +686,7 @@ x_test = np.random.uniform(-6, 6, size=(1,2))
 ::: {.cell .code }
 ```python
 k = 3
-distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
+distances = np.linalg.norm(x_test - X, ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 
 y_pred = np.mean(y[nn])
@@ -1090,7 +1090,7 @@ First, the 1D problem:
 ::: {.cell .code }
 ```python
 # Get nearest neighbors
-distances = np.array([np.linalg.norm([x_test[0]] - x_train, ord=2) for x_train in X[:, 0]])
+distances = np.linalg.norm(x_test[0] - X[:,0], ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 mdist = np.max(distances[nn])
 
@@ -1117,7 +1117,7 @@ Now, the 2D equivalent:
 ::: {.cell .code }
 ```python
 # Get nearest neighbors
-distances = np.array([np.linalg.norm(x_test[0:2] - x_train, ord=2) for x_train in X[:, 0:2]])
+distances = np.linalg.norm(x_test[0:2] - X[:, 0:2], ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 mdist = np.max(distances[nn])
 
@@ -1162,7 +1162,7 @@ def plot_3D(elev=20, azim=-20, X=X, y=y, x_test=x_test):
 
 
     # Get nearest neighbors
-    distances = np.array([np.linalg.norm(x_test - x_train, ord=2) for x_train in X])
+    distances = np.linalg.norm(x_test - X, ord=2, axis=1)
     nn = np.argsort(distances)[:k]
     mdist = np.max(distances[nn])
 
