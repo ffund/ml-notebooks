@@ -1090,7 +1090,7 @@ First, the 1D problem:
 ::: {.cell .code }
 ```python
 # Get nearest neighbors
-distances = np.linalg.norm(x_test[0] - X[:,0], ord=2, axis=1)
+distances = np.linalg.norm(x_test[0].reshape(-1,1) - X[:,0], ord=2, axis=1)
 nn = np.argsort(distances)[:k]
 mdist = np.max(distances[nn])
 
