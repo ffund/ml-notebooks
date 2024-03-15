@@ -1433,7 +1433,7 @@ You should also avoid explicit `for` loops inside the `custom_distance` function
 
 **Function signature**: 
 
-* Your `custom_distance` should accept a 1D array `a` (representing a single sample) as its first argument, and a 2D array `b` (representing a set of training samples) as its second argument. Then, it returns an array of distances from `a` (which is 1D row), to each row in `b` (which has multiple rows). 
+* Your `custom_distance` should accept a 1D array `a` (representing a single sample) as its first argument, and a 2D array `b` (representing a set of training samples) as its second argument. Then, it returns an array of distances from `a` (which is one row), to each row in `b` (which has multiple rows). 
 * The array that is returned will have many *columns* as there are *rows* in `b`.
 * Your `custom_distance` should also accept an optional `debug` argument, which defaults to `False`. If set to `True`, it will return some additional intermediate variables, as explained below.
 
@@ -1807,6 +1807,16 @@ X.describe()
 ```
 :::
 
+::: {.cell .markdown}
+#### TODO - describe your choice of features to encode
+
+:::
+
+::: {.cell .markdown}
+
+In a text cell, discuss the features you chose to include. Also, show the summary statistics of number of non-missing values per row, and discuss - do you have a reasonable number of features for all survey versions?
+
+:::
 
 
 ::: {.cell .markdown}
@@ -1840,13 +1850,14 @@ There are many options for feature selection or feature weighting - there isn't 
 
 For this assignment, you will use a naive search strategy (score each feature independently). But, 
 
-* I want you to consider **two** different scoring functions of your choice - i.e., compute two sets of scores. 
+* First, divide your training set into a training and validation subset (single hold-out validation set)
+* I want you to consider **two** different scoring functions of your choice - i.e., compute two sets of "goodness" scores. 
 * When computing scores, you should not impute 0s or any other value for `NaN` values in the data. Instead, you should compute the score for a feature using only the rows in the training data where *that* feature is not missing.
 * Also, for each scoring function, you will use the `%time` cell magic to estimate how long it takes to compute the scores.
 
-Then, if you are using feature selection (not feature weighting), you should use a hold-out validation set to select the best **number** of features to include AND to decide which of the two scoring functions to use. 
+Then, if you are using feature selection (not feature weighting), you should use the hold-out validation set to select the best **number** of features to include AND to decide which of the two scoring functions to use. 
 
-Alternatively, if you are using feature weighting (not feature selection), you should use a hold-out validation set to decide which of the two scoring functions to use.
+Alternatively, if you are using feature weighting (not feature selection), you should use the hold-out validation set to decide which of the two scoring functions to use.
 
 Also, for full credit,
 
@@ -1861,7 +1872,7 @@ Also, for full credit,
 
 ::: {.cell .markdown}
 
-In the following cell, implement feature selection or feature weighting following the requirements described above, and return the results in `X_trans`:
+In the following cell and additional code cells that you add, implement feature selection or feature weighting following the requirements described above, and return the results in `X_trans`:
 
 * If you use feature selection, `X_trans` should have all of the rows of `X`, but only a subset of its columns. You should create a variable `feat_inc` which is a list of all of the features you want to include in the model.
 * If you use feature weighting, `X_trans` should have the same dimensions of `X`, but instead of each column being in the range 0-1, each column will be scaled according to its importance (more important features will be scaled up, less important features will be scaled down). You should create a variable `feat_wt` which has a weight for every feature in `X`. Then, you'll multiply `X` by `feat_wt` to get `X_trans`.
@@ -1914,7 +1925,7 @@ In a text cell, describe the approach you used for feature selection or feature 
 
 * **Part 1: Search**: You used a naive search strategy to score feature subsets of size 1. Is the approach you chose guaranteed to evaluate the optimal feature subset?
 * **Part 2: Evaluate**: describe the two alternative scoring functions you used to evaluate the "goodness" of a feature or feature subset. Why did you think these might be well suited for *this data* and *this model*? Discuss the computation time you estimated - which scoring function took longer to compute?
-* **Part 3: Model Selection**: Discuss the results of your hold-out validation - which scoring function had better performance? 
+* **Part 3: Model Selection**: Discuss the results on the held-out validation set - which scoring function had better performance? 
 
 :::
 
