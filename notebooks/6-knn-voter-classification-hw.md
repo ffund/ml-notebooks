@@ -46,7 +46,7 @@ In the last few sections of the notebook, you will have to improve the basic mod
 
 ::: {.cell .markdown}
 
-#### 📝 Grading note
+#### 📝 Specific requirements
 
 * For full credit, you should achieve 75% or higher test accuracy overall in this notebook (i.e. when running your solution notebook from beginning to end).
 * If your solution is in the top 3 for test accuracy (relative to your classmates), you'll also earn extra credit toward your overall course grade.
@@ -514,7 +514,7 @@ We can one-hot encode this column using the `get_dummies` function in `pandas`.
 
 ::: {.cell .code}
 ```python
-df_enc_oh = pd.get_dummies(df['RACE'], prefix='RACE' )
+df_enc_oh = pd.get_dummies(df['RACE'], prefix='RACE', dtype=np.int32)
 ```
 :::
 
@@ -1413,7 +1413,6 @@ In the remaining sections of this notebook, you'll need to fill in code to:
 :::
 
 
-
 ::: {.cell .markdown}
 
 Your first task is to improve on the basic distance metric we used above. There is no one correct answer - there are many ways to compute a distance - but for full credit, your distance metric should satisfy the following criteria:
@@ -1427,6 +1426,30 @@ You should also avoid explicit `for` loops inside the `custom_distance` function
 
 :::
 
+::: {.cell .markdown}
+
+#### 📝 Specific requirements
+
+
+**Function signature**: 
+
+* Your `custom_distance` should accept a 1D array `a` (representing a single sample) as its first argument, and a 2D array `b` (representing a set of training samples) as its second argument. Then, it returns an array of distances from `a` (which is 1D row), to each row in `b` (which has multiple rows). 
+* The array that is returned will have many *columns* as there are *rows* in `b`.
+* Your `custom_distance` should also accept an optional `debug` argument, which defaults to `False`. If set to `True`, it will return some additional intermediate variables, as explained below.
+
+**Missing values**: Your `custom_distance` function should *not* impute 0s or any other value in place of `NaN` values in either `a` or `b`. 
+
+**Intermediate variables**: Your function should compute the following values, again using `a` against each row in `b`:
+
+* `total_sim` = total magnitude of "agreements"/"known similarity" between `a` and each row in `b`
+* `total_dif` = total magnitude of "disagreements"/"known dissimilarity" between `a` and each row in `b`
+* `total_nan` = total number of NaN/"unknown" values where either `a` *OR* the corresponding row of `b` (or both!) has a NaN
+
+and you should use these in computing your distances. Also, when `debug = True` is passed to the function, you should return these intermediate variables in a dictionary, as shown in the example below.
+
+
+:::
+
 
 ::: {.cell .markdown}
 #### Implement your distance metric
@@ -1436,14 +1459,30 @@ You should also avoid explicit `for` loops inside the `custom_distance` function
 ```python
 # TODO - implement distance metric
 
-def custom_distance(a, b):
+def custom_distance(a, b, debug=False):
+
   # fill in your solution here!
   # you are encouraged to use efficient numpy functions where possible
   # refer to numpy documentation
 
+  # you must compute these intermediate variables, and use them 
+  # in computing your distances. Each of these should be a 1D `numpy` array
+  # with as many elements as there are rows in `b`.
+  total_sim = ...
+  total_dif = ...
+  total_nan = ...
+
   # this is just a placeholder - your function shouldn't actually return 
   # all zeros ;)
-  return np.zeros(b.shape[0])
+  distances = np.zeros(b.shape[0])
+
+  if debug:
+    # if you are asked to return the intermediate variables too
+    return distances, {'total_sim': total_sim, 'total_dif': total_dif, 'total_nan': total_nan}
+
+  else:
+    # the default case - don't return intermediate variables
+    return distances
 ```
 :::
 
@@ -1592,6 +1631,7 @@ print(distances_ex)
 
 
 ::: {.cell .markdown}
+
 Our basic classifier used three features: age, race, and education. But there are many more features in this data that may be predictive of vote:
 
 -   More demographic information: `INCOME16GEN`, `MARRIED`, `RELIGN10`, `ATTEND16`, `LGBT`, `VETVOTER`, `SEX`
@@ -1636,7 +1676,13 @@ for f in features:
 
 ::: {.cell .markdown}
 
-It is up to you to decide which features to include in your model. However, you must encode at least eight features, including:
+
+#### 📝 Specific requirements
+
+It is up to you to decide which features to include in your model, from the features in the following list: `INCOME16GEN`, `MARRIED`, `RELIGN10`, `ATTEND16`, `LGBT`, `VETVOTER`, `SEX`, `TRACK`, `SUPREME16`, `FINSIT`, `IMMWALL`, `ISIS16`, `LIFE`, `TRADE16`, `HEALTHCARE16`, `GOVTDO10`, `GOVTANGR16`, `QLT16`, `ISSUE16`, `NEC`, `AGE`, `RACE`, `EDUC12R`.
+
+
+However, you must encode at least eight features, including:
 
 *  at least four features that are encoded using an ordinal encoder because they have a logical order (and you should include an explicit mapping for these), and
 * at least four features that are encoded using one-hot encoding because they have no logical order.
@@ -1644,6 +1690,8 @@ It is up to you to decide which features to include in your model. However, you 
 Binary features - features that can take on only two values - "count" toward either category.
 
 (If you decide to use the features I used above, they do "count" as part of the four. For example, you could use age, education, and two additional ordinal-encoded features, and race and three other one-hot-encoded features.)
+
+You will also be required to justify your decision, specifically with respect to the "missing values" aspect. Make sure you are including some informative features from *each* of the survey versions. After feature encoding, you should compute the number of non-missing values per row, and report some summary statistics about this value.
 
 :::
 
@@ -1767,6 +1815,7 @@ X.describe()
 
 
 ::: {.cell .markdown}
+
 Because the K nearest neighbor classifier weights each feature equally in the distance metric, including features that are not relevant for predicting the target variable can actually make performance worse.
 
 To improve performance, you could either:
@@ -1778,11 +1827,28 @@ Feature selection has another added benefit - if you use fewer features, than yo
 
 :::
 
+
 ::: {.cell .markdown}
 
-#### 📝 Grading note
+#### 📝 Specific requirements
 
-For full credit,
+
+There are many options for feature selection or feature weighting - there isn't one right answer here! In our lesson on feature selection/weighting, we discussed two parts to the problem of identifying the best subset of features:
+
+* **Search**: the strategy you use to determine the features or feature subsets to evaluate.
+* **Evaluate**: the approach you use to evaluate the "goodness" of a feature or feature subset. Since this dataset has the added complication of missing values, you must also consider how you handle missing values in your evaluation. 
+
+For this assignment, you will use a naive search strategy (score each feature independently). But, 
+
+* I want you to consider **two** different scoring functions of your choice - i.e., compute two sets of scores. 
+* When computing scores, you should not impute 0s or any other value for `NaN` values in the data. Instead, you should compute the score for a feature using only the rows in the training data where *that* feature is not missing.
+* Also, for each scoring function, you will use the `%time` cell magic to estimate how long it takes to compute the scores.
+
+Then, if you are using feature selection (not feature weighting), you should use a hold-out validation set to select the best **number** of features to include AND to decide which of the two scoring functions to use. 
+
+Alternatively, if you are using feature weighting (not feature selection), you should use a hold-out validation set to decide which of the two scoring functions to use.
+
+Also, for full credit,
 
 * Your solution should not select *all* of the features (if using feature selection). Or, your solution should not assign the same weight to all features (if using feature weighting).
 * Your solution should not select/weight highly the features that are least useful for predicting the target variable.
@@ -1792,24 +1858,10 @@ For full credit,
 
 :::
 
-::: {.cell .markdown}
-
-There are many options for feature selection or feature weighting, and you can choose anything that seems reasonable to you and meets the requirements above - there isn't one right answer here! But, you will have to explain and justify your choice. In our lesson on feature selection/weighting, we discussed two parts to the problem of identifying the best subset of features:
-
-* **Search**: you will have to describe the search strategy you use to determine the features or feature subsets to evaluate.
-* **Evaluate**: you will have to describe the approach you use to evaluate the "goodness" of a feature or feature subset. Since this dataset has the added complication of missing values, you should also make sure to explain how you handle missing values in your evaluation. 
-
-And, you will have to describe the approach you used to select the best **number** of features to include or best **size** of feature subset (if you are using feature selection, not feature weighting).
-
-For full credit, you will have to convince me that the approach you selected is a good match for (1) the data, and (2) the learning model.
-
-:::
-
-
 
 ::: {.cell .markdown}
 
-In the following cell, implement feature selection or feature weighting, and return the results in `X_trans`:
+In the following cell, implement feature selection or feature weighting following the requirements described above, and return the results in `X_trans`:
 
 * If you use feature selection, `X_trans` should have all of the rows of `X`, but only a subset of its columns. You should create a variable `feat_inc` which is a list of all of the features you want to include in the model.
 * If you use feature weighting, `X_trans` should have the same dimensions of `X`, but instead of each column being in the range 0-1, each column will be scaled according to its importance (more important features will be scaled up, less important features will be scaled down). You should create a variable `feat_wt` which has a weight for every feature in `X`. Then, you'll multiply `X` by `feat_wt` to get `X_trans`.
@@ -1818,9 +1870,10 @@ Some important notes:
 
 * The goal is to write code to find the feature selection or feature weighting, not to find it by manual inspection! Don't hard-code any values.
 * Although `X_trans` will include all rows of the data, you should not use the test data in the process of finding `feat_inc` or `feat_wt`! Feature selection and feature weighting are considered part of model fitting, and so only the training data may be used in this process.
-* For the "search" part of the optimization, you should not use any `sklearn` function or equivalent from another library - write pure Python+numpy code to implement the search yourself. For the "evaluate" part of the optimization, you are free to use an `sklearn` function, but make sure you understand what it does and are sure it is a good fit for the data and the model!
+* For the "evaluate" part of the optimization, you are free to use an `sklearn` function to compute feature scores, but make sure you understand what it does and are sure it is a good fit for the data and the model!
 
 :::
+
 
 
 ::: {.cell .code}
@@ -1857,13 +1910,11 @@ X_trans.describe()
 
 
 ::: {.cell .markdown}
-In a text cell, describe **in detail** the approach you used for feature selection or feature weighting. Your answer should include the following parts, in paragraph form:
+In a text cell, describe the approach you used for feature selection or feature weighting. Your answer should include the following parts, in paragraph form:
 
-* **Part 1: Search**: describe the search strategy you use to determine the features or feature subsets to evaluate. Is the approach you chose guaranteed to evaluate the optimal feature subset? How many feature subsets do you need to consider as part of your approach?
-* **Part 2: Evaluate**: describe the approach you use to evaluate the "goodness" of a feature or feature subset. Did you use a filter method or a wrapper method? What was the scoring function or model you used to evaluate the "goodness" of a feature or feature subset, and why? And since this dataset has the added complication of missing values, you should also make sure to explain how you handle missing values in your evaluation. 
-* **Part 3: Number/size**: if you are using feature selection, not feature weighting: Describe the approach you used to select the best **number** of features to include or best **size** of feature subset.
-
-Also explain: Why is the approach you chose well suited for *this data* and *this model*? And, what are some disadvantages or limitations of the approach you chose?
+* **Part 1: Search**: You used a naive search strategy to score feature subsets of size 1. Is the approach you chose guaranteed to evaluate the optimal feature subset?
+* **Part 2: Evaluate**: describe the two alternative scoring functions you used to evaluate the "goodness" of a feature or feature subset. Why did you think these might be well suited for *this data* and *this model*? Discuss the computation time you estimated - which scoring function took longer to compute?
+* **Part 3: Model Selection**: Discuss the results of your hold-out validation - which scoring function had better performance? 
 
 :::
 
