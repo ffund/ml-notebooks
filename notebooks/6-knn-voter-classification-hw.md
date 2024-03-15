@@ -1929,7 +1929,6 @@ In a text cell, describe the approach you used for feature selection or feature 
 
 :::
 
-
 ::: {.cell .markdown}
 ### Evaluate final classifier
 :::
