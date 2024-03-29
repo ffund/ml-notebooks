@@ -64,10 +64,11 @@ SOURCES += 7-demo-digits-classifiers.md
 EXECS += 7-trees-ensembles-in-depth.md
 EXECS += 7-demo-adaboost.md
 EXECS += 7-svm-pre-kernel.md
-EXECS += 7-demo-digits-classifiers.md
 
 SOURCES += 8-svm-with-kernel.md
 SOURCES += 8-svm-bias-variance.md
+SOURCES += 8-hyperparameter.md
+
 SOURCES += 8-demo-backprop.md
 SOURCES += 8-neural-net-demo-draw.md
 SOURCES += 8-lab-neural-net-music-classification.md
@@ -104,7 +105,7 @@ PANDOCFLAGS=--pdf-engine=xelatex\
 	pandoc  --self-contained --wrap=none  $^ -o $@
 
 %.nbconvert.ipynb: %.ipynb
-	jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_errors=True --ExecutePreprocessor.timeout=360 $^
+	jupyter nbconvert --to notebook --execute --ExecutePreprocessor.store_widget_state=False --ExecutePreprocessor.allow_errors=True --ExecutePreprocessor.timeout=360 $^
 
 %.pdf: %.nbconvert.ipynb
 	pandoc $^ $(PANDOCFLAGS) -o $@
