@@ -598,3 +598,12 @@ This creates a grid of plots as follows:
 
 
 :::
+
+
+::: {.cell .code}
+```python
+pd.DataFrame(clf.cv_results_)
+```
+:::
+
+
