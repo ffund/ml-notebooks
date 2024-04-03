@@ -10,7 +10,7 @@ jupyter:
 ---
 
 ::: {.cell .markdown }
-# Demo: Neural network for classification
+# Demo: Neural network for classification (PyTorch version)
 
 ------------------------------------------------------------------------
 
