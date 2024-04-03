@@ -206,9 +206,7 @@ print(tf.__version__)
 
 ::: {.cell .markdown }
 (There are two major versions of Tensorflow. Code that was written for
-TF1 often will not run with TF2. Fortunately, you can load either
-version in Colab, as described
-[here](https://colab.research.google.com/notebooks/tensorflow_version.ipynb).)
+TF1 often will not run with TF2. The current version is TF2.)
 :::
 
 ::: {.cell .markdown }

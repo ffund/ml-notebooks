@@ -71,6 +71,7 @@ SOURCES += 8-hyperparameter.md
 
 SOURCES += 8-demo-backprop.md
 SOURCES += 8-neural-net-demo-draw.md
+SOURCES += 8-neural-net-demo-draw-torch.md
 SOURCES += 8-lab-neural-net-music-classification.md
 
 EXECS += 8-svm-with-kernel.md
