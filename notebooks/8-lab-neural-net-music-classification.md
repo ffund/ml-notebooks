@@ -30,7 +30,7 @@ _Fraida Fund_
 
 ::: {.cell .markdown }
 
-⚠️ **Note**: This experiment is designed to run on a Google Colab **GPU** runtime. You should use a GPU runtime on Colab to work on this assignment. You should not run it outside of Google Colab. However, if you have been using Colab GPU runtimes a lot, you may be alerted that you have exhausted the "free" compute units allocated to you by Google Colab. If that happens, you do not have to purchase compute units - use a CPU runtime instead, and modify the experiment as instructed for CPU-only runtime.
+⚠️ **Note**: This experiment is designed to run on a Google Colab **GPU** runtime. You should use a GPU runtime on Colab to work on this assignment. You should not run it outside of Google Colab. However, if you have been using Colab GPU runtimes a lot, you may be alerted that you have exhausted the "free" compute units allocated to you by Google Colab. We will have some limited availability of GPU time during the last week before the deadline, for students who have no compute units available.
 
 :::
 
@@ -639,8 +639,7 @@ For each model, you will record:
 * the training hyperparameters (learning rate, batch size)
 * the number of epochs of training needed to achieve the target validation accuracy
 * the accuracy on the *test* data (not the validation data!). After fitting the model, use `model.evaluate` and pass the scaled *test* data to get the test loss and test accuracy
-* **GPU runtime**: the GPU energy and time to train the model to the desired validation accuracy, as computed by a `zeus-ml` measurement window that starts just before `model.fit` and ends just after `model.fit`.
-* **CPU runtime**: the time to train the model to the desired validation accuracy, as computed by the difference in `time.time()` just before `model.fit` and just after `model.fit`.
+* the GPU energy and time to train the model to the desired validation accuracy, as computed by a `zeus-ml` measurement window that starts just before `model.fit` and ends just after `model.fit`.
 
 :::
 
@@ -667,7 +666,8 @@ for lr in [0.0001, 0.001, 0.01, 0.1]:
         _ = monitor.end_window("model_train")
         monitor.begin_window("model_train")
     # if on CPU runtime
-    except NameError:  
+    except NameError: 
+        print("Uh oh! You are not connected to a GPU runtime.") 
         start_time = time.time()
 
 
@@ -704,9 +704,8 @@ for lr in [0.0001, 0.001, 0.01, 0.1]:
 
 Next, you will visualize the results. 
 
-**GPU runtime instructions**: Create a figure with four subplots. In each subplot, create a bar plot with learning rate on the horizontal axis and (1) Time to accuracy, (2) Energy to accuracy, (3) Test accuracy, (4) Epochs, on the vertical axis on each subplot, respectively. Use an appropriate vertical range for each subplot. Label all axes.
+Create a figure with four subplots. In each subplot, create a bar plot with learning rate on the horizontal axis and (1) Time to accuracy, (2) Energy to accuracy, (3) Test accuracy, (4) Epochs, on the vertical axis on each subplot, respectively. Use an appropriate vertical range for each subplot. Label all axes.
 
-**CPU runtime instructions**: Create a figure with three subplots. In each subplot, create a bar plot with learning rate on the horizontal axis and (1) Time to accuracy, (2) Test accuracy, (3) Epochs, on the vertical axis on each subplot, respectively. Use an appropriate vertical range for each subplot. Label all axes.
 
 
 :::
@@ -757,8 +756,8 @@ for batch_size in [64, 128, 256, 512, 1024, 2048, 4096, 8192]:
     except ValueError: 
         _ = monitor.end_window("model_train")
         monitor.begin_window("model_train")
-    # if on CPU runtime
-    except NameError:  
+    except NameError: 
+        print("Uh oh! You are not connected to a GPU runtime.") 
         start_time = time.time()
 
 
@@ -770,7 +769,6 @@ for batch_size in [64, 128, 256, 512, 1024, 2048, 4096, 8192]:
     # if on GPU runtime
     try: 
         measurement = monitor.end_window("model_train")
-    # if on CPU runtime
     except NameError:  
         total_time = time.time() - start_time
 
@@ -795,9 +793,8 @@ for batch_size in [64, 128, 256, 512, 1024, 2048, 4096, 8192]:
 
 Next, you will visualize the results. 
 
-**GPU runtime instructions**: Create a figure with four subplots. In each subplot, create a bar plot with batch size on the horizontal axis and (1) Time to accuracy, (2) Energy to accuracy, (3) Test accuracy, (4) Epochs, on the vertical axis on each subplot, respectively. Use an appropriate vertical range for each subplot. Label all axes.
+Create a figure with four subplots. In each subplot, create a bar plot with batch size on the horizontal axis and (1) Time to accuracy, (2) Energy to accuracy, (3) Test accuracy, (4) Epochs, on the vertical axis on each subplot, respectively. Use an appropriate vertical range for each subplot. Label all axes.
 
-**CPU runtime instructions**: Create a figure with three subplots. In each subplot, create a bar plot with batch size on the horizontal axis and (1) Time to accuracy, (2) Test accuracy, (3) Epochs, on the vertical axis on each subplot, respectively. Use an appropriate vertical range for each subplot. Label all axes.
 
 
 :::
