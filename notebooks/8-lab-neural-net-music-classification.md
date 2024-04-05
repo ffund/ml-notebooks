@@ -722,8 +722,6 @@ Next, you will visualize the results.
 
 **Comment on the results**: Given that the model is trained to a target validation accuracy, what is the effect of the learning rate on the training process?
 
-Note: because of the stochastic nature of neural network training AND in the compute resource, these measurements can be very "noisy". Look for overall trends, but don't be concerned with small differences from one experiment to the next, or with occasional "outlier" results. Also note that if the number of epochs is 500, this is an indication that the target validation accuracy was *not* reached in 500 epochs!
-
 :::
 
 
@@ -815,6 +813,5 @@ Next, you will visualize the results.
 
 **Comment on the results**: Given that the model is trained to a target validation accuracy, what is the effect of the batch size on the training process?
 
-Note: because of the stochastic nature of neural network training AND in the compute resource, these measurements can be very "noisy". Look for overall trends, but don't be concerned with small differences from one experiment to the next, or with occasional "outlier" results. Also note that if the number of epochs is 500, this is an indication that the target validation accuracy was *not* reached in 500 epochs!
 
 :::
