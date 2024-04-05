@@ -429,7 +429,9 @@ and this challenge is further complicated by the fact that all of these training
 
 Sometimes, the choice of training hyperparameters affects whether or not the model will find an acceptable set of weights at all - i.e. whether the optimizer converges.
 
-It's more often the case, though, that **for a given model**, we can arrive at a set of weights that have similar performance in many different ways, i.e. with different combinations of optimizer hyperparameters. However, the *training cost** in both **time** and **energy** will be very much affected.
+It's more often the case, though, that **for a given model**, we can arrive at a set of weights that have similar performance in many different ways, i.e. with different combinations of optimizer hyperparameters. 
+
+However, the *training cost* in both **time** and **energy** will be very much affected.
 
 In this section, we will explore these further.
 
@@ -568,7 +570,7 @@ following these specifications:
 Then, when you call `model.fit()`, you will add the `TrainToAccuracy` callback as in
 
 ```
-callbacks=[TrainToAccuracy(threshold=0.98, patience=5)]
+callbacks=[TrainToAccuracy(threshold=0.98, patience=3)]
 ```
 
 :::
@@ -579,7 +581,7 @@ callbacks=[TrainToAccuracy(threshold=0.98, patience=5)]
 # TODO - write a callback function
 class TrainToAccuracy(callbacks.Callback):
 
-    def __init__(self, threshold=0.9, patience=3):
+    def __init__(self, threshold=0.9, patience=5):
         self.threshold = threshold  # the desired accuracy threshold
         self.patience = patience # how many epochs to wait once hitting the threshold
 
@@ -599,14 +601,14 @@ Try it! run the following cell to test your `TrainToAccuracy` callback. (This wi
 
 ::: {.cell .code}
 ```python
-model.fit(Xtr_scale, ytr, epochs=100, validation_split = 0.2, callbacks=[TrainToAccuracy(threshold=0.95, patience=5)])
+model.fit(Xtr_scale, ytr, epochs=100, validation_split = 0.2, callbacks=[TrainToAccuracy(threshold=0.95, patience=3)])
 ```
 :::
 
 
 ::: {.cell .markdown}
 
-Your model shouldn't *really* train for 100 epochs - it should stop training as soon as 95% validation accuracy is achieved for 5 epochs in a row! (Your "test" is not graded, you may change the `threshold` and `patience` values in this "test" call to `model.fit` in order to check your work.)
+Your model shouldn't *really* train for 100 epochs - it should stop training as soon as 95% validation accuracy is achieved for 3 epochs in a row! (Your "test" is not graded, you may change the `threshold` and `patience` values in this "test" call to `model.fit` in order to check your work.)
 
 Note that since we are now using the validation set performance to *decide* when to stop training the model, we are no longer "allowed" to pass the test set as `validation_data`. The test set must never be used to make decisions during the model training process - only for evaluation of the final model. Instead, we specify that 20% of the training data should be held out as a validation set, and that is the validation accuracy that is used to determine when to stop training.
 
@@ -627,7 +629,7 @@ Now, you will repeat your model preparation and fitting code - with your new `Tr
 
 In each iteration of each loop, you will prepare a model (with the appropriate training hyperparameters) and train it until:
 
-* either it has achieved **0.95 accuracy for 3 epoches in a row** on a 20% validation subset of the training data,
+* either it has achieved **0.98 accuracy for 3 epoches in a row** on a 20% validation subset of the training data,
 * or, it has trained for 500 epochs
 
 whichever comes FIRST. 
@@ -652,7 +654,7 @@ lr = 0.001
 batch_size = 128
 
 metrics_vs_lr = []
-for lr in [0.0001, 0.001, 0.01, 0.1, 1]:
+for lr in [0.0001, 0.001, 0.01, 0.1]:
 
     # TODO - set up model, including appropriate optimizer hyperparameters
 
@@ -720,7 +722,7 @@ Next, you will visualize the results.
 
 ::: {.cell .markdown}
 
-**Comment on the results**: Given that the model is trained to a target validation accuracy, what is the effect of the learning rate on the training process?
+**Comment on the results**: Given that the model is trained to a target validation accuracy, what is the effect of the learning rate on the training process *in this example*?
 
 :::
 
@@ -743,7 +745,7 @@ lr = 0.001
 batch_size = 128
 
 metrics_vs_bs = []
-for batch_size in [64, 128, 256, 512, 1024, 2048]:
+for batch_size in [64, 128, 256, 512, 1024, 2048, 4096, 8192]:
 
     # TODO - set up model, including appropriate optimizer hyperparameters
 
@@ -811,7 +813,7 @@ Next, you will visualize the results.
 
 ::: {.cell .markdown}
 
-**Comment on the results**: Given that the model is trained to a target validation accuracy, what is the effect of the batch size on the training process?
+**Comment on the results**: Given that the model is trained to a target validation accuracy, what is the effect of the batch size on the training process *in this example*? What do you observe about how time and energy *per epoch* and number of epochs required varies with batch size? 
 
 
 :::
