@@ -216,7 +216,7 @@ yts = np.load('uiowa_test_labels.npy')
 ```python
 # shuffle the training set 
 # (when loaded in, samples are ordered by class)
-p = np.random.permutation(n_tr)
+p = np.random.permutation(Xtr.shape[0])
 Xtr = Xtr[p,:]
 ytr = ytr[p]
 ```
