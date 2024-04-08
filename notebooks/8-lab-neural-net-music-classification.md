@@ -564,7 +564,7 @@ following these specifications:
 
 * It will be called `TrainToAccuracy` and will accept two arguments: a `threshold` and a `patience` value.
 * If the model's validation accuracy is higher than the `threshold` for `patience` epochs in a row, stop training. 
-* In the `on_epoch_end` function, which will be called at the end of every epoch during training, you should get the current validation accuracy using `currect_acc = logs.get("val_accuracy")`. Then, set `self.model.stop_training = True` if the condition above is met.
+* In the `on_epoch_end` function, which will be called at the end of every epoch during training, you should get the current validation accuracy using `current_acc = logs.get("val_accuracy")`. Then, set `self.model.stop_training = True` if the condition above is met.
 * The default values of `threshold` and `patience` are given below, but other values may be passed as arguments at runtime.
 
 Then, when you call `model.fit()`, you will add the `TrainToAccuracy` callback as in
