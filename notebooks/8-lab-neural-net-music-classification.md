@@ -514,7 +514,7 @@ First, install the package:
 
 ::: {.cell .markdown }
 
-Then, import it, and tell it to monitor your GPU:
+Then, import it, and start an instance of a monitor, specifying the GPU that it should monitor:
 
 :::
 
