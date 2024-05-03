@@ -591,8 +591,8 @@ X_train_conv = 2*(X_train_conv/255 - 0.5)
 X_test_conv = 2*(X_test_conv/255 - 0.5)
 
 # convert string classes to integer equivalents
-y_train = y_train.astype(np.int)
-y_test  = y_test.astype(np.int)
+y_train = y_train.astype(np.int32)
+y_test  = y_test.astype(np.int32)
 
 # also add dimension to target
 y_train_conv = y_train.reshape(-1,1)
@@ -733,7 +733,7 @@ y_pred_conv = np.argmax(y_pred_prob_conv, axis=-1)
 
 ::: {.cell .code }
 ```python
-score = model_conv.evaluate(X_test_conv, y_test)
+score = model_conv.evaluate(X_test_conv, y_test_conv)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 ```

@@ -48,7 +48,6 @@ import random
 
 print('Python version:', platform.python_version())
 print('Tensorflow version:', tf.__version__)
-print('Keras version:', tf.keras.__version__)
 ```
 :::
 
@@ -81,7 +80,7 @@ import tensorflow_datasets as tfds
 
 ::: {.cell .code }
 ```python
-fig = tfds.show_examples(ds_info, ds_train)
+fig = tfds.show_examples(ds_train, ds_info)
 ```
 :::
 
@@ -131,8 +130,8 @@ We'l convert to `numpy` format again:
 
 ::: {.cell .code }
 ```python
-train_numpy = np.vstack(tfds.as_numpy(ds_train))
-test_numpy = np.vstack(tfds.as_numpy(ds_test))
+train_numpy = np.vstack(list(tfds.as_numpy(ds_train)))
+test_numpy = np.vstack(list(tfds.as_numpy(ds_test)))
 
 X_train = np.array(list(map(lambda x: x[0]['image'], train_numpy)))
 y_train = np.array(list(map(lambda x: x[0]['label'], train_numpy)))
