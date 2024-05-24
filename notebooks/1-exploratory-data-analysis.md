@@ -83,12 +83,13 @@ We will practice using a basic "recipe" for exploratory data analysis.
 
 Every exploratory data analysis is different, as specific characteristics of the data may lead you to explore different things in depth. However, this "recipe" can be a helpful starting point.
 
+**Note**: before we do anything with a dataset that we will use for machine learning, we should set aside a part of the data to use as a held-out test set! In this example, assume that we have already separated out a held-out test set.
+
 :::
 
 ::: {.cell .markdown}
 
 ## Example: Brooklyn Bridge pedestrian data set 
-
 
 :::
 
