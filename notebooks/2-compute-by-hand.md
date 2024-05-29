@@ -19,9 +19,6 @@ We'll also show how to do each of these steps in Python, so that you can try oth
 import pandas as pd
 import seaborn as sns
 import numpy as np
-
-from IPython.core.interactiveshell import InteractiveShell
-InteractiveShell.ast_node_interactivity = "all"
 ```
 :::
 
