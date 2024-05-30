@@ -29,9 +29,6 @@ sns.set()
 # for 3d interactive plots
 from ipywidgets import interact, fixed, widgets
 from mpl_toolkits import mplot3d
-
-from IPython.core.interactiveshell import InteractiveShell
-InteractiveShell.ast_node_interactivity = "all"
 ```
 :::
 
@@ -421,12 +418,12 @@ Mean of $x$ and $y$:
 $$\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i, \quad \bar{y} = \frac{1}{n} \sum_{i=1}^n y_i$$
 
 
-Sample variance of $x$ and $y$: 
+Variance of $x$ and $y$: 
 
 $$\sigma_x^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x}) ^2, \quad \sigma_y^2 = \frac{1}{n} \sum_{i=1}^n (y_i - \bar{y}) ^2$$
 
 
-Sample covariance of $x$ and $y$:  
+Covariance of $x$ and $y$:  
 
 $$\sigma_{xy} = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})$$
 
@@ -1460,7 +1457,6 @@ $$y \approx w_0 x^0 + w_1 x^1 + \ldots + w_p x^p $$
 
 Note that the model is linear in the parameters $\mathbf{w}$, which is what makes it a linear model even though it is not linear in $x$. 
 
-Issue: polynomials are "global" functions - affect the entire range from $-\infty$ to $\infty$, and changes very quickly outside the range $[-1,1]$.
 
 :::
 
@@ -1468,7 +1464,7 @@ Issue: polynomials are "global" functions - affect the entire range from $-\inft
 ::: {.cell .code}
 ```python
 def polynomial_basis(x, d):
-  return np.hstack([x**i for i in range(d)])
+  return x**np.arange(d)
 
 x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
 x_trans = polynomial_basis(x,5)
@@ -1498,6 +1494,91 @@ def plot_poly(w0, w1, w2, w3, w4, show_sum):
 
 ::: {.cell .markdown}
 
+In practice, polynomial functions are actually not very useful for modeling real data - 
+
+* polynomials are "global" functions - affect the entire range from $-\infty$ to $\infty$, even though different parts of the data might have different behavior
+* they get weird at the boundaries of the data (Runge's phenomenon) and *really* bad if you need to extrapolate past the range of the training data 
+
+Instead of high-degree polynomials, we tend to prefer lower-degree *piecewise* functions, so we can fit *local* behavior. 
+
+
+:::
+
+::: {.cell .markdown}
+
+### Splines
+
+With splines, the feature axis is divided into breakpoints - we call each breakpoints a “knot” - and then we define basis functions
+that are a polynomial function of the feature between two knots.
+
+If we constrain the piecewise function to meet at the knots, we call these splines - basis splines or "B splines". Here is how these functions are defined:
+
+First, for constant functions (degree 0) - given "knots" at positions $k_t, k_{t+1}$:
+
+$$
+\phi_{t,0}({x}) = 
+\begin{cases}
+1, \quad  k_t \leq x < k_{t+1} \\
+0, \quad  \text{otherwise}
+\end{cases}
+$$
+
+Then for degree $p>0$, it is defined recursively:
+
+$$
+\phi_{t, p}( x ) := \dfrac{ x - k_t }{k_{t+p} - k_t} \phi_{t,p-1}( x ) + \dfrac{k_{t+p+1} - x }{k_{t+p+1} - k_{t+1}} \phi_{t+1,p-1}( x )
+$$
+
+But, you won't need to compute this yourself - you can use [`SplineTransformer`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.SplineTransformer.html) in `sklearn`.
+
+
+:::
+
+
+::: {.cell .code}
+```python
+from sklearn.preprocessing import SplineTransformer
+
+def spline_basis(x, d):
+  return np.hstack([SplineTransformer(knots='uniform', n_knots = d, degree=i, extrapolation="constant").fit_transform(x) for i in range(d)])
+
+x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
+x_trans = spline_basis(x,3)
+
+@interact(w00 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w10 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w01 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w11 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w21 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w02 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w12 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w22 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          w32 = widgets.FloatSlider(min=-1, max=2, step=0.1, value=1),
+          show_sum = False)
+def plot_spline(w00, w10, w01, w11, w21, w02, w12, w22, w32, show_sum):
+  plt.figure(figsize=(10,5));
+  labels = np.array(["\phi_{0,0}", "\phi_{1,0}", 
+                     "\phi_{0,1}", "\phi_{1,1}", "\phi_{2,1}",
+                     "\phi_{0,2}", "\phi_{1,2}", "\phi_{2,2}", "\phi_{3,2}"])
+  w = np.array([w00, w10, w01, w11, w21, w02, w12, w22, w32])
+  y = np.sum(w*x_trans, axis=1)
+  if show_sum:
+    sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
+  for i in range(9):
+    sns.lineplot(x=x.squeeze(), y=w[i]*x_trans[:,i], label='$'+labels[i]+'$', alpha=0.5);  
+  plt.ylim(-2, 2);
+  plt.title("Spline");
+  plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0);
+  plt.xlabel('x')
+  plt.ylabel('$\phi(x)$')
+  plt.show()
+```
+:::
+
+
+
+::: {.cell .markdown}
+
 ### Radial basis
 
 
@@ -1518,7 +1599,7 @@ Note that in contrast to the polynomials which had "global" effect, each radial 
 ```python
 s = 0.1
 def radial_basis(x, mu_list):
-  return np.hstack([ np.exp(-1*(x-mu)**2/s**2) for mu in mu_list])
+  return np.exp(-1*(x-mu_list)**2/s**2) 
   
 x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
 x_trans = radial_basis(x, [-1, -0.5, 0, 0.5, 1])
@@ -1551,6 +1632,12 @@ def plot_radial(w0, w1, w2, w3, w4, show_sum):
 
 ::: {.cell .markdown}
 
+(try changing `s` to see its effect!)
+
+:::
+
+::: {.cell .markdown}
+
 ### Sigmoidal basis
 
 Transform a feature $x$ using $\phi_j(x) = \sigma \left( \frac{(x-\mu_j)}{s}  \right) $ where $\sigma(a) = \frac{1}{1+\exp({-a})}$, i.e.
@@ -1566,7 +1653,7 @@ $$y \approx w_0 \sigma \left( \frac{(x-\mu_0)}{s}  \right) + w_1 \sigma \left( \
 ```python
 s = 0.05
 def sigmoid_basis(x, mu_list):
-  return np.hstack([((1+np.exp((-x+mu)/s))**-1) for mu in mu_list])
+  return ((1+np.exp((-x+mu_list)/s))**-1)
   
 x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
 x_trans = sigmoid_basis(x, [-1, -0.5, 0, 0.5, 1])
@@ -1597,6 +1684,13 @@ def plot_sigmoid(w0, w1, w2, w3, w4, show_sum):
 ```
 :::
 
+
+::: {.cell .markdown}
+
+(try changing `s` to see its effect!)
+
+:::
+
 ::: {.cell .markdown}
 
 ### Fourier basis
@@ -1611,8 +1705,8 @@ $$y \approx w_0 + w_1 \sin(\pi x) + w_2 \cos(\pi x) + w_3 \sin(\pi  2 x) + w_4 \
 ::: {.cell .code}
 ```python
 def fourier_basis(x, d):
-  sins = np.hstack([np.sin(np.pi*i*x) for i in range(1,d+1)])
-  coss = np.hstack([np.cos(np.pi*i*x) for i in range(1,d+1)])
+  sins = np.sin(np.pi*np.arange(1,d+1)*x)
+  coss = np.cos(np.pi*np.arange(1,d+1)*x)
   return np.hstack([sins, coss])
     
 x = np.arange(-1.5,1.5,step=0.01).reshape(-1,1)
@@ -1626,7 +1720,7 @@ x_trans = fourier_basis(x, 2)
 def plot_fourier(w1, w2, w3, w4, show_sum):
   plt.figure(figsize=(10,5));
   w = np.array([w1, w2, w3, w4])
-  labels = ["cos(\pi x)", "sin(\pi x)", "cos(\pi 2 x)", "sin(\pi 2 x)"]
+  labels = ["sin(\pi x)", "sin(\pi 2 x)", "cos(\pi x)", "cos(\pi 2 x)"]
   y = np.sum(w*x_trans, axis=1)
   if show_sum:
     sns.lineplot(x=x.squeeze(), y=y, label='sum', alpha=1, lw=2);
@@ -1640,6 +1734,27 @@ def plot_fourier(w1, w2, w3, w4, show_sum):
   plt.show()
 ```
 :::
+
+
+
+::: {.cell .markdown}
+
+### Choosing a transformation
+
+:::
+
+::: {.cell .markdown}
+
+How do you decide what transformation to apply to the data?
+
+* domain knowledge 
+* exploratory data analysis
+* residual analysis (after model fitting)
+* trial and error
+
+:::
+
+
 
 ::: {.cell .markdown}
 
@@ -1659,6 +1774,8 @@ where $\epsilon_i \sim N(0, \sigma^2)$. In other words:
 $$\mathbf{\phi} = [1, x_1, x_2, x_1^2, x_2^2, x_1 x_2] $$
 
 Note that the model is *linear* in $\textbf{w}$.
+
+The $x_1 x_2$ term is called an *interaction* term, and reflects that the effect of $x_1$ on $y$ may depend on the value of $x_2$. 
 
 :::
 
@@ -2012,3 +2129,5 @@ print("Test MSE: ", metrics.mean_squared_error(y_test, y_test_hat))
 print("Test R2:  ", metrics.r2_score(y_test, y_test_hat))
 ```
 :::
+
+
