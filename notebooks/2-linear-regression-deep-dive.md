@@ -1735,6 +1735,124 @@ def plot_fourier(w1, w2, w3, w4, show_sum):
 ```
 :::
 
+::: {.cell .markdown}
+
+### Original vs transformed feature space
+
+When we use one of these (or another function) to transform our data before fitting a linear regression model, we take a problem that is not necessarily *linear in the original feature space*, and move it to a *transformed feature space where it is linear*.
+
+Take the following example: suppose data is generated as
+
+$$y_i = w_0 + w_1 \log {x_i} + \epsilon_i $$
+
+where $\epsilon_i \sim N(0, \sigma^2)$. 
+
+
+:::
+
+
+::: {.cell .code}
+```python
+n = 200
+x = np.random.uniform(0.2, 4, size=n)
+y = 3*np.log(x) + 0.3 * np.random.randn(n)
+```
+:::
+
+
+
+::: {.cell .markdown}
+
+We cannot get a good fit for a linear model in the original feature space:
+
+:::
+
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(5,5));
+plt.title("Original feature space")
+sns.regplot(x=x,y=y, ci=None)
+plt.xlabel("x");
+plt.ylabel("y");
+```
+:::
+
+::: {.cell .markdown}
+
+But in the transformed feature space, where $\log (x)$ is a feature, we can get a good fit:
+:::
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(5,5));
+plt.title("Transformed feature space")
+sns.regplot(x=np.log(x),y=y, ci=None)
+plt.xlabel("log x");
+plt.ylabel("y");
+```
+:::
+
+
+
+::: {.cell .markdown}
+
+We can also visualize this process in 2D. In the following example, we have
+
+$$y_i = w_0 + w_1 x_i + w_2 \log {x_i} + \epsilon_i $$
+
+where $\epsilon_i \sim N(0, \sigma^2)$. 
+
+:::
+
+
+::: {.cell .code}
+```python
+n = 200
+x = np.random.uniform(0.2, 4, size=n)
+y = -1*x + 3*np.log(x)  + 7 +  0.5 * np.random.randn(n)
+```
+:::
+
+
+::: {.cell .code}
+```python
+def plot_3D(elev=20, azim=-20, X=x, y=y):
+    plt.figure(figsize=(10,10))
+    ax = plt.subplot(projection='3d')
+
+
+    X1 = np.arange(0.2, 5, 0.2)
+    X2 = np.log(np.arange(0.2, 5, 0.2))
+    X1, X2 = np.meshgrid(X1, X2)
+    Z = X1*(-1) + X2*3
+
+    # Plot the surface.
+    ax.plot_surface(X1, X2, Z, alpha=0.1, color='gray',
+                          linewidth=0, antialiased=False)
+    ax.scatter3D(X, np.log(X), y, s=50)
+
+    ax.view_init(elev=elev, azim=azim)
+    ax.set_xlabel('x')
+    ax.set_ylabel('log x')
+    ax.set_zlabel('y')
+    ax.set_title("Transformed feature space")
+    plt.show()
+
+interact(plot_3D, elev=widgets.IntSlider(min=-90, max=90, step=10, value=20), 
+          azim=widgets.IntSlider(min=-90, max=90, step=10, value=20),
+         X=fixed(x), y=fixed(y));
+```
+:::
+
+::: {.cell .markdown}
+
+
+* First, set the elevation to 0 and azimuth to 90 to see the view in the original feature space, with $x$ on the horizontal axis and $y$ on the vertical axis.
+* When we add a second feature by "transforming" $x$, we move from a 1D feature space to a 2D feature space. Set azimuth to 30 to see the problem in 2D.
+
+:::
+
 
 
 ::: {.cell .markdown}
