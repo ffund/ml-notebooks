@@ -272,7 +272,7 @@ Now we are finally ready to train a regression model.
 Since the article is nominally abou the attractiveness of the instructor, 
 we will train the simple linear regression on the `bty_avg` feature.
 
-In the cell that follows, write code to 
+In the cell that follows, we will write code to 
 
 * use `sklearn` to fit a simple linear regression model on the training set, using `bty_avg` as the feature on which to train. Save your fitted model in a variable `reg_simple`.
 * print the intercept and coefficient of the model.
@@ -309,7 +309,7 @@ sns.lineplot(data=train, x="bty_avg", y=y_pred_train, color='red');
 
 Next, we will evaluate our model performance. 
 
-In the following cell, write a _function_ to compute key performance metrics for your model:
+In the following cell, we will write a _function_ to compute key performance metrics for our model:
 
 * compute the R2 score on your training data
 * compute the MSE on your training data
@@ -375,7 +375,7 @@ features
 
 ::: {.cell .markdown}
 
-In the following cell, write code to
+In the following cell, we will write code to
 
 * use `sklearn` to fit a linear regression model on the training set, using the `features` array as the list of features to train on. Save your fitted model in a variable `reg_multi`.
 * print a table of the features used in the regression and the coefficient assigned to each. If you have saved your fitted regression in a variable named `reg_multi`, you can create and print this table with:
@@ -426,7 +426,7 @@ Note especially the coefficients associated with each of the individual attracti
 
 (You should be able to see the collinearity clearly in the pairplot you created.)
 
-In the following cell, write code to
+In the following cell, we will write code to
 
 * create a new `features` array, that drops the _individual_ attractiveness rankings in addition to the `score` variable (but do _not_ drop the average attractiveness ranking)
 * use `sklearn` to fit a linear regression model on the training set, using the new `features` array as the list of features to train on. Save your fitted model in a variable `reg_avgbty`.
@@ -468,7 +468,7 @@ Given the model parameters you have found, which is associated with the stronges
 
 ### Evaluate multiple regression model performance
 
-Evaluate the performance of your `reg_avgbty` model. In the next cell, write code to:
+Evaluate the performance of your `reg_avgbty` model. In the next cell, we will write code to:
 
 * use the `predict` function on your fitted regression to find $\hat{y}$ for all samples in the _training_ set, and save this in an array called `y_pred_train`
 * use the `predict` function on your fitted regression to find $\hat{y}$ for all samples in the _test_ set, and save this in an array called `y_pred_test`
