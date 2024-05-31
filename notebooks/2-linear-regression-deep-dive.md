@@ -1640,7 +1640,7 @@ def plot_radial(w0, w1, w2, w3, w4, show_sum):
 
 ### Sigmoidal basis
 
-Transform a feature $x$ using $\phi_j(x) = \sigma \left( \frac{(x-\mu_j)}{s}  \right) $ where $\sigma(a) = \frac{1}{1+\exp({-a})}$, i.e.
+Transform a feature $x$ using $\phi_j(x) = \sigma \left( \frac{(x-\mu_j)}{s}  \right)$ where $\sigma(a) = \frac{1}{1+\exp({-a})}$, i.e.
 
 $$y \approx w_0 \sigma \left( \frac{(x-\mu_0)}{s}  \right) + w_1 \sigma \left( \frac{(x-\mu_1)}{s}  \right) + \ldots + w_p \sigma \left( \frac{(x-\mu_p)}{s}  \right)$$
 
@@ -1825,7 +1825,7 @@ def plot_3D(elev=20, azim=-20, X=x, y=y):
     X1 = np.arange(0.2, 5, 0.2)
     X2 = np.log(np.arange(0.2, 5, 0.2))
     X1, X2 = np.meshgrid(X1, X2)
-    Z = X1*(-1) + X2*3
+    Z = X1*(-1) + X2*3 + 7
 
     # Plot the surface.
     ax.plot_surface(X1, X2, Z, alpha=0.1, color='gray',
