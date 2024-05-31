@@ -1876,6 +1876,13 @@ How do you decide what transformation to apply to the data?
 
 ::: {.cell .markdown}
 
+## Example with basis functions and residual analysis
+
+:::
+
+
+::: {.cell .markdown}
+
 ### Generate some data
 
 :::
