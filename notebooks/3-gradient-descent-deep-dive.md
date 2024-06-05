@@ -836,12 +836,12 @@ plt.suptitle("Estimate after %d iterations with rate %s: %s" %
 def gd_step_momentum(w, X, y, lr, eta, v):
   # use current parameters to get y_hat, error
   y_hat = np.dot(X,w)
-  error = y_hat-y
+  error = y_hat - y
   # compute gradient and velocity
   grad = np.matmul(X.T, error)
-  v_new = eta*v - (lr/X.shape[0])*grad
+  v_new = eta*v + (1/X.shape[0])*grad
   # update weights
-  w_new = w + v_new
+  w_new = w - lr*v_new
 
   # we don't have to actually compute MSE
   # but I want to, for visualization 
