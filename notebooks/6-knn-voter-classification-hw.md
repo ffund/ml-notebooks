@@ -38,7 +38,7 @@ In the first few sections of this notebook, I will show you how to prepare the d
 * getting the data and loading it into the workspace.
 * preparing the data: dealing with missing data, encoding categorical data in numeric format, and splitting into training and test.
 
-In the last few sections of the notebook, you will have to improve the basic model for better performance, using a custom distance metric and using feature selection or feature weighting. In these sections, you will have specific criteria to satisfy for each task. 
+In the last few sections of the notebook, you will have to improve the basic model for better performance, using a custom distance metric and using feature weighting. In these sections, you will have specific criteria to satisfy for each task. 
 
 **However, you should also make sure your overall solution is good!** An excellent solution to this problem will achieve greater than 80% validation accuracy. A great solution will achieve 75% or higher.
 :::
@@ -49,7 +49,7 @@ In the last few sections of the notebook, you will have to improve the basic mod
 #### 📝 Specific requirements
 
 * For full credit, you should achieve 75% or higher test accuracy overall in this notebook (i.e. when running your solution notebook from beginning to end).
-* If your solution is in the top 3 for test accuracy (relative to your classmates), you'll also earn extra credit toward your overall course grade.
+* If your solution achieves an especially excellent accuracy result relative to your classmates', you may also earn extra credit toward this lab grade (at my discretion).
 
 :::
 
@@ -1403,7 +1403,7 @@ In the remaining sections of this notebook, you'll need to fill in code to:
 
 * implement a custom distance metric
 * encode more features
-* implement feature selection or feature weighting
+* implement feature weighting
 * "train" and evaluate your final classifier, including K-Fold CV to select the best value for number of neighbors.
 
 :::
@@ -1441,11 +1441,10 @@ You should also avoid explicit `for` loops inside the `custom_distance` function
 
 **Intermediate variables**: Your function should compute the following values, again using `a` against each row in `b`:
 
-* `total_sim` = total magnitude of "agreements"/"known similarity" between `a` and each row in `b`
-* `total_dif` = total magnitude of "disagreements"/"known dissimilarity" between `a` and each row in `b`
+* `total_dif` = total magnitude of "disagreements"/"known dissimilarity" between `a` and each row in `b` (This is the L1 distance for known values)
 * `total_nan` = total number of NaN/"unknown" values where either `a` *OR* the corresponding row of `b` (or both!) has a NaN
 
-and you should use these in computing your distances. Also, when `debug = True` is passed to the function, you should return these intermediate variables in a dictionary, as shown in the example below.
+and you should use these (*not* only `total_dif`) in computing your distances. Also, when `debug = True` is passed to the function, you should return these intermediate variables in a dictionary, as shown in the example below.
 
 
 :::
@@ -1468,7 +1467,6 @@ def custom_distance(a, b, debug=False):
   # you must compute these intermediate variables, and use them 
   # in computing your distances. Each of these should be a 1D `numpy` array
   # with as many elements as there are rows in `b`.
-  total_sim = ...
   total_dif = ...
   total_nan = ...
 
@@ -1478,7 +1476,7 @@ def custom_distance(a, b, debug=False):
 
   if debug:
     # if you are asked to return the intermediate variables too
-    return distances, {'total_sim': total_sim, 'total_dif': total_dif, 'total_nan': total_nan}
+    return distances, {'total_dif': total_dif, 'total_nan': total_nan}
 
   else:
     # the default case - don't return intermediate variables
@@ -1814,13 +1812,15 @@ X.describe()
 
 ::: {.cell .markdown}
 
-In a text cell, discuss the features you chose to include. Also, show the summary statistics of number of non-missing values per row, and discuss - do you have a reasonable number of features for all survey versions?
+In a text cell, discuss the features you chose to include. 
+
+Also show, for each version of the survey (1, 2, 3, 4, 5), which of the features you included are on that survey?
 
 :::
 
 
 ::: {.cell .markdown}
-### Feature selection or feature weighting
+### Feature weighting
 :::
 
 
@@ -1828,12 +1828,7 @@ In a text cell, discuss the features you chose to include. Also, show the summar
 
 Because the K nearest neighbor classifier weights each feature equally in the distance metric, including features that are not relevant for predicting the target variable can actually make performance worse.
 
-To improve performance, you could either:
-
--   use a subset of features that are most important, or
--   use feature weights, so that more important features are scaled up and less important features are scaled down.
-
-Feature selection has another added benefit - if you use fewer features, than you also get a faster inference time.
+To improve performance, we will use feature weights, so that more important features are scaled up and less important features are scaled down.
 
 :::
 
@@ -1850,20 +1845,21 @@ There are many options for feature selection or feature weighting - there isn't 
 
 For this assignment, you will use a naive search strategy (score each feature independently). But, 
 
-* First, divide your training set into a training and validation subset (single hold-out validation set)
+* First, divide the training set into a training and validation subset (single hold-out validation set). 
 * I want you to consider **two** different scoring functions of your choice - i.e., compute two sets of "goodness" scores. 
 * When computing scores, you should not impute 0s or any other value for `NaN` values in the data. Instead, you should compute the score for a feature using only the rows in the training data where *that* feature is not missing.
 * Also, for each scoring function, you will use the `%%time` cell magic to estimate how long it takes to compute the scores.
 
-Then, if you are using feature selection (not feature weighting), you should use the hold-out validation set to select the best **number** of features to include AND to decide which of the two scoring functions to use. 
+Then, use the hold-out validation set to decide which of the two scoring functions to use. For each scoring function,
 
-Alternatively, if you are using feature weighting (not feature selection), you should use the hold-out validation set to decide which of the two scoring functions to use.
+* "Fit" a KNN model (with your custom distance function, random tie break, etc. as discussed above) on the training subset of the weighted feature data.
+* Evaluate the model by computing its accuracy score on the held-out validation subset.
 
 Also, for full credit,
 
-* Your solution should not select *all* of the features (if using feature selection). Or, your solution should not assign the same weight to all features (if using feature weighting).
-* Your solution should not select/weight highly the features that are least useful for predicting the target variable.
-* Your solution *should* select/weight highly the features are are most useful for predicting the target variable.
+* Your solution should not assign the same weight to all features.
+* Your solution should not weight highly the features that are least useful for predicting the target variable.
+* Your solution *should* weight highly the features are are most useful for predicting the target variable.
 * Your implementation should satisfy the requirements above generally, not only for this specific data. (It will be evaluated on other data.)
 * Your solution must be well justified.
 
@@ -1872,16 +1868,15 @@ Also, for full credit,
 
 ::: {.cell .markdown}
 
-In the following cell and additional code cells that you add, implement feature selection or feature weighting following the requirements described above, and return the results in `X_trans`:
+In the following cell and additional code cells as needed, implement feature weighting following the requirements described above, and return the results in `X_trans`:
 
-* If you use feature selection, `X_trans` should have all of the rows of `X`, but only a subset of its columns. You should create a variable `feat_inc` which is a list of all of the features you want to include in the model.
-* If you use feature weighting, `X_trans` should have the same dimensions of `X`, but instead of each column being in the range 0-1, each column will be scaled according to its importance (more important features will be scaled up, less important features will be scaled down). You should create a variable `feat_wt` which has a weight for every feature in `X`. Then, you'll multiply `X` by `feat_wt` to get `X_trans`.
+* `X_trans` should have the same dimensions of `X`, but instead of each column being in the range 0-1, each column will be scaled according to its importance (more important features will be scaled up, less important features will be scaled down). You should create a variable `feat_wt` which has a weight for every feature in `X`. Then, you'll multiply `X` by `feat_wt` to get `X_trans`.
 
 Some important notes:
 
-* The goal is to write code to find the feature selection or feature weighting, not to find it by manual inspection! Don't hard-code any values.
-* Although `X_trans` will include all rows of the data, you should not use the test data in the process of finding `feat_inc` or `feat_wt`! Feature selection and feature weighting are considered part of model fitting, and so only the training data may be used in this process.
-* For the "evaluate" part of the optimization, you are free to use an `sklearn` function to compute feature scores, but make sure you understand what it does and are sure it is a good fit for the data and the model!
+* The goal is to write code for feature weighting, not to find it by manual inspection! Don't hard-code any values.
+* Although `X_trans` will include all rows of the data, you should not use the test data in the process of finding `feat_wt`! Feature selection and feature weighting are considered part of model fitting, and so only the training data may be used in this process.
+* You are free to use an `sklearn` function to compute feature scores, but make sure you understand what it does and are sure it is a good fit for the data and the model.
 
 :::
 
@@ -1889,14 +1884,20 @@ Some important notes:
 
 ::: {.cell .code}
 ```python
-# TODO - feature selection OR feature weighting
+# TODO - feature weighting
 
-# if you choose feature selection
-# feat_inc = ...
-# X_trans = X[feat_inc]
+# score_1 = ... # array of scores per column for first scoring function
+# score_2 - ... # array of scores per column for second scoring function
 
-# if you choose feature weighting
-# feat_wt = 
+# Xtr_fw, Xvl_fw, ytr_fw, yvl_fw = train_test_split(...) # divide training data intro training and validation split
+
+# fit KNN model using score_1 to weight features
+# acc_1 = ...   # accuracy of KNN model on validation set (weighted using score_1)
+
+# fit KNN model using score_2 to weight features
+# acc_2 = ...   # accuracy of KNN model on validation set (weighted using score_2)
+
+# feat_wt = ... # final feature weights (whichever of score_1 or score_2 is better)
 # X_trans = X.multiply(feat_wt)
 ```
 :::
@@ -1916,16 +1917,15 @@ X_trans.describe()
 
 
 ::: {.cell .markdown}
-#### TODO - describe your approach to feature selection or feature weighting
+#### TODO - describe your approach to feature weighting
 :::
 
 
 ::: {.cell .markdown}
-In a text cell, describe the approach you used for feature selection or feature weighting. Your answer should include the following parts, in paragraph form:
+In a text cell, describe the approach you used for feature weighting. Your answer should include the following parts, in paragraph form:
 
-* **Part 1: Search**: You used a naive search strategy to score feature subsets of size 1. Is the approach you chose guaranteed to evaluate the optimal feature subset?
-* **Part 2: Evaluate**: describe the two alternative scoring functions you used to evaluate the "goodness" of a feature or feature subset. Why did you think these might be well suited for *this data* and *this model*? Discuss the computation time you estimated - which scoring function took longer to compute?
-* **Part 3: Model Selection**: Discuss the results on the held-out validation set - which scoring function had better performance? 
+* Describe the two alternative scoring functions you used to evaluate the "goodness" of a feature or feature subset. Why did you think these might be well suited for *this data* and *this model*?
+* Discuss the results on the held-out validation set - which scoring function had better performance? (You must refer to specific values from your evaluation.)
 
 :::
 
