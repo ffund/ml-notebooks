@@ -1848,7 +1848,6 @@ For this assignment, you will use a naive search strategy (score each feature in
 * First, divide the training set into a training and validation subset (single hold-out validation set). 
 * I want you to consider **two** different scoring functions of your choice - i.e., compute two sets of "goodness" scores. 
 * When computing scores, you should not impute 0s or any other value for `NaN` values in the data. Instead, you should compute the score for a feature using only the rows in the training data where *that* feature is not missing.
-* Also, for each scoring function, you will use the `%%time` cell magic to estimate how long it takes to compute the scores.
 
 Then, use the hold-out validation set to decide which of the two scoring functions to use. For each scoring function,
 
@@ -1886,10 +1885,10 @@ Some important notes:
 ```python
 # TODO - feature weighting
 
+# Xtr_fw, Xvl_fw, ytr_fw, yvl_fw = train_test_split(...) # divide training data intro training and validation split
+
 # score_1 = ... # array of scores per column for first scoring function
 # score_2 - ... # array of scores per column for second scoring function
-
-# Xtr_fw, Xvl_fw, ytr_fw, yvl_fw = train_test_split(...) # divide training data intro training and validation split
 
 # fit KNN model using score_1 to weight features
 # acc_1 = ...   # accuracy of KNN model on validation set (weighted using score_1)
