@@ -439,6 +439,378 @@ df.head()
 
 ::: {.cell .markdown}
 
+### More `pandas` basics
+
+:::
+
+::: {.cell .markdown}
+
+There are a few basic things that it's helpful to be able to do in `pandas` without consulting documentation. Let's run through these things here:
+
+* get a column or a subset of columns from a `pandas` data frame (and understand what data type is returned in each case!)
+* get a `numpy` array with values from a `pandas` data frame
+* get a row or a subset of rows from a `pandas` data frame.
+
+:::
+
+
+::: {.cell .markdown}
+
+We will often need to select a single column or a subset of columns from a `pandas` data frame. For example, we may have a data frame that includes useful features, identifiers (such as names or ID numbers) that should not be used as features, and a target variable - and we will want to pass just the useful features to a function that will train a model.
+
+The syntax for selecting a subset of columns from a data frame named `df` is:
+
+```
+df[["name_col_1", "name_col_2"]]
+```
+
+etc., where `name_col_1` and `name_col_2` are the names of the columns that you want to select.
+
+Try this now:
+
+:::
+
+::: {.cell .code}
+```python
+df[["Towards Manhattan", "Towards Brooklyn"]]
+```
+:::
+
+::: {.cell .code}
+```python
+df[["Towards Manhattan", "Towards Brooklyn"]].info()
+```
+:::
+
+
+::: {.cell .markdown}
+
+Note that the return value is a *data frame*.
+
+You can get these values as `numpy` array using `.to_numpy()` (or you may see code that does this using `.values` - but this syntax is being phased out). This will be a **2D** `numpy` array (with a row dimension and a column dimension).
+
+:::
+
+::: {.cell .code}
+```python
+df[["Towards Manhattan", "Towards Brooklyn"]].to_numpy()
+```
+:::
+
+::: {.cell .code}
+```python
+df[["Towards Manhattan", "Towards Brooklyn"]].to_numpy().shape
+```
+:::
+
+::: {.cell .markdown}
+
+If you need to select a single column, you can do it in a similar way, but passing only one entry in the list of columns to select - e.g.
+
+```
+df[["name_col_1"]]
+```
+
+and the return value will similarly be a data frame (and after `.to_numpy()`, will be a `numpy` array that is 2D).
+
+:::
+
+::: {.cell .code}
+```python
+df[["Pedestrians"]]
+```
+:::
+
+::: {.cell .markdown}
+
+However, you could also select a single column by passing the column name as a string, instead of as a list, like
+
+```
+df["name_col_1"]
+```
+
+In this case, the return value will be a data *series*, and the `numpy` array returned by `.to_numpy()` is 1D.
+
+:::
+
+::: {.cell .code}
+```python
+df["Pedestrians"]
+```
+:::
+
+::: {.cell .markdown}
+
+Note the differences in the outputs below, depending on whether a string or a list is used inside the `[]`. These differences have implications for further computation using broadcasting rules, or for passing values to functions that require specific types of inputs (e.g. specifically a data frame or 2D array, vs a data series or 1D array).
+
+:::
+
+
+::: {.cell .code}
+```python
+df[["Pedestrians"]].info()
+```
+:::
+
+::: {.cell .code}
+```python
+df["Pedestrians"].info()
+```
+:::
+
+
+
+::: {.cell .code}
+```python
+df[["Pedestrians"]].to_numpy().shape
+```
+:::
+
+
+::: {.cell .code}
+```python
+df["Pedestrians"].to_numpy().shape
+```
+:::
+
+
+
+::: {.cell .markdown}
+
+Next, let's talk about getting a row or subset of rows!
+
+First, let's note that the data we are working with right now has integer indices. These are shown in the first "column" of the print view:
+
+:::
+
+::: {.cell .code}
+```python
+df
+```
+:::
+
+
+::: {.cell .code}
+```python
+df.index.to_numpy()
+```
+:::
+
+
+::: {.cell .markdown}
+
+
+To select rows by passing an integer index or list of indices, we will use either `.iloc[]` or `.loc[]`.
+
+As with column indexing, we can pass a single value (which will return a data series, 1D array) or a list of one or more values (which will return a data frame, 2D array, even if we pass a "list" of one value!)
+
+:::
+
+::: {.cell .code}
+```python
+df.iloc[0]
+```
+:::
+
+
+::: {.cell .code}
+```python
+df.loc[0]
+```
+:::
+
+::: {.cell .code}
+```python
+df.loc[0].info()
+```
+:::
+
+::: {.cell .code}
+```python
+df.iloc[[0, 1, 2]]
+```
+:::
+
+
+::: {.cell .code}
+```python
+df.loc[[0, 1, 2]]
+```
+:::
+
+::: {.cell .code}
+```python
+df.loc[[0, 1, 2]].info()
+```
+:::
+
+::: {.cell .markdown}
+
+Note that in either case, an array of indices can also be passed using a variable. (This will be useful in machine learning contexts, when we may have a large data frame and then an array of indices of samples used for training, and another array of indices of samples used for test/evaluation.)
+
+:::
+
+::: {.cell .code}
+```python
+idx = [0, 1, 2]
+df.loc[idx].info()
+```
+:::
+
+::: {.cell .markdown}
+
+
+Either `.iloc[]` or `.loc[]` can also be used to select specific rows and columns together. 
+
+Since this data frame has columns with names, not integer indices, we will use the column names with `.loc[]`. 
+
+If we use `.iloc[]` we would specify the integer index of the column instead.
+
+:::
+
+::: {.cell .code}
+```python
+df.loc[[0, 1, 2], ['Pedestrians']]
+```
+:::
+
+
+::: {.cell .code}
+```python
+df.iloc[[0, 1, 2], [2]]
+```
+:::
+
+
+::: {.cell .markdown}
+
+Of course, we can also specify multiple columns - 
+
+:::
+
+
+::: {.cell .code}
+```python
+df.loc[[0, 1, 2], ['Pedestrians', 'hour']]
+```
+:::
+
+::: {.cell .markdown}
+
+With respect to the dimension of the return values
+
+* when we pass an array for both row index and column index, the return value will be a data frame (or, after `.to_numpy()`, a 2D array)
+* when we pass a single value for either the row index or column index, and an array for the other index, the return value will be a data series (or, after `.to_numpy()`, a 1d array)
+* when we pass a single value for both the row index and column index, the return value is just a single value, e.g. an integer or a string
+
+:::
+
+::: {.cell .code}
+```python
+# data frame with one value
+df.loc[[0], ['Pedestrians']]
+#df.loc[[0], ['Pedestrians']].info()
+```
+:::
+
+::: {.cell .code}
+```python
+# data series with one value
+df.loc[0, ['Pedestrians']]
+#df.loc[0, ['Pedestrians']].info()
+```
+:::
+
+::: {.cell .code}
+```python
+# also data series with one value
+df.loc[[0], 'Pedestrians']
+#df.loc[[0], 'Pedestrians'].info()
+```
+:::
+
+
+::: {.cell .code}
+```python
+# one value returned as an integer
+df.loc[0, 'Pedestrians']
+```
+:::
+
+
+::: {.cell .markdown}
+
+As with `numpy` array slicing and indexing, we can also use `:` to mean "all" (rows or columns, depending on which dimension it is passed in), and things like `:2` or `100:` or `10:15`, with `.loc[]`:
+:::
+
+::: {.cell .code}
+```python
+df.loc[[0, 1, 2], :]
+```
+:::
+
+::: {.cell .code}
+```python
+df.loc[:, ['Pedestrians', 'hour']]
+```
+:::
+
+::: {.cell .code}
+```python
+df.loc[:2, ['Pedestrians', 'hour']]
+```
+:::
+
+
+::: {.cell .code}
+```python
+df.loc[100:, ['Pedestrians', 'hour']]
+```
+:::
+
+::: {.cell .code}
+```python
+df.loc[10:15, ['Pedestrians', 'hour']]
+```
+:::
+
+::: {.cell .markdown}
+
+`.loc[]` can also accept an array of Boolean indices! For example:
+
+:::
+
+::: {.cell .code}
+```python
+# all samples recorded at 5AM
+df.loc[df.hour==5]
+```
+:::
+
+::: {.cell .code}
+```python
+# all samples recorded at 5AM or 6AM
+df.loc[(df.hour==5) | (df.hour==6)]
+```
+:::
+
+::: {.cell .code}
+```python
+# all samples from January or February where there was some precipitation
+df.loc[(df.month <= 2) & (df.precipitation > 0)]
+```
+:::
+
+
+::: {.cell .markdown}
+
+These basic techniques - including a good understanding of the dimension of return values - will come in handy whenever you are working with data in `pandas`.
+
+:::
+
+
+::: {.cell .markdown}
+
 
 ### Inspect (and possibly clean/filter) the data
 
