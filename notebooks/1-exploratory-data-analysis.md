@@ -828,6 +828,12 @@ For many of these "sanity checks", we will need some *domain knowledge*. It's ha
 
 :::
 
+::: {.cell .markdown}
+
+> **Note**: Ordinarily, if we plan to train a machine learning model, this is the stage at which we would divide the data into a training set (used for all data exploration, pre-processing, model fitting, and model selection tasks) and a test set (used only for evaluation). We are not actually going to train any machine learning model with this data, though, so we can proceed with our exploratory data analysis on the entire dataset.
+
+:::
+
 
 ::: {.cell .markdown}
 
