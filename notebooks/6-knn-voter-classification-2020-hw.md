@@ -1462,7 +1462,7 @@ Note that `numpy` includes many functions that are helpful when working with arr
 To realize these goals, you should modify the `custom_distance` function as follows:
 
 * for a row in `a` and each row in `b`, count the number of values missing in *either* `a`, `b`, or both.
-* then, add a penalty that scales with "number of missing values" to the L1 distance that the original `custom_distance` computes.
+* then, compute a penalty that scales with "number of missing values". Add this penalty to the L1 distance that the original `custom_distance` computes.
 
 :::
 
@@ -1480,7 +1480,7 @@ To realize these goals, you should modify the `custom_distance` function as foll
 * `l1` = total magnitude of "disagreements"/"known dissimilarity" between `a` and each row in `b` (This is the L1 distance for known values). It is already computed by the original `custom_distance`.
 * `n_nan` = total number of NaN/"unknown" values where either `a` *OR* the corresponding row of `b` (or both!) has a NaN.
 
-and you should use both of these (*not* only `l1`) in computing your distances.
+and you should use both of these (*not* only `l1`) in your distances.
 
 
 :::
@@ -1631,7 +1631,7 @@ You will try to improve the model by adding some of these features.
 
 Refer to the PDF documentation to see the question and the possible answers corresponding to each of these features. You may also choose to do some exploratory data analysis, to help you understand these features better.
 
-For your convenience, here are all the possible answers to those survey questions:
+For your convenience, here are all the possible answers to those survey questions (you will need the text of the possible answers in order to design mappings for ordinal features):
 
 :::
 
@@ -2006,6 +2006,12 @@ Check your work:
 ```python
 X_trans.describe()
 ```
+:::
+
+::: {.cell .markdown}
+
+**TODO**: Comment on the results. Which features are assigned the highest weights by your scoring function? Does this make sense, based on what you saw in your data visualization earlier?
+
 :::
 
 ::: {.cell .markdown}
