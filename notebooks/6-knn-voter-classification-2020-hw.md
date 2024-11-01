@@ -737,7 +737,8 @@ def custom_distance(a, b):
     # dif will have NaN for each element where either a or b is NaN
     l1 = np.nansum(dif, axis=1)  # sum of differences, treating NaN as 0
     d[i] = l1
-  return d```
+  return d
+```
 :::
 
 
