@@ -299,7 +299,7 @@ for m in range(n_estimators):
 from sklearn.ensemble import AdaBoostClassifier
 
 clf_ab = AdaBoostClassifier(n_estimators = n_estimators, algorithm='SAMME',
-                            base_estimator = DecisionTreeClassifier(max_depth=1))
+                            estimator = DecisionTreeClassifier(max_depth=1))
 clf_ab.fit(X, y)
 accuracy_score(clf_ab.predict(X), y)
 ```
