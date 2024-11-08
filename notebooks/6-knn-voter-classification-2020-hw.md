@@ -1759,7 +1759,7 @@ If you use AI to generate plotting code for this assignment, you must add a text
 
 ::: {.cell .markdown}
 
-Now, make a similar plot for samples on survey Version 1 only:
+Now, make a similar plot for features on survey Version 1 only:
 :::
 
 ::: {.cell .code}
@@ -1772,7 +1772,7 @@ Now, make a similar plot for samples on survey Version 1 only:
 
 ::: {.cell .markdown}
 
-for samples on survey Version 2 only:
+for features on survey Version 2 only:
 :::
 
 ::: {.cell .code}
@@ -1785,7 +1785,7 @@ for samples on survey Version 2 only:
 
 ::: {.cell .markdown}
 
-for samples on survey Version 3 only:
+for features on survey Version 3 only:
 :::
 
 ::: {.cell .code}
@@ -1798,7 +1798,7 @@ for samples on survey Version 3 only:
 
 ::: {.cell .markdown}
 
-and for samples on survey Version 4 only:
+and for features on survey Version 4 only:
 :::
 
 ::: {.cell .code}
