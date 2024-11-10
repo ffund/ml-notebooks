@@ -1622,7 +1622,7 @@ in addition to the features `age`, `qraceai`, and `educ18`.
 
 You will try to improve the model by adding some of these features. 
 
-(Note: you may not add features that are included in the lists above. We are deliberately excluding features that ask about the candidates, or about political affiliations, because we are trying to develop a model that predicts vote using *only* demographic information and opinions about issues.)
+(Note: you may not add features that are **not** included in the lists above. We are deliberately excluding features that ask about the candidates, or about political affiliations, because we are trying to develop a model that predicts vote using *only* demographic information and opinions about issues.)
 
 
 :::
