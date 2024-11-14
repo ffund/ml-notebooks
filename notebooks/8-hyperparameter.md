@@ -29,7 +29,7 @@ import scipy
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.utils.fixes import loguniform
+from scipy.stats import loguniform
 ```
 :::
 
