@@ -443,7 +443,7 @@ X_grid = X_grid/(n_plot-1.0)
 
 # Get the response in the hidden units 
 layer_hid = model.get_layer('hidden')
-model1 = Model(inputs=model.input,
+model1 = Model(inputs=model.get_layer(index=0).input,
                outputs=layer_hid.output)
 zhid_plot = model1.predict(X_grid)
 zhid_plot = zhid_plot.reshape((n_plot,n_plot,nh))
