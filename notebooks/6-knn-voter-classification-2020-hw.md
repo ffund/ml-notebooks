@@ -1495,7 +1495,7 @@ and you should use both of these (*not* only `l1`) in your distances.
 ```python
 # TODO - implement distance metric
 
-def custom_distance(a, b, debug=False):
+def custom_distance(a, b):
 
   # fill in your solution here!
 
