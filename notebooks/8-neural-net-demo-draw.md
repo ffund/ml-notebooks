@@ -225,15 +225,14 @@ We first import some key sub-packages from `keras`.
 ::: {.cell .code }
 ```python
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.layers import Dense, Activation
+from tensorflow.keras.layers import Dense, Activation, Input
 ```
 :::
 
 ::: {.cell .markdown }
-Next, we clear the session. This is not strictly necessary since we
-haven't computed anything yet, but it is good practice if you are going
-to train multiple "temporary" models in a row - it frees up memory
-associated with models that are no longer in scope.
+
+Keras keeps track of computational graphs behind the scenes, and sometimes (e.g. you run this notebook several times) it may be holding on to computational graphs for models that are no longer in scope (e.g. you no longer have a variable pointing to that model). The following command frees up memory for those models, just in case.
+
 :::
 
 ::: {.cell .code }
@@ -273,9 +272,14 @@ nin = 2  # dimension of input data
 nh = 4  # number of hidden units
 nout = 1  # number of outputs = 1 since this is binary
 model = Sequential()
-model.add(Dense(units=nh, input_shape=(nin,), activation='sigmoid', name='hidden'))
+model.add(Input(shape=(nin,)))
+model.add(Dense(units=nh, activation='sigmoid', name='hidden'))
 model.add(Dense(units=nout, activation='sigmoid', name='output'))
 ```
+:::
+
+::: {.cell .markdown}
+(Note: a previous version of this notebook specified the input shape in the first hidden layer, instead of having a separate `Input`, but this practice is no longer recommended.)
 :::
 
 ::: {.cell .markdown }
