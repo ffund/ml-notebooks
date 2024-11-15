@@ -38,7 +38,7 @@ from sklearn.model_selection import train_test_split
 from sklearn import ensemble, neighbors, linear_model, svm
 
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.layers import Dense, Activation, Conv2D, Flatten, BatchNormalization, InputLayer, AvgPool2D, MaxPool2D, GlobalAvgPool2D
+from tensorflow.keras.layers import Dense, Activation, Conv2D, Flatten, BatchNormalization, Input, AvgPool2D, MaxPool2D, GlobalAvgPool2D
 import tensorflow.keras.backend as K
 from keras.utils import plot_model
 ```
@@ -216,9 +216,10 @@ nh2 = 64
 nh3 = 64  
 nout = 1 
 model_fc = Sequential()
-model_fc.add(Dense(units=nh1, input_shape=(nin,), activation='relu', name='hidden1'))
-model_fc.add(Dense(units=nh2, input_shape=(nh1,), activation='relu', name='hidden2'))
-model_fc.add(Dense(units=nh3, input_shape=(nh2,), activation='relu', name='hidden3'))
+model_fc.add(Input(shape=(nin,)))
+model_fc.add(Dense(units=nh1, activation='relu', name='hidden1'))
+model_fc.add(Dense(units=nh2, activation='relu', name='hidden2'))
+model_fc.add(Dense(units=nh3, activation='relu', name='hidden3'))
 model_fc.add(Dense(units=nout, activation='sigmoid', name='output'))
 
 model_fc.compile(optimizer='adam',
@@ -277,7 +278,7 @@ plt.ylim(0,1);
 ```python
 filters = 10
 model_conv = Sequential()
-model_conv.add(InputLayer(input_shape=x_train_img.shape[1:]))
+model_conv.add(Input(shape=x_train_img.shape[1:]))
 model_conv.add(Conv2D(filters, kernel_size=3, padding="same", activation="relu", use_bias=False ))
 model_conv.add(MaxPool2D(pool_size=(2, 2)))
 model_conv.add(BatchNormalization())
