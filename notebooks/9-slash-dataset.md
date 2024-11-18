@@ -37,10 +37,15 @@ import scipy
 from sklearn.model_selection import train_test_split
 from sklearn import ensemble, neighbors, linear_model, svm
 
+import tensorflow as tf
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Dense, Activation, Conv2D, Flatten, BatchNormalization, Input, AvgPool2D, MaxPool2D, GlobalAvgPool2D
 import tensorflow.keras.backend as K
 from keras.utils import plot_model
+
+from ipywidgets import interactive, Layout
+import ipywidgets as widgets
+
 ```
 :::
 
@@ -471,34 +476,44 @@ new_test_score = model_conv.evaluate(x_new[...,np.newaxis], y_new)[1]
 
 ::: {.cell .code }
 ```python
-from ipywidgets import interactive
-from ipywidgets import Layout
-import ipywidgets as widgets
-
 def plot_layer(test_idx, layer_idx):
-  convout1_f = K.function(model_conv.inputs, [model_conv.layers[layer_idx].output])
-  convolutions = np.squeeze(convout1_f(x[test_idx].reshape((1,30,30,1))))
-  if (len(convolutions.shape)) > 1:
-    m = convolutions.shape[2]
-    n = int(np.ceil(np.sqrt(m)))
+    # Create a new model that outputs the target layer instead of using K.function()
+    layer_model = tf.keras.Model(inputs=model_conv.inputs,
+                               outputs=model_conv.layers[layer_idx].output)
 
-    # Visualization of each filter of the layer
-    fig = plt.figure(figsize=(15,12))
-    print(model_conv.layers[layer_idx].name)
-    for i in range(m):
-        ax = fig.add_subplot(n,n,i+1)
-        ax.imshow(convolutions[:,:,i], cmap='gray')
-        ax.set_title(i)
-  else:
-    print(model_conv.layers[layer_idx].name)
-    plt.imshow(convolutions.reshape(1, convolutions.shape[0]), cmap='gray');
-    plt.yticks([])
-    plt.xticks(range(convolutions.shape[0]))
+    #convout1_f = K.function(model_conv.inputs, [model_conv.layers[layer_idx].output])
+
+    # Get the layer output using this model
+    layer_output = layer_model(tf.convert_to_tensor(x[test_idx].reshape((1,30,30,1))))
+    convolutions = np.squeeze(layer_output.numpy())
+
+    #convolutions = np.squeeze(convout1_f(x[test_idx].reshape((1,30,30,1))))
+
+    if (len(convolutions.shape)) > 1:
+        m = convolutions.shape[2]
+        n = int(np.ceil(np.sqrt(m)))
+
+        # Visualization of each filter of the layer
+        fig = plt.figure(figsize=(15,12))
+        print(model_conv.layers[layer_idx].name)
+        for i in range(m):
+            ax = fig.add_subplot(n,n,i+1)
+            ax.imshow(convolutions[:,:,i], cmap='gray')
+            ax.set_title(i)
+    else:
+        print(model_conv.layers[layer_idx].name)
+        plt.imshow(convolutions.reshape(1, convolutions.shape[0]), cmap='gray')
+        plt.yticks([])
+        plt.xticks(range(convolutions.shape[0]))
+    plt.show()
+
 
 style = {'description_width': 'initial'}
 layout = Layout(width="800px")
 test_idx = widgets.IntSlider(min=0, max=len(x)-1, value=0, style=style, layout=layout)
 layer_idx = widgets.IntSlider(min=0, max=len(model_conv.layers)-2, value=0, style=style, layout=layout)
+
+
 interactive(plot_layer, test_idx=test_idx, layer_idx=layer_idx)
 ```
 :::
