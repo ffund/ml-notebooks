@@ -1058,8 +1058,6 @@ image_bw = image.convert('L')
 image_bw_resized = image_bw.resize((28,28), Image.BICUBIC)
 image_bw_resized_inverted = PIL.ImageOps.invert(image_bw_resized)
 test_sample = np.array(image_bw_resized_inverted).reshape(1, 28, 28)
-test_sample_conv = test_sample.reshape(1, 28, 28, 1)
-test_sample_conv = 2*(test_sample_conv - 0.5)
 p = plt.imshow(np.reshape(test_sample, (28,28)), cmap=plt.cm.gray,);
 p = plt.title('Shape: ' + str(test_sample.shape))
 ```
@@ -1087,7 +1085,7 @@ plt.title("Convolutional network");
 
 ::: {.cell .code }
 ```python
-test_probs = model_aug.predict(test_sample_conv)
+test_probs = model_aug.predict(test_sample)
 sns.barplot(x=np.arange(0,10), y=test_probs.squeeze());
 plt.ylabel("Probability");
 plt.xlabel("Class");
