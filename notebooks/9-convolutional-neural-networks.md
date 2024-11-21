@@ -43,8 +43,7 @@ from sklearn.metrics import accuracy_score
 import tensorflow as tf
 from tensorflow.keras import optimizers
 from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
-from keras.layers import Conv2D, MaxPooling2D, Input
+from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization, Rescaling, Conv2D, MaxPooling2D, Input
 from keras import backend as K
 from keras.datasets import mnist     
 from keras.utils import plot_model
@@ -86,54 +85,73 @@ X_test.shape
 ::: {.cell .markdown }
 *Attribution: This section is based closely on [this demo notebook by
 Sundeep
-Rangan](https://github.com/sdrangan/introml/blob/master/unit09_neural/demo2_mnist_neural.ipynb)*
+Rangan](https://github.com/sdrangan/introml/blob/master/unit09_neural/demo2_mnist_neural_tf.ipynb)*
 
-First, we will train a simple neural network. We have:
+First, we will train a simple neural network. 
 
--   One hidden layer with $N_H=100$ units, with sigmoid activation.
--   One output layer with $N_O=10$ units, one for each of the 10
-    possible classes. The output activation is softmax, which is used
-    for multi-class targets
 :::
 
-::: {.cell .markdown }
-We will prepare our data by scaling it.
+::: {.cell .markdown}
 
-We will also separate part of the training data to use for model tuning.
-The accuracy on this validation set will be used to determine when to
-stop training the model.
+We will train our neural network with early stopping, which is a kind of model selection/model tuning, so we will first split out some data for a validation set:
+
+:::
+
+
+::: {.cell .code }
+```python
+# split training set so we can use part of it for model tuning
+X_tr, X_vl, y_tr, y_vl = train_test_split(X_train, y_train, test_size=1.0/6.0)
+```
+:::
+
+
+::: {.cell .markdown }
+
+We will also need to think about pre-processing the data at the input to our network. To understand why, look at one data sample - specifically, its shape and min and max value.
+
 :::
 
 ::: {.cell .code }
 ```python
-# scale
-X_train_nn = 2*(X_train/255 - 0.5)
-X_test_nn  = 2*(X_test/255 - 0.5)
+X_tr[0].shape
+```
+:::
 
-# reshape
-X_train_nn = X_train_nn.reshape(X_train.shape[0], X_train.shape[1]*X_train.shape[2])
-X_test_nn = X_test_nn.reshape(X_test.shape[0], X_test.shape[1]*X_test.shape[2])
 
-# split training set so we can use part of it for model tuning
-X_train_nn, X_val_nn, y_train_nn, y_val_nn = train_test_split(X_train_nn, y_train, test_size=1.0/6.0)
-
-print("Training data shape", X_train_nn.shape)
-print("Validation data shape", X_val_nn.shape)
-print("Testing data shape", X_test_nn.shape)
+::: {.cell .code }
+```python
+X_tr[0].min(), X_tr[0].max()
 ```
 :::
 
 ::: {.cell .markdown }
-Then, we can prepare our neural network:
+
+For a fully connected neural network, we will need to "flatten" the data from its current 28x28 shape to a 1D 784 shape, using a `Flatten` layer right after the input.  We will then add a `Rescaling` layer, to rescale so that the min and max values are -1 and 1, respectively.
+
+Then, we will have:
+
+-   One hidden layer with $N_H=100$ units, with ReLu activation.
+-   One output layer with $N_O=10$ units, one for each of the 10
+    possible classes. The output activation is softmax, which is used
+    for multi-class targets.
+
+:::
+
+
+::: {.cell .markdown }
+With that in mind, we can prepare our fully connected neural network.
 :::
 
 ::: {.cell .code }
 ```python
-nin = X_train_nn.shape[1]  # dimension of input data
+nin = X_tr[0].shape  # dimension of one sample of input data
 nh = 512     # number of hidden units
 nout = 10   # number of outputs 
 model_fc = Sequential()
 model_fc.add(Input(shape=(nin,)))
+model_fc.add(Flatten())
+mode_fc.add(Rescaling(scale=1./127.5, offset=-1))
 model_fc.add(Dense(units=nh, activation='relu', name='hidden'))
 model_fc.add(Dense(units=nout, activation='softmax', name='output'))
 model_fc.summary()
@@ -170,15 +188,15 @@ model_fc.compile(optimizer=opt,
 Finally, we are ready to train our network. We wil specify the number of
 epochs and the batch size. We will also use a callback function to
 configure the training process to stop before the configured number of
-epochs, if no improvement in the validation set accuracy is observed for
+epochs, if no improvement in the validation set loss is observed for
 several epochs. We will also the restore the weights that had the best
 performance on the validation set.
 :::
 
 ::: {.cell .code }
 ```python
-es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', 
-                                      patience=5,restore_best_weights=True )
+es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='max', 
+                                      patience=10,restore_best_weights=True )
 ```
 :::
 
@@ -192,9 +210,9 @@ which reports the time to execute the entire cell
 ::: {.cell .code }
 ```python
 %%time
-hist = model_fc.fit(X_train_nn, y_train_nn, 
+hist = model_fc.fit(X_tr, y_tr, 
                        epochs=100, batch_size=128, 
-                       validation_data=(X_val_nn,y_val_nn), 
+                       validation_data=(X_vl,y_vl), 
                        callbacks=[es])
 ```
 :::
@@ -206,8 +224,6 @@ overfitted; we may suspect overfitting if the training performance is
 improving with additional training epochs while the validation
 performance is getting worse.
 
-In this case, we can see that we "saturated" the training accuracy at
-100%, while the accuracy on the test set is a bit lower than that.
 :::
 
 ::: {.cell .code }
@@ -229,7 +245,7 @@ Now we can make predictions with our fitted model:
 
 ::: {.cell .code }
 ```python
-%time y_pred_prob_nn = model_fc.predict(X_test_nn)
+%time y_pred_prob_nn = model_fc.predict(X_test)
 y_pred_nn = np.argmax(y_pred_prob_nn, axis=-1)
 ```
 :::
@@ -251,7 +267,7 @@ Note that we can also compute the accuracy with
 
 ::: {.cell .code }
 ```python
-score = model_fc.evaluate(X_test_nn, y_test)
+score = model_fc.evaluate(X_test, y_test)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 ```
@@ -358,21 +374,8 @@ p = plt.title('Shape: ' + str(np.asarray(image_bw_resized_inverted).shape))
 
 ::: {.cell .code }
 ```python
-# adjust contrast and scale
-pixel_filter = 20 # value from 0 to 100 - may need to adjust this manually
-min_pixel = np.percentile(image_bw_resized_inverted, pixel_filter)
-image_bw_resized_inverted_scaled = np.clip(image_bw_resized_inverted-min_pixel, 0, 255)
-max_pixel = np.max(image_bw_resized_inverted_scaled)
-image_bw_resized_inverted_scaled = np.asarray(image_bw_resized_inverted_scaled)/max_pixel
-p = plt.imshow(np.asarray(image_bw_resized_inverted_scaled), cmap=plt.cm.gray,);
-p = plt.title('Shape: ' + str(np.asarray(image_bw_resized_inverted_scaled).shape))
-```
-:::
-
-::: {.cell .code }
-```python
-# finally, reshape to (1, 784) - 1 sample, 784 features
-test_sample = np.array(image_bw_resized_inverted_scaled).reshape(1,784)
+# finally, turn to a numpy array
+test_sample = np.array(image_bw_resized_inverted).reshape(1, 28, 28)
 p = plt.imshow(np.reshape(test_sample, (28,28)), cmap=plt.cm.gray,);
 p = plt.title('Shape: ' + str(test_sample.shape))
 ```
@@ -550,47 +553,11 @@ Also, we will try to improve performance using the following techniques:
 :::
 
 
-::: {.cell .markdown }
-Then, we prepare our data. First, we reshape: the convolutional neural
-network requires each sample to have a 3D shape, including a depth -
-here, our image has only one color channel, so the depth is 1. We also
-scale and shift our data.
-
-We separate part of the training data to use for model tuning. The
-accuracy on this validation set will be used to determine when to stop
-training the model.
-:::
-
-::: {.cell .code }
-```python
-# reshape input to a 28x28x1 volume 
-X_train_conv = X_train.reshape(X_train.shape[0], 28, 28, 1) 
-X_test_conv = X_test.reshape(X_test.shape[0], 28, 28, 1)
-
-# scale
-X_train_conv = 2*(X_train_conv/255 - 0.5)
-X_test_conv = 2*(X_test_conv/255 - 0.5)
-
-# convert string classes to integer equivalents
-y_train = y_train.astype(np.int32)
-y_test  = y_test.astype(np.int32)
-
-# also add dimension to target
-y_train_conv = y_train.reshape(-1,1)
-y_test_conv = y_test.reshape(-1,1)
-
-# split training set so we can use part of it for model tuning
-X_train_conv, X_val_conv, y_train_conv, y_val_conv = train_test_split(X_train_conv, y_train_conv, test_size=1.0/6.0)
-
-print("Training data shape", X_train_conv.shape)
-print("Validation data shape", X_val_conv.shape)
-print("Testing data shape", X_test_conv.shape)
-```
-:::
 
 ::: {.cell .markdown }
-Next, we prepare our model with a sequence of `Conv2D`,
-`BatchNormalization`, `Activation`, `MaxPooling2D`, `Dropout`, and
+We prepare our model with the same `Input` and `Rescaling` layers, but note that this
+time we do *not* `Flatten` the data at the input. This is followed by a sequence of `Conv2D`,
+`BatchNormalization`, `Activation`, `MaxPooling2D`, `Dropout`, and finally `Flatten` and 
 `Dense` layers.
 :::
 
@@ -605,6 +572,7 @@ n_classes = 10                                      # number of classes
 
 model_conv = Sequential()                                 # Linear stacking of layers
 model_conv.add(Input(shape=input_shape))
+model_conv.add(Rescaling(scale=1./127.5, offset=-1))
 
 # Convolution Layer 1
 model_conv.add(Conv2D(32, (3, 3))) 			                  # 32 3x3 kernels
@@ -659,26 +627,25 @@ model_conv.compile(optimizer=opt,
 :::
 
 ::: {.cell .markdown }
-Next, we prepare our Early Stopping callback. We will stop training if 5
-epochs pass without an improvement in the validation accuracy, and at
+Next, we repeat our Early Stopping callback. We will stop training if 10
+epochs pass without an improvement in the validation loss, and at
 that point we will restore the model with the best validation accuracy
 seen so far.
 :::
 
 ::: {.cell .code }
 ```python
-es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', 
-                                      patience=5,restore_best_weights=True )
+es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='max', 
+                                      patience=10,restore_best_weights=True )
 ```
 :::
 
 ::: {.cell .code }
 ```python
 %%time
-# steps per epoch should be n_samples/batch_size
-hist = model_conv.fit(X_train_conv, y_train_conv, 
-                           epochs = 20, batch_size=128,
-                           validation_data=(X_val_conv, y_val_conv),
+hist = model_conv.fit(X_tr, y_tr, 
+                           epochs = 100, batch_size=128,
+                           validation_data=(X_vl, y_vl),
                            callbacks=[es])
 ```
 :::
@@ -698,14 +665,14 @@ plt.legend(['Training accuracy', 'Validation accuracy']);
 
 ::: {.cell .code }
 ```python
-%time y_pred_prob_conv = model_conv.predict(X_test_conv)
+%time y_pred_prob_conv = model_conv.predict(X_test)
 y_pred_conv = np.argmax(y_pred_prob_conv, axis=-1)
 ```
 :::
 
 ::: {.cell .code }
 ```python
-score = model_conv.evaluate(X_test_conv, y_test_conv)
+score = model_conv.evaluate(X_test, y_test)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 ```
@@ -742,20 +709,13 @@ test sample we uploaded previously.
 
 ::: {.cell .code }
 ```python
-test_sample_conv = test_sample.reshape(1, 28, 28, 1)
-test_sample_conv = 2*(test_sample_conv - 0.5)
+test_probs = model_conv.predict(test_sample)
 ```
 :::
 
 ::: {.cell .code }
 ```python
-test_probs = model_conv.predict(test_sample_conv)
-```
-:::
-
-::: {.cell .code }
-```python
-plt.imshow(test_sample_conv.reshape(28, 28), cmap='gray');
+plt.imshow(test_sample.reshape(28, 28), cmap='gray');
 ```
 :::
 
@@ -782,7 +742,7 @@ We will select one input to examine:
 ```python
 # choose an image to explore
 img_index = 3675
-img = X_test_conv[img_index]
+img = X_test[img_index]
 # add an extra dimension to it so it is in 4D
 img = img.reshape(1,28,28,1)
 plt.figure();
@@ -800,7 +760,7 @@ def plot_layer(layer_idx):
 
   layer_model = tf.keras.Model(inputs=model_conv.inputs,
                             outputs=model_conv.layers[layer_idx].output)
-  layer_output = layer_model(X_test_conv[img_index].reshape(1,28,28,1))
+  layer_output = layer_model(X_test[img_index].reshape(1,28,28,1))
   convolutions = np.squeeze(layer_output.numpy())
   if (len(convolutions.shape)) > 1:
 
@@ -819,7 +779,7 @@ def plot_layer(layer_idx):
 
 style = {'description_width': 'initial'}
 layout = Layout(width="800px")
-layer_idx = widgets.IntSlider(min=0, max=13, value=0, style=style, layout=layout)
+layer_idx = widgets.IntSlider(min=1, max=14, value=1, style=style, layout=layout)
 interactive(plot_layer, layer_idx=layer_idx)
 ```
 :::
@@ -870,7 +830,7 @@ from tensorflow.keras.models import load_model
 model2 = load_model("mnist_conv_mod.keras")
 
 # use saved model to predict new samples
-y_pred_prob_conv2 = model2.predict(X_test_conv)
+y_pred_prob_conv2 = model2.predict(X_test)
 y_pred_conv2 = np.argmax(y_pred_prob_conv, axis=-1)
 acc = accuracy_score(y_test, y_pred_conv2)
 print("Accuracy of saved model on test set: %f" % acc)
@@ -902,7 +862,8 @@ n_classes = 10                                      # number of classes
 
 model_aug = Sequential()                                 # Linear stacking of layers
 model_aug.add(Input(shape=input_shape))
-      
+model_aug.add(Rescaling(scale=1./127.5, offset=-1))
+
 # Convolution Layer 1
 model_aug.add(Conv2D(32, (3, 3)))                        # 32 3x3 kernels
 model_aug.add(BatchNormalization(axis=-1))               # normalize 
@@ -951,43 +912,56 @@ model_aug.compile(optimizer=opt,
 :::
 
 ::: {.cell .markdown }
-In the following cell, we will use the `ImageDataGenerator` in `keras`
-for data augmentation. This function will generate versions of the
-training images that have some image effects applied: rotation, shift,
-shear, zoom.
+In the following cell, we will use the `image` functions in Tensorflow for data augmentation. This function will generate versions of the training images that have some image effects applied: brightness, contrast, and crop (and then resize back to the expected shape).
+
+We will set up a dataset "pipeline" that gets images in batches from memory, applies the augmentation, then passes the augmented images to the model.
+
+Note that the augmentation is applied only to the training data, not to validation or test data.
 :::
 
 ::: {.cell .code }
 ```python
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+def augment_images(image, label):
+    image = tf.image.random_brightness(image, max_delta=0.1)
+    image = tf.image.random_contrast(image, lower=0.9, upper=1.1)
+    image = tf.image.random_crop(
+    image, size=(image.shape[0] - 4, image.shape[1] - 4, image.shape[2])
+    )
+    image = tf.image.resize(image, [28,28])
+    return image, label
 
-train_gen = ImageDataGenerator(rotation_range=8, width_shift_range=0.08, shear_range=0.3,
-                         height_shift_range=0.08, zoom_range=0.08)
-train_generator = train_gen.flow(X_train_conv, y_train_conv, batch_size=128)
+tr_ds = tf.data.Dataset.from_tensor_slices((X_tr.reshape(-1,28,28,1), y_tr))
+tr_ds = tr_ds.shuffle(buffer_size=1000).map(
+    augment_images, num_parallel_calls=tf.data.AUTOTUNE
+).batch(128).prefetch(tf.data.AUTOTUNE)
 
-val_gen = ImageDataGenerator()
-val_generator = val_gen.flow(X_val_conv, y_val_conv, batch_size=128)
+vl_ds = tf.data.Dataset.from_tensor_slices((X_vl.reshape(-1,28,28,1), y_vl))
+vl_ds = vl_ds.batch(128).prefetch(tf.data.AUTOTUNE)
+
+ts_ds = tf.data.Dataset.from_tensor_slices((X_test.reshape(-1,28,28,1), y_test))
+ts_ds = ts_ds.batch(128).prefetch(tf.data.AUTOTUNE)
+
 ```
 :::
 
 ::: {.cell .markdown }
 To train our model with data augmentation, we will use the
-`fit` function and pass our generator.
+`fit` function and pass our dataset.
 :::
 
 ::: {.cell .code }
 ```python
 %%time
-hist = model_aug.fit(train_generator, 
-                          epochs = 20,
-                          validation_data = val_generator,
+hist = model_aug.fit(tr_ds, 
+                          epochs = 100,
+                          validation_data = vl_ds,
                           callbacks=[es])
 ```
 :::
 
 ::: {.cell .code }
 ```python
-score = model_aug.evaluate(X_val_conv, y_val_conv)
+score = model_aug.evaluate(ts_ds)
 ```
 :::
 
@@ -1006,14 +980,14 @@ plt.legend(['training accuracy', 'validation accuracy']);
 
 ::: {.cell .code }
 ```python
-%time y_pred_prob_aug = model_aug.predict(X_test_conv)
+%time y_pred_prob_aug = model_aug.predict(X_test)
 y_pred_aug = np.argmax(y_pred_prob_aug, axis=-1)
 ```
 :::
 
 ::: {.cell .code }
 ```python
-score = model_aug.evaluate(X_test_conv, y_test_conv)
+score = model_aug.evaluate(X_test, y_test)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 ```
@@ -1045,7 +1019,7 @@ Now, let's see its performance on our own test sample:
 
 ::: {.cell .code }
 ```python
-test_probs = model_aug.predict(test_sample_conv)
+test_probs = model_aug.predict(test_sample)
 ```
 :::
 
@@ -1083,12 +1057,7 @@ image = Image.open(filename)
 image_bw = image.convert('L')
 image_bw_resized = image_bw.resize((28,28), Image.BICUBIC)
 image_bw_resized_inverted = PIL.ImageOps.invert(image_bw_resized)
-# adjust contrast and scale
-min_pixel = np.percentile(image_bw_resized_inverted, pixel_filter)
-image_bw_resized_inverted_scaled = np.clip(image_bw_resized_inverted-min_pixel, 0, 255)
-max_pixel = np.max(image_bw_resized_inverted)
-image_bw_resized_inverted_scaled = np.asarray(image_bw_resized_inverted_scaled)/max_pixel
-test_sample = np.array(image_bw_resized_inverted_scaled).reshape(1,784)
+test_sample = np.array(image_bw_resized_inverted).reshape(1, 28, 28)
 test_sample_conv = test_sample.reshape(1, 28, 28, 1)
 test_sample_conv = 2*(test_sample_conv - 0.5)
 p = plt.imshow(np.reshape(test_sample, (28,28)), cmap=plt.cm.gray,);
@@ -1108,7 +1077,7 @@ plt.title("Fully connected network");
 
 ::: {.cell .code }
 ```python
-test_probs = model_conv.predict(test_sample_conv)
+test_probs = model_conv.predict(test_sample)
 sns.barplot(x=np.arange(0,10), y=test_probs.squeeze());
 plt.ylabel("Probability");
 plt.xlabel("Class");
