@@ -644,7 +644,7 @@ Here, we apply data augmentation and preprocessing to the training data; and jus
 
 ::: {.cell .code }
 ```python
-BATCH_SIZE=64
+BATCH_SIZE=4
 ds_train = ds_train.map(preprocess_image)
 ds_train = ds_train.map(augment_image)
 ds_train = ds_train.shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
