@@ -57,8 +57,8 @@ print('Tensorflow version:', tf.__version__)
 
 ::: {.cell .markdown }
 The "rock paper scissors" dataset is available directly from the
-Tensorflow package. In the cells that follow, we'll get the data, plot
-a few examples, and also do some preprocessing.
+`tensorflow_datasets` package. In the cells that follow, we'll get the data, plot
+a few examples, and also prepare a preprocessing function (which we won't apply yet).
 :::
 
 ::: {.cell .code }
@@ -73,6 +73,7 @@ import tensorflow_datasets as tfds
     'rock_paper_scissors',
     split=['train', 'test'],
     shuffle_files=True,
+    as_supervised=True,  # ensures output is (image, label)
     with_info=True
 )
 ```
@@ -94,6 +95,12 @@ classes = np.array(['rock', 'paper', 'scissors'])
 ## Pre-process dataset
 :::
 
+::: {.cell .markdown }
+
+Each of the base models that comes in Keras has its own `preprocess_input` function. We're going to use a [MobileNetV2](https://keras.io/api/applications/mobilenet/#mobilenetv2-function) model (which expects image data to have values in the -1 to 1 range), so we will use its specific preprocessing function.
+
+:::
+
 ::: {.cell .code }
 ```python
 INPUT_IMG_SIZE = 224
@@ -103,43 +110,21 @@ INPUT_IMG_SHAPE = (224, 224, 3)
 
 ::: {.cell .code }
 ```python
-def preprocess_image(sample):
-    sample['image'] = tf.cast(sample['image'], tf.float32)
-    sample['image'] = sample['image'] / 255.
-    sample['image'] = tf.image.resize(sample['image'], [INPUT_IMG_SIZE, INPUT_IMG_SIZE])
-    return sample
-```
-:::
-
-::: {.cell .code }
-```python
-ds_train = ds_train.map(preprocess_image)
-ds_test  = ds_test.map(preprocess_image)
-```
-:::
-
-::: {.cell .code }
-```python
-fig = tfds.show_examples(ds_train, ds_info, )
+def preprocess_image(image, label):
+    image = tf.cast(image, tf.float32)
+    image = tf.image.resize(image, (INPUT_IMG_SIZE, INPUT_IMG_SIZE))
+    # Preprocessing for MobileNetV2 - scales to whatever range MobileNetV2 expects
+    image = tf.keras.applications.mobilenet_v2.preprocess_input(image)  
+    return image, label
 ```
 :::
 
 ::: {.cell .markdown }
-We'l convert to `numpy` format again:
+
+We won't apply this preprocessing to our dataset yet, but we will get this function ready so that we can apply it to a test sample very soon.
+
 :::
 
-::: {.cell .code }
-```python
-train_numpy = np.vstack(list(tfds.as_numpy(ds_train)))
-test_numpy = np.vstack(list(tfds.as_numpy(ds_test)))
-
-X_train = np.array(list(map(lambda x: x[0]['image'], train_numpy)))
-y_train = np.array(list(map(lambda x: x[0]['label'], train_numpy)))
-
-X_test = np.array(list(map(lambda x: x[0]['image'], test_numpy)))
-y_test = np.array(list(map(lambda x: x[0]['label'], test_numpy)))
-```
-:::
 
 ::: {.cell .markdown }
 ## Upload custom test sample
@@ -169,7 +154,7 @@ filename = 'scissors.png'
 # pre-process image
 image = Image.open(filename).convert('RGB')
 image_resized = image.resize((INPUT_IMG_SIZE, INPUT_IMG_SIZE), Image.BICUBIC)
-test_sample = np.array(image_resized)/255.0
+test_sample = np.array(image_resized)
 test_sample = test_sample.reshape(1, INPUT_IMG_SIZE, INPUT_IMG_SIZE, 3)
 ```
 :::
@@ -194,7 +179,7 @@ additional training.
 :::
 
 ::: {.cell .markdown }
-Here\'s a table of the models available as Keras Applications.
+Here is a table of the models available as Keras Applications.
 
 In this table, the top-1 and top-5 accuracy refer to the model\'s
 performance on the ImageNet validation dataset, and depth is the depth
@@ -459,7 +444,9 @@ base_model.summary()
 
 ::: {.cell .code }
 ```python
-base_probs = base_model.predict(test_sample)
+# preprocess test sample before using it
+test_sample_pre, _ = preprocess_image(test_sample, label=2)
+base_probs = base_model.predict(test_sample_pre)
 base_probs.shape
 ```
 :::
@@ -562,12 +549,6 @@ This time, we will get the MobileNetV2 model *without* the fully
 connected layer at the top of the network.
 :::
 
-::: {.cell .code }
-```python
-import tensorflow.keras.backend as K
-K.clear_session()
-```
-:::
 
 ::: {.cell .code }
 ```python
@@ -644,26 +625,42 @@ Also, we'll use data augmentation:
 
 ::: {.cell .code }
 ```python
-BATCH_SIZE=256
+def augment_image(image, label):
+    image = tf.image.random_flip_left_right(image)
+    image = tf.image.random_brightness(image, max_delta=0.1)
+    image = tf.image.random_contrast(image, lower=0.9, upper=1.1)
+    image = tf.image.random_crop(
+    image, size=(image.shape[0] - 4, image.shape[1] - 4, image.shape[2])
+    )
+    image = tf.image.resize(image, (INPUT_IMG_SIZE, INPUT_IMG_SIZE))
+    return image, label
 ```
+:::
+
+
+::: {.cell .markdown }
+Here, we apply data augmentation and preprocessing to the training data; and just preprocessing to the test data.
 :::
 
 ::: {.cell .code }
 ```python
-from keras.preprocessing.image import ImageDataGenerator
+BATCH_SIZE=256
+ds_train = ds_train.map(preprocess_image)
+ds_train = ds_train.map(augment_image)
+ds_train = ds_train.shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
-train_gen = ImageDataGenerator(rotation_range=8, width_shift_range=0.08, shear_range=0.3,
-                         height_shift_range=0.08, zoom_range=0.08)
-train_generator = train_gen.flow(X_train, y_train, batch_size=BATCH_SIZE)
-
-val_gen = ImageDataGenerator()
-val_generator = val_gen.flow(X_test, y_test, batch_size=BATCH_SIZE)
+ds_test  = ds_test.map(preprocess_image)
+ds_test  = ds_test.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 ```
 :::
 
 ::: {.cell .markdown }
 Now we can start training our model. Remember, we are *only* updating
 the weights in the classification head.
+
+Also note that we are not doing early stopping or otherwise "using" 
+the data passed as `validation_data`, so it's OK to use the test data
+in this instance. 
 :::
 
 ::: {.cell .code }
@@ -671,11 +668,9 @@ the weights in the classification head.
 n_epochs = 20
 
 hist = model.fit(
-    train_generator, 
-    epochs=n_epochs,
-    steps_per_epoch=X_train.shape[0]//BATCH_SIZE,
-    validation_data=val_generator, 
-    validation_steps=X_test.shape[0]//BATCH_SIZE
+    ds_train,
+    epochs = n_epochs, 
+    validation_data = ds_test
 )
 ```
 :::
@@ -764,13 +759,11 @@ model.summary()
 ```python
 n_epochs_fine = 20
 
-hist_fine = model.fit( 
-    train_generator, 
+hist_fine = model.fit(
+    ds_train,
     epochs=n_epochs + n_epochs_fine,
     initial_epoch=n_epochs,  
-    steps_per_epoch=X_train.shape[0]//BATCH_SIZE,
-    validation_data=val_generator, 
-    validation_steps=X_test.shape[0]//BATCH_SIZE
+    validation_data = ds_test
 )
 ```
 :::
@@ -813,7 +806,7 @@ plt.show()
 
 ::: {.cell .code }
 ```python
-test_probs = model.predict(test_sample)
+test_probs = model.predict(test_sample_pre)
 ```
 :::
 
