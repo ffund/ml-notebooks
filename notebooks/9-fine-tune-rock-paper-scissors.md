@@ -609,7 +609,7 @@ We'l compile the model:
 
 ::: {.cell .code }
 ```python
-opt = tf.keras.optimizers.Adam(learning_rate=0.01)
+opt = tf.keras.optimizers.Adam(learning_rate=0.005)
 
 model.compile(
     optimizer=opt,
@@ -627,10 +627,10 @@ Also, we'll use data augmentation:
 ```python
 def augment_image(image, label):
     image = tf.image.random_flip_left_right(image)
-    image = tf.image.random_brightness(image, max_delta=0.1)
-    image = tf.image.random_contrast(image, lower=0.9, upper=1.1)
+    image = tf.image.random_brightness(image, max_delta=0.4)
+    image = tf.image.random_contrast(image, lower=0.8, upper=1.2)
     image = tf.image.random_crop(
-    image, size=(image.shape[0] - 4, image.shape[1] - 4, image.shape[2])
+    image, size=(image.shape[0] - 8, image.shape[1] - 8, image.shape[2])
     )
     image = tf.image.resize(image, (INPUT_IMG_SIZE, INPUT_IMG_SIZE))
     return image, label
