@@ -188,14 +188,14 @@ model_fc.compile(optimizer=opt,
 Finally, we are ready to train our network. We wil specify the number of
 epochs and the batch size. We will also use a callback function to
 configure the training process to stop before the configured number of
-epochs, if no improvement in the validation set loss is observed for
+epochs, if no improvement in the validation set accuracy is observed for
 several epochs. We will also the restore the weights that had the best
 performance on the validation set.
 :::
 
 ::: {.cell .code }
 ```python
-es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='max', 
+es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', 
                                       patience=10,restore_best_weights=True )
 ```
 :::
@@ -628,14 +628,14 @@ model_conv.compile(optimizer=opt,
 
 ::: {.cell .markdown }
 Next, we repeat our Early Stopping callback. We will stop training if 10
-epochs pass without an improvement in the validation loss, and at
+epochs pass without an improvement in the validation accuracy, and at
 that point we will restore the model with the best validation accuracy
 seen so far.
 :::
 
 ::: {.cell .code }
 ```python
-es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='max', 
+es = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', 
                                       patience=10,restore_best_weights=True )
 ```
 :::
