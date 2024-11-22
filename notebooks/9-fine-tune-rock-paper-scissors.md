@@ -609,7 +609,7 @@ We'l compile the model:
 
 ::: {.cell .code }
 ```python
-opt = tf.keras.optimizers.Adam(learning_rate=0.005)
+opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
 
 model.compile(
     optimizer=opt,
@@ -627,10 +627,10 @@ Also, we'll use data augmentation:
 ```python
 def augment_image(image, label):
     image = tf.image.random_flip_left_right(image)
-    image = tf.image.random_brightness(image, max_delta=0.4)
-    image = tf.image.random_contrast(image, lower=0.8, upper=1.2)
+    image = tf.image.random_brightness(image, max_delta=0.05)
+    image = tf.image.random_contrast(image, lower=0.95, upper=1.05)
     image = tf.image.random_crop(
-    image, size=(image.shape[0] - 8, image.shape[1] - 8, image.shape[2])
+    image, size=(image.shape[0] - 2, image.shape[1] - 2, image.shape[2])
     )
     image = tf.image.resize(image, (INPUT_IMG_SIZE, INPUT_IMG_SIZE))
     return image, label
@@ -644,7 +644,7 @@ Here, we apply data augmentation and preprocessing to the training data; and jus
 
 ::: {.cell .code }
 ```python
-BATCH_SIZE=4
+BATCH_SIZE=64
 ds_train = ds_train.map(preprocess_image)
 ds_train = ds_train.map(augment_image)
 ds_train = ds_train.shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
@@ -744,7 +744,7 @@ for layer in base_model.layers[:fine_tune_at]:
     layer.trainable =  False
     
 # use a smaller training rate for fine-tuning
-opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
+opt = tf.keras.optimizers.Adam(learning_rate=1e-6)
 model.compile(
     optimizer = opt,
     loss=tf.keras.losses.sparse_categorical_crossentropy,
