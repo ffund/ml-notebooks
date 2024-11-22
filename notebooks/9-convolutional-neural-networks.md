@@ -151,7 +151,7 @@ nout = 10   # number of outputs
 model_fc = Sequential()
 model_fc.add(Input(shape=nin))
 model_fc.add(Flatten())
-mode_fc.add(Rescaling(scale=1./127.5, offset=-1))
+model_fc.add(Rescaling(scale=1./127.5, offset=-1))
 model_fc.add(Dense(units=nh, activation='relu', name='hidden'))
 model_fc.add(Dense(units=nout, activation='softmax', name='output'))
 model_fc.summary()
