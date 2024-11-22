@@ -609,7 +609,7 @@ We'l compile the model:
 
 ::: {.cell .code }
 ```python
-opt = tf.keras.optimizers.Adam(learning_rate=0.001)
+opt = tf.keras.optimizers.Adam(learning_rate=0.01)
 
 model.compile(
     optimizer=opt,
@@ -744,7 +744,7 @@ for layer in base_model.layers[:fine_tune_at]:
     layer.trainable =  False
     
 # use a smaller training rate for fine-tuning
-opt = tf.keras.optimizers.Adam(learning_rate=0.00001)
+opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
 model.compile(
     optimizer = opt,
     loss=tf.keras.losses.sparse_categorical_crossentropy,
