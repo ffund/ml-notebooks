@@ -589,7 +589,7 @@ top:
 model = tf.keras.models.Sequential()
 
 model.add(base_model)
-model.add(tf.keras.layers.Dropout(0.5))
+model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(
     units=3,
     activation=tf.keras.activations.softmax
