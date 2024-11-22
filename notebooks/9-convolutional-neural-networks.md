@@ -987,7 +987,7 @@ y_pred_aug = np.argmax(y_pred_prob_aug, axis=-1)
 
 ::: {.cell .code }
 ```python
-score = model_aug.evaluate(X_test, y_test)
+score = model_aug.evaluate(ts_ds)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 ```
