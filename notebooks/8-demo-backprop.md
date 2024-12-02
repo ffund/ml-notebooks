@@ -547,7 +547,7 @@ def backprop(X, y, W_H, W_O, z_H, u_H, z_O, u_O):
     deltaH = np.dot(deltaO, W_O[1:hiddenLayerSize+1].T)*sigmoidPrime(z_H)
 
     # compute derivative w.r.t. weights at output layer
-    u_H_b = np.hstack((np.ones((u_H.shape[0],1)), u_H))
+    u_H_b = np.column_stack((np.ones((u_H.shape[0],1)), u_H))
     dLdwO = np.dot(u_H_b.T, deltaO).reshape(hiddenLayerSize+1,outputLayerSize)
 
     # compute derivative w.r.t. weights at hidden layer

@@ -1641,7 +1641,6 @@ For your convenience, here are all the possible answers to those survey question
 ```python
 features = ['issue20', 'qlt20', 'issvqual', 'favblm', 'acasupre', 'fairjust', 'facemask', 'nec', 'govtangr', 'econvcor',  'life', 'containc', 'covidhar', 'racism20', 'countacc', 'voteexpe', 'abortion', 'finsit', 'supreme1', 'climatec', 
 'age10', 'sex', 'latino', 'income20', 'newvoter', 'work', 'unionhh1', 'married', 'child12', 'vetvoter', 'brnagain', 'relign18', 'lgbt', 'age', 'educ18', 'qraceai']
-df[cols]
 
 for f in features:
   print(f)
