@@ -304,7 +304,7 @@ Print the model summary.
 ::: {.cell .code }
 ```python
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.layers import Dense, Activation
+from tensorflow.keras.layers import Dense, Activation, Input
 from tensorflow.keras import optimizers
 from tensorflow.keras import callbacks
 import tensorflow.keras.backend as K
@@ -443,7 +443,7 @@ In this section, we will explore these further.
 
 Repeat your model preparation and fitting code, but try four learning rates as shown in the vector `rates`. In each iteration of the loop:
 
--   use `K.clear_session()` to free up memory from models that are no longer in scope. (Note that this does not affect models that are still "in scope"!)
+-   use `K.clear_session()` to free up memory from models that are no longer in scope. (Note that this does not affect models that are still "in scope"! Students sometimes make the mistake of thinking that this will "reset" the weights of a model that has already been fitted - it will not do that.)
 -   construct the network
 -   select the optimizer. Use the Adam optimizer with the learning rate specific to this iteration
 -   train the model for 20 epochs (make sure you are training a *new* model in each iteration, and not *continuing* the training of a model created already outside the loop)
@@ -744,7 +744,7 @@ lr = 0.001
 batch_size = 128
 
 metrics_vs_bs = []
-for batch_size in [64, 128, 256, 512, 1024, 2048, 4096, 8192]:
+for batch_size in [32,  128, 512, 2048, 8192]:
 
     # TODO - set up model, including appropriate optimizer hyperparameters
 
