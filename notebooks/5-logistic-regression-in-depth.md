@@ -185,7 +185,7 @@ x_true = np.linspace(0, 1)
 y_true =  -(x_true * w_true[1] + w_true[0])/w_true[2]
 sns.lineplot(x=x_true, y=y_true, color='black', label='True separating hyperplane');
 y_fit =  -(x_true * w_star[1] + w_star[0])/w_star[2]
-sns.lineplot(x=x_true, y=y_true, color='red', label='Fitted separating hyperplane');
+sns.lineplot(x=x_true, y=y_fit, color='red', label='Fitted separating hyperplane');
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1);
 ```
 :::
