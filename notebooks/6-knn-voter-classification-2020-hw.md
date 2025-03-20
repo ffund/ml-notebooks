@@ -500,7 +500,7 @@ Other categorical features, such as `qraceai` (race), have no logical ordering. 
 
 ::: {.cell .code}
 ```python
-df['race'].value_counts()
+df['qraceai'].value_counts()
 ```
 :::
 
