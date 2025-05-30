@@ -35,7 +35,7 @@ Answers to open-ended questions (e.g. "Comment on the results..") must be **in y
 
 ::: {.cell .markdown}
 
-To illustrate principles of linear regression, we are going to use some data from the textbook "An Introduction to Statistical Learning with Applications in R/Python" (Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani).
+To illustrate principles of linear regression, we are going to use some data from the textbook "An Introduction to Statistical Learning" (Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani).
 
 The dataset is described as follows:
 
@@ -370,7 +370,7 @@ Next, you'll create a plot of predicted sales vs. actual sales for each of the t
  You will organize these as three *subplots* in one row. In each subplot, for a different model,
 
 * Create a scatter plot of predicted sales ($\hat{y}$) on the vertical axis, and actual sales ($y$) on the horizontal axis. 
-* Make sure both axes use the same scale (the range of the vertical axis should be the same as the range of the horizontal axis) and that all three subplots use the same scale. Since the units of `sales` and predicted `sales` should be the same, if we use the same scale we can make direct comparisons based on the appearance of the plots.
+* Make sure both axes use the same scale (the range of the vertical axis should be the same as the range of the horizontal axis) and that all three subplots use the same scale. Since the units of `sales` and predicted `sales` should be the same, if we use the same scale we can make direct comparisons based on the appearance of the plots. Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area for each subplot should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Label each axes, and each plot. 
 
 Code is provided for you for the TV model - add subplots to the figure to also show the radio model and the newspaper model.
@@ -407,7 +407,7 @@ Next, you'll create a plot of residuals vs. actual sales for each of the three m
  You will organize these as three *subplots* in one row. In each subplot, for a different model,
 
 * Create a scatter plot with the residuals ($y - \hat{y}$) on the vertical axis, and actual sales ($y$) on the horizontal axis. 
-* Use the same vertical scale for all three subplots, and the same horizontal scale for all three subplots (but the vertical scale and the horizontal scale will not be the same as one another!). 
+* Use the same vertical scale for all three subplots, and the same horizontal scale for all three subplots (but the vertical scale and the horizontal scale will not be the same as one another!).  Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Label each axes, and each plot. 
 
 Code is provided for you for the TV model - add subplots to the figure to also show the radio model and the newspaper model.
@@ -446,7 +446,7 @@ In each column, for a different model,
 
 
 * create a scatter plot with the residuals ($y - \hat{y}$) on the vertical axis, and the feature ($x$) on the horizontal axis, for each feature. 
-* Use the same vertical scale for all subplots (but the horizontal scale will depend on the feature! The upper end of the TV ad spending range is different from the radio ad spending range.) 
+* Use the same vertical scale for all subplots (but the horizontal scale will depend on the feature, and will be different for each feature! The upper end of the TV ad spending range is different from the radio ad spending range.)  Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area for each subplot should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Make sure to clearly label each axis, and also label each subplot with a title that indicates which regression model it uses. 
 
 Code is provided for you for the TV model - add subplots to the figure to also show the radio model and the newspaper model.
@@ -577,7 +577,7 @@ Next, plot predicted sales vs. actual sales for the multiple regression model.
 
 
 * Create a scatter plot of predicted sales ($\hat{y}$) on the vertical axis, and actual sales ($y$) on the horizontal axis. 
-* Make sure both axes use the same scale (the range of the vertical axis should be the same as the range of the horizontal axis).
+* Make sure both axes use the same scale (the range of the vertical axis should be the same as the range of the horizontal axis). Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Label each axes.
 
 :::
@@ -605,6 +605,7 @@ Next, create a plot of residuals vs. actual sales for the multiple regression mo
 
 
 * Create a scatter plot with the residuals ($y - \hat{y}$) on the vertical axis, and actual sales ($y$) on the horizontal axis. 
+* Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Label each axes, and each plot. 
 
 
@@ -633,7 +634,7 @@ Finally, you'll create a plot of residuals vs. features, for each of the three f
 In each subplot,
 
 * create a scatter plot with the residuals ($y - \hat{y}$) on the vertical axis, and the feature ($x$) on the horizontal axis. 
-* Use the same vertical scale for all subplots (but the horizontal scale will depend on the feature! The upper end of the TV ad spending range is different from the radio ad spending range.) 
+* Use the same vertical scale for all subplots (but the horizontal scale will depend on the feature! The upper end of the TV ad spending range is different from the radio ad spending range.)  Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area for each subplot should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Make sure to clearly label each axis, and also label each subplot with a title that indicates which regression model it uses. 
 
 :::
@@ -672,7 +673,9 @@ This is because:
 * In the simple regression case, the coefficent for newspaper ads represents the effect of an increase in newspaper advertising.
 * In the multiple regression case, the coefficient for newspaper ads represents the effect of an increase in newspaper advertising **while holding TV and radio advertising constant**.
 
-It turns out that in the simple linear regression on newspaper ad budget, the regression was "learning" the effect of a feature that was correlated with newspaper ad budget, not the effect of newspaper ad budget itself. We observe that there is a correlation between newspaper ad budget and radio ad budget, and a smaller correlation between newspaper ad budget and TV ad budget. (This is logical; if an ad campaign spends a lot of money on one medium, they are likely to spend a lot on others as well.)
+It turns out that in the simple linear regression on newspaper ad budget, the regression was "learning" the effect of a feature that was correlated with newspaper ad budget, not the effect of newspaper ad budget itself. 
+
+We observe that there is a correlation between newspaper ad budget and radio ad budget, and a smaller correlation between newspaper ad budget and TV ad budget. (This is logical; if an ad campaign spends a lot of money on one medium, they are likely to spend a lot on others as well.)
 
 :::
 
@@ -691,6 +694,16 @@ train[['TV', 'radio', 'newspaper']].corr()
 
 
 ::: {.cell .markdown}
+
+In the simple regression model, sales appear to increase when newspaper ad spending increases. However, this is because newspaper ad spending and other types of ad spending are correlated, so when newspaper ad spending increases the other types of ad spending also increase.
+
+From the multiple regression model, we can see that when newspaper ad spending increases and other types of ad spending *do not* also increase, sales do not increase.
+
+:::
+
+
+::: {.cell .markdown}
+
 
 In this section, we will explore this further using the Frisch-Waugh-Lovell (FWL) theorem. This theorem will help us understand in greater depth what the coefficient in the multiple regression represents, when there are correlated features included in the regression.
 
@@ -724,8 +737,8 @@ $$\hat{x_j} = w_0^{x_j} + \sum_{k \neq j} w^{x_{j}}_{k}x_{k}$$
 where
 
 * the superscript $x_j$ on the coefficients denotes that these are the coefficients for the model to predict $x_j$
-* $\hat{x_j}$ is the estimate of $x_j$ according to this model, and this is the part of $x_j$ whose information is already in the other features
-* the residual of this model, $\epsilon^{x_{j}} = x_j - \hat{x_j}$, is the part of $x_j$ whose information is *not* already in the other features.
+* $\hat{x_j}$ is the estimate of $x_j$ according to this model, and this is the part of $x_j$ whose information is already in the other features. (This is the part that is correlated with other features.)
+* the residual of this model, $\epsilon^{x_{j}} = x_j - \hat{x_j}$, is the part of $x_j$ whose information is *not* already in the other features. (This is the part that is uncorrelated with other features.)
 
 :::
 
@@ -760,6 +773,8 @@ and that
 
 * the coefficient $w^{*}_{j}$ - which tells us the association between "the parts of $x_j$ not in the other features" and "the parts of $y$ not predicted by the other features" - is going to be the **same** as $w_j$ in the multiple regression model we fitted earlier!
 * and the residuals $\epsilon^{*}$ will be the same as the residuals of the multiple regression model we fitted earlier.
+
+This makes it clear that in a multiple regression model, the coefficient of the feature $x_j$ - which tells us the association between $x_j$ and $y$ when other features are held constant - tells us about how much of the variance in $y$ is explained by $x_j$ *independent of the other features in the model*.
 
 :::
 
@@ -873,7 +888,10 @@ plt.tight_layout();
 
 ::: {.cell .markdown}
 
-**Comment on the results**.  What do you notice about the relationship between $\hat{x_{j}}$ and the other features, vs the relationship between $\epsilon^{x_{j}}$ and the other features? (Note: when you judge the relative slope of the line in these plots, don't forget to be mindful of the different horizontal scales of your plots!)
+**Comment on the results**. 
+
+- What do you notice about the relationship between $\hat{x_{j}}$ (`newspaper` ad spending) and the other features? To what extent can `newspaper` ad spending be "predicted" by the other features?
+- You should observe that there is no relationship between $\epsilon^{x_{j}}$ (the residual of the model that is "trained to predict `newspaper`") and the other features. This residual represents what "part" of `newspaper` ad spending?
 
 :::
 
@@ -943,7 +961,11 @@ Once again, you can think of these two "components" of `sales` as:
 
 ::: {.cell .markdown}
 
-**Comment on the results**.  What do you notice about the relationship between $\hat{y}$ and the other (not-$x_j$) features, vs the relationship between $\epsilon^{y}$ and the other features? 
+**Comment on the results**. 
+
+- What do you notice about the relationship between $\hat{y}$ (`sales`) and the other (not-$x_j$) features (`tv` ad spending, `radio` ad spending)?
+- The residual $\epsilon^{y}$ represents the part of $\hat{y}$ (`sales`) that is still "unexplained" even after considering the linear effect of which features?
+
 
 :::
 
@@ -1042,7 +1064,12 @@ plt.show();
 
 ::: {.cell .markdown}
 
-**Comment on the results**. Compare `residual_news_fwl` (the residual of the "residualized" model) to the residual of the multiple regression model trained in the earlier section - what do you notice, and how do you explain this?
+**Comment on the results**. 
+
+- What was the coefficient for `newspaper` in the simple regression `reg_news`, in the multiple regression `reg_multi`, and in the "residualized" model?
+- What do the first two panels show about the association between the `newspaper` feature and `sales`?
+- The third panel shows the residualized `sales` (after accounting for the effect of `tv` and `radio`) and the residualized `newspaper` (after removing the parts that are "predicted" by `tv` and `radio`). What does this plot show us about the association between `newspaper` and `sales`, once we remove the effect of `tv` and `radio` from both `newspaper` and `sales`?
+
 
 :::
 
@@ -1170,7 +1197,7 @@ Next, plot predicted sales vs. actual sales for the multiple regression model wi
 
 
 * Create a scatter plot of predicted sales ($\hat{y}$) on the vertical axis, and actual sales ($y$) on the horizontal axis. 
-* Make sure both axes use the same scale (the range of the vertical axis should be the same as the range of the horizontal axis).
+* Make sure both axes use the same scale (the range of the vertical axis should be the same as the range of the horizontal axis). Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Label each axes.
 
 :::
@@ -1198,6 +1225,7 @@ Next, create a plot of residuals vs. actual sales for the multiple regression mo
 
 
 * Create a scatter plot with the residuals ($y - \hat{y}$) on the vertical axis, and actual sales ($y$) on the horizontal axis. 
+* Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Label each axes, and each plot. 
 
 
@@ -1226,7 +1254,7 @@ Finally, you'll create a plot of residuals vs. features, for each of the three *
 In each subplot,
 
 * create a scatter plot with the residuals ($y - \hat{y}$) on the vertical axis, and the feature ($x$) on the horizontal axis. 
-* Use the same vertical scale for all subplots (but the horizontal scale will depend on the feature! The upper end of the TV ad spending range is different from the radio ad spending range.) 
+* Use the same vertical scale for all subplots (but the horizontal scale will depend on the feature! The upper end of the TV ad spending range is different from the radio ad spending range.) Make sure the scale is appropriate (does not exclude data, and does not make it difficult to see the data due to excessive whitespace). Also, the plot area for each subplot should be square-shaped (similar height and width) in order to make the relevant trend easier to see.
 * Make sure to clearly label each axis, and also label each subplot with a title that indicates which regression model it uses. 
 
 :::
