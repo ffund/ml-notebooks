@@ -1437,6 +1437,8 @@ plt.ylabel('w1');
 ```
 :::
 
+<!-- 
+
 ::: {.cell .markdown }
 
 The Ridge regression also pulls the coefficients away from the "true" coefficients
@@ -1530,6 +1532,7 @@ plt.ylabel('w1');
 ```
 :::
 
+-->
 
 ::: {.cell .markdown }
 ## 3D visualization of L1 and L2 regularization 
