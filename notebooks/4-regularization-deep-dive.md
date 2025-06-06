@@ -1437,6 +1437,99 @@ plt.ylabel('w1');
 ```
 :::
 
+::: {.cell .markdown }
+
+The Ridge regression also pulls the coefficients away from the "true" coefficients
+and toward the origin. However, because the shape of the penalty contours is circular,
+it doesn't favor solutions where coefficients are "zeroed". 
+
+We can see this by looking at the MSE contours and L2 regularization penalty contours for 
+the same data:
+
+:::
+
+::: {.cell .code }
+```python
+l2_penalty_coefs = np.linalg.norm(coef_grid, ord=2, axis=1).squeeze()
+alpha_list = np.arange(1, 5000, 20)
+n_alphas = len(alpha_list)
+coefs_ridge = np.zeros((n_alphas, 2, 2))
+cost_ridge  = np.zeros((n_alphas, 2, 2))
+```
+:::
+
+
+::: {.cell .code }
+```python
+for idx, alpha in enumerate(alpha_list):
+  regr_ridge_a = Ridge(alpha=alpha).fit(x_a, y_a)
+  coefs_ridge[idx,:,0] = regr_ridge_a.coef_
+  cost_ridge[idx,:,0]  = mean_squared_error(y_a, regr_ridge_a.predict(x_a))
+
+  regr_ridge_b = Ridge(alpha=alpha).fit(x_b, y_b)
+  coefs_ridge[idx,:,1] = regr_ridge_b.coef_
+  cost_ridge[idx,:,1]  = mean_squared_error(y_b, regr_ridge_b.predict(x_b))
+```
+:::
+
+::: {.cell .code }
+```python
+plt.figure(figsize=(12,6));
+
+
+plt.subplot(1,2,1)
+X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.contourf(X1, X2, mses_a, levels=50, cmap='Spectral');
+p = plt.contour(X1, X2, l2_penalty_coefs, cmap='binary');
+plt.plot(coefs_ridge[:,0,0], coefs_ridge[:,1,0], marker='.', color='black', markersize=10, alpha=0.2)
+plt.scatter(coefs_a[0], coefs_a[1], marker='*', color='white', s=100)
+plt.xlabel('w2');
+plt.ylabel('w1');
+
+plt.subplot(1,2,2)
+X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.contourf(X1, X2, mses_b, levels=50, cmap='Spectral');
+p = plt.contour(X1, X2, l2_penalty_coefs, cmap='binary');
+plt.plot(coefs_ridge[:,0,1], coefs_ridge[:,1,1], marker='.', color='black', markersize=10, alpha=0.2)
+plt.scatter(coefs_b[0], coefs_b[1], marker='*', color='white', s=100)
+plt.xlabel('w2');
+plt.ylabel('w1');
+```
+:::
+
+
+
+::: {.cell .markdown }
+
+and then plot the regularization path on top
+of the Ridge loss function contour:
+
+:::
+
+
+
+::: {.cell .code }
+```python
+plt.figure(figsize=(12,6));
+
+plt.subplot(1,2,1)
+X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.contourf(X1, X2, mses_a + 10*l2_penalty_coefs, levels=50, cmap='Spectral');
+plt.scatter(coefs_a[0], coefs_a[1], marker='*', color='white', s=100)
+plt.plot(coefs_ridge[:,0,0], coefs_ridge[:,1,0], marker='.', color='black', markersize=15, alpha=0.2)
+plt.xlabel('w2');
+plt.ylabel('w1');
+
+plt.subplot(1,2,2)
+X1, X2 = np.meshgrid(coefs, coefs)
+p = plt.contourf(X1, X2, mses_b + 10*l2_penalty_coefs, levels=50, cmap='Spectral');
+plt.scatter(coefs_b[0], coefs_b[1], marker='*', color='white', s=100)
+plt.plot(coefs_ridge[:,0,1], coefs_ridge[:,1,1], marker='.', color='black', markersize=15, alpha=0.2)
+plt.xlabel('w2');
+plt.ylabel('w1');
+```
+:::
+
 
 ::: {.cell .markdown }
 ## 3D visualization of L1 and L2 regularization 
