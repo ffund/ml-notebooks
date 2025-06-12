@@ -587,7 +587,7 @@ The following plot shows the coefficient value for each feature:
 ::: {.cell .code}
 ```python
 plt.figure(figsize=(20,5))
-plt.stem(np.arange(0, d),reg_all.coef_, bottom=0, use_line_collection=True);
+plt.stem(np.arange(0, d),reg_all.coef_, bottom=0);
 plt.xticks(np.arange(0, d, 1.0), rotation=90);
 ```
 :::
