@@ -6,7 +6,7 @@ jupyter:
     display_name: Python 3
     name: python3
   nbformat: 4
-  nbformat_minor: 0
+  nbformat_minor: 4
 ---
 
 
@@ -72,8 +72,7 @@ from sklearn import datasets
 from sklearn import metrics
 from sklearn import preprocessing
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split, KFold
-
+from sklearn.model_selection import train_test_split, KFold, TimeSeriesSplit
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -81,12 +80,12 @@ import pandas as pd
 import seaborn as sns
 sns.set()
 
+from tqdm import tqdm
 from ipywidgets import interact, fixed, widgets
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 ```
 :::
-
 
 
 
@@ -152,12 +151,26 @@ def plot_poly_fit(d, show_train, show_test,
 ### Cross validation
 :::
 
+
+::: {.cell .markdown}
+
+In this section, we will explore the use of K-fold cross validation for model selection
+
+K-fold cross validation is sometimes used for model evaluation, and sometimes used for model selection. There are a few important differences in how K-fold CV is used in each case:
+
+* **Model evaluation**: When the total number of samples available is very small, we may not want to split off a single held-out test set for evaluation, since the results will vary dramatically depending on the draw of training vs. test samples. Under these circumstances, we may prefer to use K-fold CV to evaluate the model. In this case, we pass the entire dataset to the K-fold CV.
+* **Model selection**: When we want to select the best model out of a set of possible candidate models (or equivalently, select model hyperparamaters, such as degree of a polynomial model or number of knots in a spline model), we need a validation set to help us evaluate each candidate model on data not used to fit the model parameters. In this case, we _only_ pass the training subset of the data to the K-fold CV. We won't use the test set at all inside the K-fold cross validation, because using the test set for model selection is a form of data leakage.
+
+
+:::
+
 ::: {.cell .markdown}
 
 Splitting a data set for K-fold cross validation is conceptually very simple. The basic idea is:
 
 * We get a list of indices of training data, and decide how many "folds" we will use. The number of validation samples in each fold $N_{val}$ wil be the total number of training samples, divided by the number of folds.
 * Then, we iterate over the number of folds. In the first fold, we put the first $N_{val}$ samples in the validation set and exclude them from the training set. In the second fold, we put the second batch of $N_{val}$ samples in the validation set, and exclude them from the training set. Continue until $K$ folds.
+
 
 In most circumstances, we will shuffle the list of training data indices first.
 
@@ -467,6 +480,37 @@ plt.ylabel("K-fold R2");
 ```
 :::
 
+
+::: {.cell .markdown}
+Now, we can re-fit a model of degree `d_min_mse` or `d_max_r2` on the *entire* training set:
+:::
+
+::: {.cell .code}
+```python
+x_train_dopt =  x_train[:, :d_max_r2]
+x_test_dopt  =   x_test[:, :d_max_r2]
+reg_dopt = LinearRegression().fit(x_train_dopt, y_train)
+y_hat = reg_dopt.predict(x_test_dopt)
+mse_dopt = metrics.mean_squared_error(y_test, y_hat)
+r2_dopt  = metrics.r2_score(y_test, y_hat)
+
+```
+:::
+
+::: {.cell .code}
+```python
+mse_dopt
+```
+:::
+
+::: {.cell .code}
+```python
+r2_dopt
+```
+:::
+
+
+
 ::: {.cell .markdown}
 ### Model selection using 1-SE "rule"
 :::
@@ -560,6 +604,235 @@ plt.ylabel("K-fold R2");
 ```
 :::
 
+::: {.cell .markdown}
+
+### Mistake: using the test set for model selection
+
+In the examples above, we learned how to use K-fold CV to select a model using a validation set that is split off from the training data.
+
+We understand from a previous lesson that we should not use the training set for model selection - the training error will decrease with model complexity, so this approach would always choose the most complex model (rather than one that has the best performance on data not used to fit the model).
+
+However, you may feel tempted to use the test set for model selection (i.e. choose the model that has the best performance on the test set). But, this would be a mistake! Using the test set for model selection is a form of data leakage. If you select the model with best performance on the test set, you risk overfitting to noise in the test data, and since you have "contaminated" your test set by using it in this way, you no longer have a held-out test set on which to evaluate your final model. Your evaluation on this "contaminated" test set will be an overly optimistic evaluation.
+
+:::
+
+::: {.cell .markdown}
+
+To demonstrate this, we will use an extreme example: we will generate a very small dataset with 20 samples, and a very large number of features - 10,000 features! - where
+
+$$y = x_0 + x_1 + \epsilon$$
+
+that is,
+
+* the first two features, columns `0` and `1`, are relevant to the target variable
+* the remaining features are just noise.
+
+(It's an extreme example because the number of samples is very small, and the number of features is relatively so large! But this extreme example will help us illustrate our point.)
+
+:::
+
+::: {.cell .code}
+```python
+def generate_y(x):
+    # y is sum of columns 0 and 1 from X + some noise
+    y = x[:, 0] + x[:, 1]
+    y += np.random.normal(0, .01, y.shape)
+    return y
+
+def generate_x(n):
+    return np.random.uniform(0, 3, (n, 10000))
+
+# generate data, split into training and test
+X = generate_x(20)
+y = generate_y(X)
+Xtr, Xts, ytr, yts = train_test_split(X, y, test_size=0.2)
+```
+:::
+
+::: {.cell .markdown}
+
+Then, we are going to train a model on only *two* features. However, assuming we do not know in advance which features are relevant and which features are not, we need to use some sort of feature selection.
+
+First, we wil do feature selection the *wrong* way:
+
+* For each feature, we will train a simple linear regression using only that feature.
+* We will compute the R2 score of that simple linear regression on the *test* data. This will be considered the "score" of that feature.
+
+:::
+
+::: {.cell .code}
+```python
+num_features = Xtr.shape[1]
+score_ts = np.zeros(num_features)
+for i in tqdm(range(num_features), desc="Scoring Features"):
+    # get subset of data for the feature
+    Xtr_subset = Xtr[:, i]
+    Xts_subset = Xts[:, i]
+    # train a model on this feature
+    model = LinearRegression()
+    model.fit(Xtr_subset, ytr)
+    # score this model using the test set
+    y_pred = model.predict(Xts_subset)
+    score_ts[i] = r2_score(yts, y_pred)
+```
+:::
+
+::: {.cell .markdown}
+
+Although the first two features (`0` and `1`) are the only meaningful features, they will not necessarily be the only ones with a high "score" using this method, because of the noise in the data:
+
+:::
+
+
+::: {.cell .code}
+```python
+plt.figure(figsize=(20,5))
+plt.stem(np.arange(0, 10000),score_ts, bottom=0);
+```
+:::
+
+::: {.cell .markdown}
+
+Suppose we now find the two features with the highest test R2 score, and train a multiple regression model using those two features.
+
+:::
+
+::: {.cell .code}
+```python
+# get features with highest score
+best_two_features = np.argsort(score_ts)[-2:]  # Last two (sorted in ascending order)
+print(best_two_features) # Is it 0 and 1? if not... uh oh...
+```
+:::
+
+
+::: {.cell .code}
+```python
+model = LinearRegression()
+model.fit(Xtr[:, best_two_features], ytr)
+```
+:::
+
+::: {.cell .markdown}
+
+This model may still have a reasonably high R2 score on the test data - 
+
+:::
+
+::: {.cell .code}
+```python
+y_pred = model.predict(Xts[:, best_two_features])
+print( r2_score(yts, y_pred) ) 
+```
+:::
+
+::: {.cell .markdown}
+
+But, that doesn't mean that it will really do well at making predictions for new data not used at all in the training process - let's generate some new data using the same functions, and try it out:
+
+:::
+
+::: {.cell .code}
+```python
+X_new = generate_x(20)
+y_new = generate_y(X_new)
+```
+:::
+
+
+::: {.cell .code}
+```python
+# on actual new data, score is very low
+y_new_pred = model.predict(X_new[:, best_two_features])
+print( r2_score(y_new, y_new_pred) )
+```
+:::
+
+
+::: {.cell .markdown}
+
+This approach, in which we used the test set for model selection, had a major problem: although the model we selected was actually *not* a good model, the evaluation was "overly optimistic" - it implied that the model *was* good. 
+
+This is because we "contaminated" the test set by using it for model selection. Let's try again with the correct approach, where we use a separate validation set split off from the training data for model selection:
+
+:::
+
+
+::: {.cell .code}
+```python
+
+X_train, X_val, y_train, y_val = train_test_split(Xtr, ytr, test_size=4, random_state=2)
+
+# "Score" each feature by fitting on the training set and evaluating on the test set
+num_features = X_train.shape[1]
+score_vl = np.zeros(num_features)
+for i in tqdm(range(num_features), desc="Scoring Features"):
+    # get subset of data for the feature
+    Xtr_subset = X_train[:, i]
+    Xvl_subset = X_val[:, i]
+    # train a model on this feature
+    model = LinearRegression()
+    model.fit(Xtr_subset, y_train)
+    # score this model using the test set
+    y_pred = model.predict(Xvl_subset)
+    score_vl[i] = r2_score(y_val, y_pred)
+
+```
+:::
+
+
+
+::: {.cell .code}
+```python
+# get features with highest score
+best_two_features = np.argsort(score_vl)[-2:]  # Last two (sorted in ascending order)
+print(best_two_features) # Is it 0 and 1? if not... uh oh...
+```
+:::
+
+::: {.cell .code}
+```python
+model = LinearRegression()
+model.fit(Xtr[:, best_two_features], ytr)
+```
+:::
+
+::: {.cell .markdown}
+
+When we evaluate *this* model on the test set:
+
+:::
+
+::: {.cell .code}
+```python
+y_pred = model.predict(Xts[:, best_two_features])
+print( r2_score(yts, y_pred) ) 
+```
+:::
+
+::: {.cell .markdown}
+
+we understand (correctly!) that the model is not useful. The evaluation on the "clean" held-out test set is similar to the model performance on really "new" data:
+
+:::
+
+
+::: {.cell .code}
+```python
+y_new_pred = model.predict(X_new[:, best_two_features])
+print( r2_score(y_new, y_new_pred) )
+
+```
+:::
+
+::: {.cell .markdown}
+
+This example highlights the danger of using the test set in any meaningful way before the final evaluation (including training, data processing, or model selection) - with a "contaminated" test set, our evaluation may be overly optimistic and we will not understand the true performance of our model.
+
+Using the test set for model selection is not the only mistake that can lead to data leakage and an overly optimistic evaluation, though! The next section describes another...
+
+:::
+
 
 
 ::: {.cell .markdown}
@@ -601,7 +874,7 @@ df.head()
 
 Let's assume that we are making this prediction sometime near the beginning of May 2020 (like in the reading), well into the first wave in the U.S., and we want to predict when this wave will fall off (deaths go back to zero). 
 
-We'll use all of the data up to May 2020 for training. But afterwards, we'll go back and see how well our model did by comparing its predictions for May and June 2020 to the real course of the pandemic.
+We'll use all of the data up to May 2020 for training, since that is what is available at "training time". But afterwards, we'll go back and see how well our model did by comparing its predictions for May and June 2020 to the real course of the pandemic.
 
 :::
 
@@ -680,9 +953,83 @@ plt.ylim(0, 3000);
 
 ::: {.cell .markdown}
 
-A better way to train and evaluate this model would be to use a validation set that is *not* used to fit the model parameters to evaluate its performance, or even better: to use cross validation to evaluate different candidate models.
+and the R2 score shows that this model has very poor performance on the test set of future data:
 
-Let's see how we might do that for this time series data. One possible approach would be to create multiple "folds", where in each fold, the number of samples in the training set increases (and the validation set is always the ten days after the training set - we are validating whether our model can predict deaths ten days into the future).
+:::
+
+
+::: {.cell .code}
+```python
+metrics.r2_score(df_ts.deathIncrease, deathIncrease_fitted_future)
+```
+:::
+
+
+::: {.cell .markdown}
+
+The R2 score on the training set didn't tell us about the model's performance on its "true" task: making predictions about the future. This is a "worst case scenario" for model evaluation:
+
+* **Best case**: Model does well in evaluation, model does well when deployed for its "true" task.
+* **Second best case**: Model does poorly in evaluation, but at least you know not to deploy the model for its "true" task.
+* **Worst case**: Model does well in evaluation, you deploy the model for its "true" task, and then the model does very poorly - in this case you make bad decisions, lose credibility, etc. because you trust the model output. You would be much better off if you understood from the evaluation that the model is not useful.
+
+:::
+
+
+::: {.cell .markdown}
+
+It's likely that the examples in the "Predicting the course of COVID with a “cubic model”" case study only evaluated their models on the same data used for training, which is why they vastly overestimated its ability. But, even if they had tried to evaluate on a held-out validation set, if they had not split the data in a way that respects its structure, they would *still* vastly overestimate the capabilities of the model.
+
+Let's see how. Since this is a small dataset, instead of a single train/test split, we'll evaluate the model using KFold CV with five splits, and we'll report the average R2 score on the "held-out" set across folds.
+
+(Note that in this case, we are using K-fold CV only for model evaluation, not model selection.)
+
+:::
+
+
+::: {.cell .code}
+```python
+nfold = len(idxval)
+kf = KFold(shuffle=True, n_splits=nfold)
+
+r2_badcv = np.zeros(nfold)
+
+fig, axs = plt.subplots(1, nfold, sharex=True, sharey=True)
+fig.set_figwidth(15);
+fig.set_figheight(2);
+
+
+for isplit, (train_idx, val_idx) in enumerate(kf.split(df_tr_poly)):
+    x_train_kfold, x_val_kfold = df_tr_poly[train_idx], df_tr_poly[val_idx]
+    y_train_kfold, y_val_kfold = df_tr.deathIncrease.iloc[train_idx], df_tr.deathIncrease.iloc[val_idx]
+
+    model = LinearRegression().fit(x_train_kfold, y_train_kfold)
+    y_pred = model.predict(x_val_kfold)
+    r2_badcv[isplit] = metrics.r2_score(y_val_kfold, y_pred)
+
+    _ = sns.scatterplot(x=x_train_kfold[:, 0], y=y_train_kfold, ax=axs[isplit]);
+    _ = sns.scatterplot(x=x_val_kfold[:, 0], y=y_val_kfold, ax=axs[isplit]);
+    _ = axs[isplit].set_title(f"Fold {isplit+1}");
+
+```
+:::
+
+::: {.cell .code}
+```python
+r2_badcv.mean()
+```
+:::
+
+
+::: {.cell .markdown}
+
+When the model makes predictions on the "validation" set in the example above, it has already been trained on the data points immediately before and after each validation sample.
+
+This is a much easier task than the "true" task that the model will perform - making predictions for a sequence of consecutive future dates.
+
+To evaluate the performance of the model, we should make sure that the validation task mimics this "true" task. 
+
+One possible approach would be to create multiple "folds", where in each fold, the number of samples in the training set increases (and the validation set is always the ten days after the training set - we are validating whether our model can predict deaths ten days into the future).
 
 Here's what that might look like (blue dots are training data, orange dots are validation data):
 
@@ -691,94 +1038,47 @@ Here's what that might look like (blue dots are training data, orange dots are v
 
 ::: {.cell .code}
 ```python
-idxval = [10, 20, 30, 40, 50]
 nfold = len(idxval)
+tscv = TimeSeriesSplit(n_splits=nfold, test_size=10)
+
+r2_tscv = np.zeros(nfold)
 
 fig, axs = plt.subplots(1, nfold, sharex=True, sharey=True)
 fig.set_figwidth(15);
 fig.set_figheight(2);
 
-for isplit, idx in enumerate(idxval):
-        
-    x_train_kfold = df_tr_poly[:idx]
-    y_train_kfold = df_tr.deathIncrease.values[:idx]
-    x_val_kfold = df_tr_poly[idx:idx+10]
-    y_val_kfold = df_tr.deathIncrease.values[idx:idx+10]
 
-    p = sns.scatterplot(x=x_train_kfold[:,0], y=y_train_kfold, ax=axs[isplit]);
-    p = sns.scatterplot(x=x_val_kfold[:,0], y=y_val_kfold, ax=axs[isplit]);
+for isplit, (train_idx, val_idx) in enumerate(tscv.split(df_tr_poly)):
+    x_train_kfold, x_val_kfold = df_tr_poly[train_idx], df_tr_poly[val_idx]
+    y_train_kfold, y_val_kfold = df_tr.deathIncrease.iloc[train_idx], df_tr.deathIncrease.iloc[val_idx]
+
+    model = LinearRegression().fit(x_train_kfold, y_train_kfold)
+    y_pred = model.predict(x_val_kfold)
+    r2_tscv[isplit] = metrics.r2_score(y_val_kfold, y_pred)
+
+    _ = sns.scatterplot(x=x_train_kfold[:, 0], y=y_train_kfold, ax=axs[isplit]);
+    _ = sns.scatterplot(x=x_val_kfold[:, 0], y=y_val_kfold, ax=axs[isplit]);
+    _ = axs[isplit].set_title(f"Fold {isplit+1}");
 ```
 :::
 
 
 ::: {.cell .markdown}
-Now we can use this cross validation to evaluate different polynomial model orders. For each model order, and each "fold", we'll compute the training and validation MSE and R2.
+With this validation approach, we find (correctly) that the polynomial model is *not* good at predicting COVID cases:
 :::
-
 
 ::: {.cell .code}
 ```python
-# model orders to be tested
-dmax = 4
-dtest_list = np.arange(1,dmax+1)
-nd = len(dtest_list)
-
-idxval = [10, 20, 30, 40, 50]
-nfold = len(idxval)
-
-mse_val = np.zeros((nd,nfold))
-r2_val  = np.zeros((nd,nfold))
-mse_tr  = np.zeros((nd,nfold))
-r2_tr   = np.zeros((nd,nfold))
-
-# loop over the folds
-# the first loop variable tells us how many out of nfold folds we have gone through
-# the second loop variable tells us how to split the data
-for isplit, idx in enumerate(idxval):
-        
-    x_train_kfold = df_tr_poly[:idx]
-    y_train_kfold = df_tr.deathIncrease.values[:idx]
-    x_val_kfold = df_tr_poly[idx:idx+10]
-    y_val_kfold = df_tr.deathIncrease.values[idx:idx+10]
-
-    for didx, dtest in enumerate(dtest_list):
-
-      # get transformed features
-      x_train_dtest =  x_train_kfold[:, :dtest]
-      x_val_dtest   =  x_val_kfold[:, :dtest]
-
-      # fit data
-      reg_dtest = LinearRegression().fit(x_train_dtest, y_train_kfold)
-      
-      # measure MSE on validation data
-      y_hat = reg_dtest.predict(x_val_dtest)
-      mse_val[didx, isplit] = metrics.mean_squared_error(y_val_kfold, y_hat)
-      r2_val[didx, isplit] = metrics.r2_score(y_val_kfold, y_hat)
-
-      # measure MSE on training data
-      y_hat_tr = reg_dtest.predict(x_train_dtest)
-      mse_tr[didx, isplit] = metrics.mean_squared_error(y_train_kfold, y_hat_tr)
-      r2_tr[didx, isplit] = metrics.r2_score(y_train_kfold, y_hat_tr)
+r2_tscv.mean()
 ```
 :::
+
 
 ::: {.cell .markdown}
-Looking at the result, we see that the training R2 is reasonably good for the polynomial model (here, we show the mean across folds for each polynomial degree):
-:::
 
-::: {.cell .code}
-```python
-r2_tr.mean(axis=1)
-```
-:::
+This case study highlights, the importance of evaluating on a held-out test set not used for training, but also, of making sure that the evaluation task is comparable to the "true" task that the model will be used for! 
 
-::: {.cell .markdown}
-But the validation R2 tells a more accurate story: the model is wildly overfitting, and it has no predictive power whatsoever. 
-:::
+In the evaluation with shuffled data, the R2 score seems to be high, but this is only due to data leakage. The evaluation is not valid, and the model is really not useful. The correct evaluation, with a time series split, shows that the model does not have any predictive benefit.
 
-::: {.cell .code}
-```python
-r2_val.mean(axis=1)
-```
 :::
 
