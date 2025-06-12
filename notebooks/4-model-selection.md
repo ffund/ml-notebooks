@@ -685,7 +685,7 @@ for i in tqdm(range(num_features), desc="Scoring Features"):
 
 ::: {.cell .markdown}
 
-Although the first two features (`0` and `1`) are the only meaningful features, they will not necessarily be the only ones with a high "score" using this method, because of the noise in the data:
+Although the first two features (`0` and `1`) are the only meaningful features, they will not necessarily be the only ones with a high "score" using this method, because of the noise in the data. Some of the "irrelevant" features will have scores as high or higher:
 
 :::
 
