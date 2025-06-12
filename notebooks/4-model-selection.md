@@ -497,6 +497,13 @@ r2_dopt  = metrics.r2_score(y_test, y_hat)
 ```
 :::
 
+::: {.cell .markdown}
+
+and evaluate it on the test set:
+
+:::
+
+
 ::: {.cell .code}
 ```python
 mse_dopt
