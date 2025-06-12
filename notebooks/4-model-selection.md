@@ -676,8 +676,7 @@ for i in tqdm(range(num_features), desc="Scoring Features"):
     Xtr_subset = Xtr[:, [i]]
     Xts_subset = Xts[:, [i]]
     # train a model on this feature
-    model = LinearRegression()
-    model.fit(Xtr_subset, ytr)
+    model = LinearRegression().fit(Xtr_subset, ytr)
     # score this model using the test set
     y_pred = model.predict(Xts_subset)
     score_ts[i] = metrics.r2_score(yts, y_pred)
@@ -707,16 +706,15 @@ Suppose we now find the two features with the highest test R2 score, and train a
 ::: {.cell .code}
 ```python
 # get features with highest score
-best_two_features = np.argsort(score_ts)[-2:]  # Last two (sorted in ascending order)
-print(best_two_features) # Is it 0 and 1? if not... uh oh...
+best_two_features_ts = np.argsort(score_ts)[-2:]  # Last two (sorted in ascending order)
+print(best_two_features_ts) # Is it 0 and 1? if not... uh oh...
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-model = LinearRegression()
-model.fit(Xtr[:, best_two_features], ytr)
+model_ts = LinearRegression().fit(Xtr[:, best_two_features_ts], ytr)
 ```
 :::
 
@@ -728,7 +726,7 @@ This model may still have a reasonably high R2 score on the test data -
 
 ::: {.cell .code}
 ```python
-y_pred = model.predict(Xts[:, best_two_features])
+y_pred = model_ts.predict(Xts[:, best_two_features_ts])
 print( metrics.r2_score(yts, y_pred) ) 
 ```
 :::
@@ -750,7 +748,7 @@ y_new = generate_y(X_new)
 ::: {.cell .code}
 ```python
 # on actual new data, score is very low
-y_new_pred = model.predict(X_new[:, best_two_features])
+y_new_pred = model_ts.predict(X_new[:, best_two_features_ts])
 print( metrics.r2_score(y_new, y_new_pred) )
 ```
 :::
@@ -778,8 +776,7 @@ for i in tqdm(range(num_features), desc="Scoring Features"):
     Xtr_subset = X_train[:, [i]]
     Xvl_subset = X_val[:, [i]]
     # train a model on this feature
-    model = LinearRegression()
-    model.fit(Xtr_subset, y_train)
+    model = LinearRegression().fit(Xtr_subset, y_train)
     # score this model using the test set
     y_pred = model.predict(Xvl_subset)
     score_vl[i] = metrics.r2_score(y_val, y_pred)
@@ -792,15 +789,14 @@ for i in tqdm(range(num_features), desc="Scoring Features"):
 ::: {.cell .code}
 ```python
 # get features with highest score
-best_two_features = np.argsort(score_vl)[-2:]  # Last two (sorted in ascending order)
-print(best_two_features) # Is it 0 and 1? if not... uh oh...
+best_two_features_vl = np.argsort(score_vl)[-2:]  # Last two (sorted in ascending order)
+print(best_two_features_vl) # Is it 0 and 1? if not... uh oh...
 ```
 :::
 
 ::: {.cell .code}
 ```python
-model = LinearRegression()
-model.fit(Xtr[:, best_two_features], ytr)
+model_vl = LinearRegression().fit(Xtr[:, best_two_features_vl], ytr)
 ```
 :::
 
@@ -812,7 +808,7 @@ When we evaluate *this* model on the test set:
 
 ::: {.cell .code}
 ```python
-y_pred = model.predict(Xts[:, best_two_features])
+y_pred = model_vl.predict(Xts[:, best_two_features_vl])
 print( metrics.r2_score(yts, y_pred) ) 
 ```
 :::
@@ -826,7 +822,7 @@ we understand (correctly!) that the model is not useful. The evaluation on the "
 
 ::: {.cell .code}
 ```python
-y_new_pred = model.predict(X_new[:, best_two_features])
+y_new_pred = model_vl.predict(X_new[:, best_two_features_vl])
 print( metrics.r2_score(y_new, y_new_pred) )
 
 ```
