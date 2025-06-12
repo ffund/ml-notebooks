@@ -720,7 +720,7 @@ model_ts = LinearRegression().fit(Xtr[:, best_two_features_ts], ytr)
 
 ::: {.cell .markdown}
 
-This model may still have a reasonably high R2 score on the test data - 
+This model is likely to have a reasonably high R2 score on the test data - 
 
 :::
 
@@ -992,7 +992,7 @@ Let's see how. Since this is a small dataset, instead of a single train/test spl
 
 ::: {.cell .code}
 ```python
-nfold = len(idxval)
+nfold = 5
 kf = KFold(shuffle=True, n_splits=nfold)
 
 r2_badcv = np.zeros(nfold)
@@ -1041,7 +1041,7 @@ Here's what that might look like (blue dots are training data, orange dots are v
 
 ::: {.cell .code}
 ```python
-nfold = len(idxval)
+nfold = 5
 tscv = TimeSeriesSplit(n_splits=nfold, test_size=10)
 
 r2_tscv = np.zeros(nfold)
