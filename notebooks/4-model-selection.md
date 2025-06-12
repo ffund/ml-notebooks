@@ -666,14 +666,14 @@ num_features = Xtr.shape[1]
 score_ts = np.zeros(num_features)
 for i in tqdm(range(num_features), desc="Scoring Features"):
     # get subset of data for the feature
-    Xtr_subset = Xtr[:, i]
-    Xts_subset = Xts[:, i]
+    Xtr_subset = Xtr[:, [i]]
+    Xts_subset = Xts[:, [i]]
     # train a model on this feature
     model = LinearRegression()
     model.fit(Xtr_subset, ytr)
     # score this model using the test set
     y_pred = model.predict(Xts_subset)
-    score_ts[i] = r2_score(yts, y_pred)
+    score_ts[i] = metrics.r2_score(yts, y_pred)
 ```
 :::
 
@@ -722,7 +722,7 @@ This model may still have a reasonably high R2 score on the test data -
 ::: {.cell .code}
 ```python
 y_pred = model.predict(Xts[:, best_two_features])
-print( r2_score(yts, y_pred) ) 
+print( metrics.r2_score(yts, y_pred) ) 
 ```
 :::
 
@@ -744,7 +744,7 @@ y_new = generate_y(X_new)
 ```python
 # on actual new data, score is very low
 y_new_pred = model.predict(X_new[:, best_two_features])
-print( r2_score(y_new, y_new_pred) )
+print( metrics.r2_score(y_new, y_new_pred) )
 ```
 :::
 
@@ -768,14 +768,14 @@ num_features = X_train.shape[1]
 score_vl = np.zeros(num_features)
 for i in tqdm(range(num_features), desc="Scoring Features"):
     # get subset of data for the feature
-    Xtr_subset = X_train[:, i]
-    Xvl_subset = X_val[:, i]
+    Xtr_subset = X_train[:, [i]]
+    Xvl_subset = X_val[:, [i]]
     # train a model on this feature
     model = LinearRegression()
     model.fit(Xtr_subset, y_train)
     # score this model using the test set
     y_pred = model.predict(Xvl_subset)
-    score_vl[i] = r2_score(y_val, y_pred)
+    score_vl[i] = metrics.r2_score(y_val, y_pred)
 
 ```
 :::
@@ -806,7 +806,7 @@ When we evaluate *this* model on the test set:
 ::: {.cell .code}
 ```python
 y_pred = model.predict(Xts[:, best_two_features])
-print( r2_score(yts, y_pred) ) 
+print( metrics.r2_score(yts, y_pred) ) 
 ```
 :::
 
@@ -820,7 +820,7 @@ we understand (correctly!) that the model is not useful. The evaluation on the "
 ::: {.cell .code}
 ```python
 y_new_pred = model.predict(X_new[:, best_two_features])
-print( r2_score(y_new, y_new_pred) )
+print( metrics.r2_score(y_new, y_new_pred) )
 
 ```
 :::
