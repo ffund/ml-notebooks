@@ -578,6 +578,19 @@ d_one_se
 ```
 :::
 
+::: {.cell .markdown}
+
+Note that we use
+
+```
+np.min(dtest_list[idx_one_se])
+```
+
+because in this case, the smallest value of `dtest_list` is the one with the least complexity. In other circumstances, we might need a different rule to select the least complex model from the list of candidate models whose score is within one standard error of the best model.
+
+
+:::
+
 ::: {.cell .code}
 ```python
 plt.errorbar(x=dtest_list, y=mse_val.mean(axis=1), yerr=mse_val.std(axis=1)/np.sqrt(nfold-1));
