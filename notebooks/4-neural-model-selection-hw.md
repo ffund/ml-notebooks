@@ -366,7 +366,8 @@ On the vertical axis,
 
 Make sure to carefully label each axis (including units on the time
 axis!), and label the data series (i.e. which color is the actual value
-and which is the predicted value).
+and which is the predicted value). Use solid lines (not dashed or dotted).
+Use similar dimensions as the "velocity vs. time" plot above.
 
 :::
 
@@ -454,7 +455,7 @@ includes delayed features one time step back:
 
 ::: {.cell .code }
 ```python
-X_dly1, y_dly1 = create_dly_data(X, y, 1)
+X_dly_1, y_dly_1 = create_dly_data(X, y, 1)
 ```
 :::
 
@@ -472,7 +473,7 @@ X.shape
 ::: {.cell .code }
 ```python
 # dimensions of data matrix with delayed features 1 time step back
-X_dly1.shape
+X_dly_1.shape
 ```
 :::
 
@@ -485,7 +486,7 @@ the original data matrix.)
 
 ::: {.cell .code }
 ```python
-X_dly1[0]
+X_dly_1[0]
 ```
 :::
 
@@ -497,7 +498,7 @@ np.hstack((X[1], X[0]))
 
 ::: {.cell .code }
 ```python
-y_dly1[0]
+y_dly_1[0]
 ```
 :::
 
@@ -546,8 +547,15 @@ This is significantly better than the memoryless model.
 ```
 :::
 
+::: {.cell .code }
+```python
+rsq_dly_2
+```
+:::
+
+
 ::: {.cell .markdown }
-As before, plot the predicted vs. true values, but for the model 
+As before (with the same style requirements as before), plot the predicted vs. true values, but for the model 
 with `dly=2`, with one subplot for X velocity and one subplot for 
 Y velocity.
 :::
@@ -560,8 +568,10 @@ Y velocity.
 :::
 
 ::: {.cell .markdown }
-Also as you did before, plot the actual and predicted valuer over time 
-for the first 1000 samples, for the model with `dly=2`. 
+Also as you did before (with the same style requirements as before), plot the actual and predicted values over time 
+for the first 1000 samples, for the model with `dly=2`. (Note: make sure you are comparing the model prediction to the "delayed" test data samples, not the original samples!)
+
+
 Does the model predict the hand velocity well?
 :::
 
@@ -694,7 +704,7 @@ for i, idx_split in enumerate(kf.split(Xdly)):
 
 ::: {.cell .markdown }
 Write code to find the delay that has the best mean validation R2. Get the
-best delay according to the "best R2" rule, and save it in `d_opt`.
+best delay according to the "best R2" rule, and save it in `d_opt`. Print the value of `d_opt`.
 :::
 
 ::: {.cell .code }
@@ -706,6 +716,8 @@ best delay according to the "best R2" rule, and save it in `d_opt`.
 ```
 :::
 
+
+
 ::: {.cell .markdown }
 Now write code to find the best delay using the one SE rule (i.e. find
 the simplest model whose validation R2 is within one SE of the model
@@ -713,6 +725,8 @@ with the best R2).
 
 * get the "target R2" that is within one of the "best R2" model, and save it in `rsq_one_se_tgt`
 * then get the delay of the simplest model with R2 greater than this target, and save it in `d_one_se`.
+
+Print the value of `d_one_se`.
 :::
 
 ::: {.cell .code }
@@ -783,7 +797,12 @@ Then,  fit a linear model:
 
 
 ::: {.cell .markdown }
-Use your fitted model to get the predictions and find the R2 score on the test set. 
+Use your fitted model to get the predictions `yhat_dly_one_se` 
+and find the R2 score `rsq_dly_one_se` on the test set. 
+
+Print the value of `rsq_dly_one_se`. It should be substantially
+better than before.
+
 :::
 
 ::: {.cell .code }
@@ -796,14 +815,30 @@ Use your fitted model to get the predictions and find the R2 score on the test s
 ```
 :::
 
+
+
 ::: {.cell .markdown }
 Also plot the actual and predicted values over time for the first 1000
 samples of the *test* data (similar to your plots in the previous
-sections). 
+sections, following the same style requirements). 
+(Note: make sure you are comparing the model prediction to the "delayed" 
+test data samples, not the original samples!)
+
 
 Comment on this plot - does the model predict the hand
-velocity well, compared to the previous models? See if you can identify a few points where this model 
-does noticeably better.
+velocity well, compared to the previous models? 
+
+See if you can identify a few points where this model 
+does noticeably better. Download and *annotate* this plot - 
+circle parts of the time series where the model with one-SE delay
+is noticably better at predicting the true value than the model with delay = 2.
+
+Comment on the versions of this plot you created for 
+each of the three models (no delay, delay 2, delay with one-SE delay).
+What is the R2 score of the model in each case? Does the visual improvement
+you can see in the plot align with your expectations, based on the magnitude
+of the improvement in R2 score?
+
 
 :::
 
