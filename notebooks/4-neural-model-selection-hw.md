@@ -674,8 +674,8 @@ nfold = 10
 #  Create a k-fold object
 # kf = KFold(...)
  
-# Initialize a matrix rsq_kfold to hold values of the R^2 across the model orders and folds.
-rsq_kfold = np.zeros((nd,nfold))
+# Initialize a matrix rsq_kf to hold values of the R^2 across the model orders and folds.
+rsq_kf = np.zeros((nd,nfold))
  
 # Loop over the folds
 for i, idx_split in enumerate(kf.split(Xdly)):
@@ -697,7 +697,7 @@ for i, idx_split in enumerate(kf.split(Xdly)):
  
         # Fit linear regression on training data
  
-        #  Measure the R2 on validation data and store in the matrix rsq_kfold
+        #  Measure the R2 on validation data and store in the matrix rsq_kf
         # yhat_kf = ...
 ```
 :::
