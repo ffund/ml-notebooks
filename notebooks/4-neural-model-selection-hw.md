@@ -24,9 +24,22 @@ jupyter:
 
 ::: {.cell .markdown }
 **Name**: \[Fill in your name here\]
-
 **Net ID**: \[Fill in your net ID here\]
+
 :::
+
+
+::: {.cell .markdown}
+
+
+Make a copy of this notebook in your own Google Drive and, as you work through it, fill in missing code and answers to the questions.
+
+After you are finished, you will copy your answers from individual sections *and* a copy of the entire notebook into PrairieLearn for submission. (Note that the PrairieLearn autograder will expect that you have used exactly the variable names shown in this template notebook.)
+
+Answers to open-ended questions (e.g. "Comment on the results..") must be **in your own words**, reflecting your own interpretation and understanding, and must refer to specific results (including numeric values) you obtained in this notebook.
+
+:::
+
 
 ::: {.cell .markdown }
 **Attribution**: This notebook is a slightly adapted version of the
@@ -203,7 +216,7 @@ for n in range(nneuron):
 :::
 
 ::: {.cell .markdown }
-## Fitting a linear model
+## 1. Fitting a linear model
 
 Let's first try a linear regression model to fit the data.
 
@@ -275,6 +288,8 @@ performance.
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO: Split data intro training and test sets
 # Xtr ...
 ```
@@ -282,27 +297,29 @@ performance.
 
 ::: {.cell .markdown }
 Now, fit a linear regression on the training data `Xtr,ytr`. Make a
-prediction `yhat` using the test data, `Xts`. Compare `yhat` to `yts` to
-measure `rsq`, the R2 value. Use the sklearn `r2_score` method.
+prediction `yhat_no_dly` using the test data, `Xts`. Compare `yhat_no_dly` to `yts` to
+measure `rsq_no_dly`, the R2 value. Use the sklearn `r2_score` method.
 :::
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO: Fit a linear model
-# yhat = ...
-# rsq = ...
+# yhat_no_dly = ...
+# rsq_no_dly = ...
 ```
 :::
 
 
 ::: {.cell .markdown}
-Print the `rsq` value. You should get `rsq` of around `0.45`.
+Print the `rsq_no_dly` value. You should get `rsq_no_dly` of around `0.45`.
 :::
 
 
 ::: {.cell .code}
 ```python
-rsq
+rsq_no_dly
 ```
 :::
 
@@ -323,7 +340,9 @@ Make sure both axes use the same scale (the range of the vertical axis should be
 the same as the range of the horizontal axis) *and* that all 
 subplots use the same scale. Label each axes, and each plot 
 (indicate which plot shows the velocity in the X direction and 
-which shows the velocity in the Y direction!)
+which shows the velocity in the Y direction!)  Also, the plot area for 
+each subplot should be square-shaped (similar height and width) in order 
+to make the relevant trend easier to see.
 
 :::
 
@@ -362,7 +381,7 @@ Comment on this plot - does the model predict the hand velocity well?
 :::
 
 ::: {.cell .markdown }
-## Fitting a model with delay
+## 2. Fitting a model with delay
 :::
 
 ::: {.cell .markdown }
@@ -491,12 +510,12 @@ y[1]
 ::: {.cell .markdown }
 Now fit an linear delayed model with `dly=2` delay lags. That is,
 
--   Create delayed data by calling `create_dly_data` with `dly=2`
+-   Create delayed data `X_dly_2, y_dly_2` by calling `create_dly_data` with `dly=2`
 -   Split the data (with the extra delay features!) into training and test as before (again, do not
-    shuffle the data, and use a test size of 0.33)
+    shuffle the data, and use a test size of 0.33). Name the training data `Xtr_dly_2, ytr_dly_2` and name the test data `Xts_dly_2, yts_dly_2`.
 -   Fit the model on the training data
--   Use the model to predict the values for the test data and save the result in `yhat`
--   Measure the R2 score on the test data and save the result in `rsq`
+-   Use the model to predict the values for the test data and save the result in `yhat_dly_2`
+-   Measure the R2 score on the test data and save the result in `rsq_dly_2`. (Note: make sure you are comparing the model prediction to the "delayed" test data samples, not the original samples!)
 
 If you did this correctly, you should get a new R2 score around 0.60.
 This is significantly better than the memoryless model.
@@ -504,19 +523,26 @@ This is significantly better than the memoryless model.
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO: Fit a linear model with dly=2
 
 # Create the delayed data
+# X_dly_2, y_dly_2 = ...
 
 # Split into training and test
+# Xtr_dly_2, ytr_dly_2 = ...
+# Xts_dly_2, yts_dly_2 = ...
 
 # Create linear regression object
 
 # Fit the model
 
 # Predict values for test data
+# yhat_dly_2 = ... 
 
 # Measure the new r2 score
+# rsq_dly_2 = ...
 ```
 :::
 
@@ -546,15 +572,16 @@ Does the model predict the hand velocity well?
 :::
 
 ::: {.cell .markdown }
-## Selecting the optimal delay with K-fold CV
+## 3. Selecting the optimal delay with K-fold CV
 
-In the previous example, we fixed `dly=2`. We can now select the optimal
+In the previous example, we fixed `dly=2`. We will now select the optimal
 delay using K-fold cross validation.
 
-Since we have a large number of data samples, it turns out that the
-optimal model order uses a very high delay. Using the above fitting
-method, the computations take too long. So, to simplify things, we will
-just pretend that we have a very limited data set.
+Since we have a large number of data samples, it will take a long time to run the K-fold CV
+for finding the optimal delay. So, to simplify things, we will
+just pretend that we have a very limited data set, `Xred` and `yred`.
+In this section, we'll use the reduced data set `Xred` and `yred` in place
+of the original `X` and `y`.
 
 We will compute `Xred` and `yred` by taking the first `nred=6000`
 samples of the data `X` and `y`.
@@ -579,45 +606,29 @@ and test sets - we can use all of it for model training and model selection.
 
 ::: {.cell .markdown }
 We will look at model orders up to `dmax=15`. We will create a delayed
-data matrix, `Xdly,ydly`, using `create_dly_data` with the reduced data
+data matrix, `X_dly_15,y_dly_15`, using `create_dly_data` with the reduced data
 `Xred,yred` and `dly=dmax`.
 :::
 
 ::: {.cell .code }
 ```python
 dmax = 15
-
-Xdly, ydly = create_dly_data(Xred,yred,dmax)
+X_dly_15, y_dly_15 = create_dly_data(Xred,yred,dmax)
 ```
 :::
 
 ::: {.cell .code }
 ```python
-Xdly.shape
+X_dly_15.shape
 ```
 :::
 
 ::: {.cell .code }
 ```python
-ydly.shape
+y_dly_15.shape
 ```
 :::
 
-<!--
-::: {.cell .markdown }
-Note that we can use `Xdly, ydly` to get a data matrix for any delay *up
-to* `dmax`, not only for delay = `dmax`. For example, to get a data
-matrix with delay = 1:
-:::
-
-::: {.cell .code }
-```python
-dtest = 1
-X_dtest = Xdly[:,:(dtest+1)*nneuron]
-X_dtest.shape
-```
-:::
--->
 
 ::: {.cell .markdown }
 We are going to use K-fold CV with `nfold=10` to find the optimal delay,
@@ -642,6 +653,9 @@ data.
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
+
 # TODO: Use K-fold CV to select dly
 
 # Number of folds
@@ -650,8 +664,8 @@ nfold = 10
 #  Create a k-fold object
 # kf = KFold(...)
  
-# Initialize a matrix Rsq to hold values of the R^2 across the model orders and folds.
-Rsq = np.zeros((nd,nfold))
+# Initialize a matrix rsq_kfold to hold values of the R^2 across the model orders and folds.
+rsq_kfold = np.zeros((nd,nfold))
  
 # Loop over the folds
 for i, idx_split in enumerate(kf.split(Xdly)):
@@ -661,19 +675,20 @@ for i, idx_split in enumerate(kf.split(Xdly)):
  
     for it, dtest in enumerate(dtest_list):
         # DO NOT call create_dly_data again
-        # just select the appropriate subset of columns of Xdly
-        # X_dtest = Xdly with the columns corresponding to only the `dtest+1` most recent times.
+        # just select the appropriate subset of columns of X_dly_15
+        # X_dtest = X_dly_15 with the columns corresponding to only the `dtest+1` most recent times.
  
-        # Split the data (X_dtest,ydly) into training and validation
+        # Split the data (X_dtest, y_dly_15) into training and validation
         # using idx_tr and idx_val
-        # Xtr = ...
-        # ytr = ...
-        # Xval = ...
-        # yval = ...
+        # Xtr_kf = ...
+        # ytr_kf = ...
+        # Xval_kf = ...
+        # yval_kf = ...
  
         # Fit linear regression on training data
  
-        #  Measure the R2 on validation data and store in the matrix Rsq
+        #  Measure the R2 on validation data and store in the matrix rsq_kfold
+        # yhat_kf = ...
 ```
 :::
 
@@ -684,19 +699,26 @@ best delay according to the "best R2" rule, and save it in `d_opt`.
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO: Use K-fold CV (continued)
+# d_opt = ....
 ```
 :::
 
 ::: {.cell .markdown }
 Now write code to find the best delay using the one SE rule (i.e. find
 the simplest model whose validation R2 is within one SE of the model
-with the best R2). Get the best delay according to the "one SE
-rule", and save it in `d_one_se`.
+with the best R2). 
+
+* get the "target R2" that is within one of the "best R2" model, and save it in `rsq_one_se_tgt`
+* then get the delay of the simplest model with R2 greater than this target, and save it in `d_one_se`.
 :::
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO: Use K-fold CV (continued)
 ```
 :::
@@ -717,46 +739,60 @@ section of the demo notebook. Label each axes.
 
 ::: {.cell .markdown }
 
-## Fitting the selected model
+## 4. Fitting the selected model
 :::
 
 ::: {.cell .markdown }
-Now that we have selected a model order, we can fit the (reduced) data
-to that model.
+Now that we have selected a model order, we can fit a 
+linear regression model using the best delay according to the one SE rule.
 
-Use all rows of `Xdly` and `ydly` (but select appropriate columns)
-to fit a linear regression model using the
-best delay according to the one SE rule.
+First, create an "best according to one-SE delay" training and test set
+
 :::
+
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
+# Un-comment this line:
+# X_dly_one_se, y_dly_one_se = create_dly_data(X, y, d_one_se)
+
+# Then, use train_test_split to create Xtr_dly_one_se, ytr_dly_one_se and Xts_dly_one_se, yts_dly_one_se
+# (using the same settings as before)
+# Xtr_dly_one_se, ytr_dly_one_se = ...
+# Xts_dly_one_se, yts_dly_one_se = ...
+```
+:::
+
+::: {.cell .markdown }
+
+Then,  fit a linear model:
+
+:::
+
+
+::: {.cell .code }
+```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO: Fit a linear model with `dly=d_one_se`
-# Fit model on all rows of Xdly, ydly (select appropriate columns!)
+
 ```
 :::
 
+
 ::: {.cell .markdown }
-Then, define a test set using data that was not used to train the model:
+Use your fitted model to get the predictions and find the R2 score on the test set. 
 :::
 
 ::: {.cell .code }
 ```python
-# if d_one_se is the optimal model order, you can use
-Xtr, Xts, ytr, yts = train_test_split(X, y, test_size=0.33, shuffle=False)
-Xts_dly, yts_dly = create_dly_data(Xts,yts,d_one_se)
-```
-:::
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
 
-::: {.cell .markdown }
-Use your fitted model to find the R2 score on this test set. It should be slightly higher than before.
-:::
-
-::: {.cell .code }
-```python
 # TODO: Fit a linear model with `dly=d_one_se` (continued) 
-yhat = ...
-rsq = ...
+# yhat_dly_one_se = ...
+# rsq_dly_one_se = ...
 ```
 :::
 
@@ -766,8 +802,8 @@ samples of the *test* data (similar to your plots in the previous
 sections). 
 
 Comment on this plot - does the model predict the hand
-velocity well, compared to the previous models? See if you can identify a few points in the first 
-1000 samples where this model does noticeably better.
+velocity well, compared to the previous models? See if you can identify a few points where this model 
+does noticeably better.
 
 :::
 
