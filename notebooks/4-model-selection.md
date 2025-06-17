@@ -487,13 +487,8 @@ Now, we can re-fit a model of degree `d_min_mse` or `d_max_r2` on the *entire* t
 
 ::: {.cell .code}
 ```python
-x_train_dopt =  x_train[:, :d_max_r2]
-x_test_dopt  =   x_test[:, :d_max_r2]
+x_train_dopt =  x_train_trans[:, :d_max_r2]
 reg_dopt = LinearRegression().fit(x_train_dopt, y_train)
-y_hat = reg_dopt.predict(x_test_dopt)
-mse_dopt = metrics.mean_squared_error(y_test, y_hat)
-r2_dopt  = metrics.r2_score(y_test, y_hat)
-
 ```
 :::
 
@@ -503,6 +498,15 @@ and evaluate it on the test set:
 
 :::
 
+::: {.cell .code}
+```python
+x_test_dopt = x_test**np.arange(1,d_max_r2+1)
+y_hat = reg_dopt.predict(x_test_dopt)
+mse_dopt = metrics.mean_squared_error(y_test, y_hat)
+r2_dopt  = metrics.r2_score(y_test, y_hat)
+
+```
+:::
 
 ::: {.cell .code}
 ```python
