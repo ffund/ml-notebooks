@@ -638,6 +638,8 @@ We understand from a previous lesson that we should not use the training set for
 
 However, you may feel tempted to use the test set for model selection (i.e. choose the model that has the best performance on the test set). But, this would be a mistake! Using the test set for model selection is a form of data leakage. If you select the model with best performance on the test set, you risk overfitting to noise in the test data, and since you have "contaminated" your test set by using it in this way, you no longer have a held-out test set on which to evaluate your final model. Your evaluation on this "contaminated" test set will be an overly optimistic evaluation.
 
+**Note**: This example is from the section "The Wrong and Right Way to Do Cross-validation" in the textbook *Elements of Statistical Learning*.
+
 :::
 
 ::: {.cell .markdown}
