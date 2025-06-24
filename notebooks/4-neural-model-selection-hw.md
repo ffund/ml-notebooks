@@ -753,6 +753,16 @@ section of the demo notebook. Label each axes.
 
 ::: {.cell .markdown }
 
+Look at the plot, and validate:
+
+* Does the model with no delay have a similar validation R2 to the value you measured earlier for a memoryless model? (it should have been around 0.45.) You are working with a different (smaller) subset of the data now, so the R2 won't be exactly the same as before, but it should be similar.
+* Does the model with delay 2 have a similar validation R2 to the value you measured earlier for a delay 2 model? (it should have been around 0.60.) You are working with a different (smaller) subset of the data now, so the R2 won't be exactly the same as before, but it should be similar.
+* Does the trend (of validation R2 vs delay order) generally match your expectations?
+
+:::
+
+::: {.cell .markdown }
+
 ## 4. Fitting the selected model
 :::
 
