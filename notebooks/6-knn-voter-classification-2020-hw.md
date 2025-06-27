@@ -52,6 +52,7 @@ In the last few sections of the notebook, you will have to improve the basic mod
 #### 📝 Specific requirements
 
 * For full credit, you should achieve 75% or higher test accuracy overall in this notebook (i.e. when running your solution notebook from beginning to end).
+* Also, you should achieve no less than 70% test accuracy on any survey version.
 
 :::
 
@@ -2178,3 +2179,25 @@ acc = ...
 print(acc)
 ```
 :::
+
+::: {.cell .markdown}
+
+Also compute the test accuracy *for each survey version separately*. (Use the `y_pred` you already computed.) Save the results in an 
+array named `acc_by_version`.
+
+For full credit, you should achieve no less than 70% test accuracy on any survey version.
+
+:::
+
+
+::: {.cell .code}
+```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
+# TODO - evaluate - find accuracy grouped by survey version
+# acc_by_version = np.array([acc_v1, acc_v2, acc_v3, acc_v4])
+acc_by_version = ...
+```
+:::
+
+
