@@ -49,6 +49,7 @@ SOURCES += 6-k-nearest-neighbors-in-depth.md
 SOURCES += 6-decision-trees.md
 SOURCES += 6-knn-tree-bias-variance.md
 SOURCES += 6-knn-voter-classification-hw.md
+SOURCES += 6-knn-voter-classification-2020-hw.md
 
 EXECS += 6-k-nearest-neighbors-in-depth.md
 EXECS += 6-decision-trees.md

@@ -40,7 +40,7 @@ In the first few sections of this notebook, I will show you how to prepare the d
 
 In the last few sections of the notebook, you will have to improve the basic model for better performance, using a custom distance metric and using feature weighting. In these sections, you will have specific criteria to satisfy for each task. 
 
-**However, you should also make sure your overall solution is good!** An excellent solution to this problem will achieve greater than 80% test accuracy. A great solution will achieve 75% or higher.
+**However, you should also make sure your overall solution is good!** An excellent solution to this problem will achieve greater than 80% test accuracy. (It is possible to achieve an accuracy greater than 85%.) A great solution will achieve 75% or higher.
 
 (A K nearest neighbor model is not necessarily the best model for this data - but the experience of *improving* the K nearest neighbor model will be a useful learning experience for us. In particular, it is a nice demonstration of how plugging some data into an `sklearn` classifier is not the beginning and end of model training!)
 
@@ -597,7 +597,7 @@ idx_tr, idx_ts = train_test_split(np.arange(0, df.shape[0]), test_size = 0.3, ra
 
 
 ::: {.cell .markdown}
-I specified the state of the random number generator for repeatability, so that every time we run this notebook we'll have the same split. This makes it easier to discuss specific examples.
+I specified the state of the random number generator for repeatability, so that every time we run this notebook we'll have the same split. This makes it easier to discuss specific examples. 
 :::
 
 
@@ -1291,7 +1291,7 @@ k_list = np.arange(1, 301, 10)
 n_k = len(k_list)
 acc_list = np.zeros((n_k, n_fold))
 
-kf = KFold(n_splits=5, shuffle=True)
+kf = KFold(n_splits=n_fold, shuffle=True)
 
 for isplit, idx_k in enumerate(kf.split(idx_tr)):
 
@@ -1493,6 +1493,8 @@ and you should use both of these (*not* only `l1`) in your distances.
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - implement distance metric
 
 def custom_distance(a, b):
@@ -1622,7 +1624,7 @@ in addition to the features `age`, `qraceai`, and `educ18`.
 
 You will try to improve the model by adding some of these features. 
 
-(Note: you may not add features that are **not** included in the lists above. We are deliberately excluding features that ask about the candidates, or about political affiliations, because we are trying to develop a model that predicts vote using *only* demographic information and opinions about issues.)
+Note: you may not add features that are **not** included in the lists above. We are deliberately excluding features that ask about the candidates, or about political affiliations, because we are trying to develop a model that predicts vote using *only* demographic information and opinions about issues.
 
 
 :::
@@ -1656,7 +1658,7 @@ for f in features:
 
 #### 📝 Specific requirements
 
-From among the features listed above, you should encode all of the features that seem *useful* according to the anaylsis we are about to do, although it is up to you to decide where the (qualitative) threshold for "useful" lies.
+From among the features listed above, you should encode all of the features that seem *useful* according to the anaylsis we are about to do, although it is up to you to decide where the (qualitative) threshold for "useful" lies. (We will apply feature weighting later, so it should not be very harmful to include not-so-relevant features; you can keep this in mind when deciding what is "useful".)
 
 However, even if you don't find this many useful features, you must encode at least **eight** features, including:
 
@@ -1666,6 +1668,8 @@ However, even if you don't find this many useful features, you must encode at le
 Binary features - features that can take on only two values - "count" toward either category.
 
 (If you decide to use the features I used above, they do "count" as part of the four. For example, you could use age, education, and two additional ordinal-encoded features, and race and three other one-hot-encoded features.)
+
+Furthermore, for full credit, you *must* have features that seem *useful* for each survey version.
 
 :::
 
@@ -1820,9 +1824,11 @@ and for features on survey Version 4 only:
 
 ::: {.cell .markdown}
 
-**TODO**: Now that you have a better idea of which features are useful, describe your overall strategy for encoding features. Which features will you include, and why (with reference to the figures you created)?
+**TODO**: Now that you have a better idea of which features are useful for each survey version: Which features will you include in your model, and why (with reference to the figures you created)? 
+
 
 :::
+
 
 
 ::: {.cell .markdown}
@@ -1848,6 +1854,8 @@ Also:
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - encode ordinal features
 
 # set up mapping dictionary and list of features to encode with ordinal encoding
@@ -1899,6 +1907,8 @@ Also:
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - encode categorical features
 
 # use get_dummies as shown above to get the encoded columns, stack and save in df_enc_oh
@@ -1925,6 +1935,8 @@ Now, we'll create a combined data frame with all of the encoded features:
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 X = pd.concat([df_enc_oh, df_enc_ord], axis=1)
 ```
 :::
@@ -1945,7 +1957,9 @@ X.describe()
 
 Because the K nearest neighbor classifier weights each feature equally in the distance metric, including features that are not relevant for predicting the target variable can actually make performance worse.
 
-To improve performance, we will use feature weights, so that more important features are scaled up and less important features are scaled down.
+To improve performance, we will use feature weights, so that more important features are scaled up (and count more when computing distance between samples) and less important features are scaled down (and count less, when computing distance). 
+
+Currently, every feature is on a scale from 0 to 1. We will compute feature weights, then multiply each column by its corresponding weight, so that each feature is scaled from 0 to "feature weight". 
 
 :::
 
@@ -1954,33 +1968,41 @@ To improve performance, we will use feature weights, so that more important feat
 
 #### 📝 Specific requirements
 
+There are many options for feature selection or feature weighting. For this assignment, you will use a naive search strategy (score each feature independently) using Weight of Evidence (WoE) and Information Value (IV) as the scoring function.
 
-There are many options for feature selection or feature weighting. For this assignment, you will use a naive search strategy (score each feature independently) using any scoring function you think will be helpful for this specific predictive task, and you will use the scores to weight the feature data.
+WoE and IV may be used in
 
-When computing scores, you should not impute 0s or any other value for `NaN` values in the data. Instead, you should compute the score for a feature using only the rows in the training data where *that* feature is not missing.
+* binary classification problems
+* with categorical features (each feature takes on a set of discrete values) (or, continuous features that are "binned")
 
-Also, for full credit,
+to quantify how well a feature distinguishes between the 0 and 1 classes. Since this voter classification task is a binary classification problem with categorical features, we can use this approach.
 
-* Your solution should not assign the same weight to all features.
-* Your solution should not weight highly the features that are least useful for predicting the target variable.
-* Your solution *should* weight highly the features are are most useful for predicting the target variable.
-* Your implementation should satisfy the requirements above generally, not only for this specific data. (It will be evaluated on other data.)
-* Your solution must be well justified.
+For each possible value $j$ of a feature $X$, WoE is computed as:
+
+$$\text{WoE}_j = \ln \left( \frac{P(X = x_j \mid y = 0)}{P(X = x_j \mid y = 1)} \right)$$
+
+Here, the numerator is the proportion of samples in the "negative" (`0`) class for which the value of the featue is $x_j$, and the denominator is the proportion of samples in the "positive" (`1`) class for which the value of the featue is $x_j$.  
+
+A strongly negative WoE means that value of a feature is strongly associated with belonging to the positive class; a strongly positive WoE means that value of a feature is strongly associated with belonging to the negative class.
+
+The `pandas` built-in `groupby` and `agg` functions (which we practiced in the Week 1 Colab lesson) will be useful for computing the WoE of each feature.
+
+At this point, you will have a WoE for each possible *value* of a feature. Then, the Information Value (IV) summarizes the overall predictive power of a feature by combining the WoE and the difference in class distributions across all possible values of the feature:
+
+$$\text{IV} = \sum_{j} \left( P(X = x_j \mid y = 0) - P(X = x_j \mid y = 1) \right) \cdot \text{WoE}_j$$
+
+Note that you will compute these values *excluding the samples where the value of the feature is missing*. That is, when computing the WoE values and the IV value for a feature, you will first get the subset of the data for which that feature is not missing; then you will compute WoE and IV for that subset.
 
 :::
 
 
 ::: {.cell .markdown}
 
-In the following cell and additional code cells as needed, implement feature weighting following the requirements described above, and return the results in `X_trans`:
+In the following cell, implement the `compute_feature_iv` function using the template that is provided. 
 
-* `X_trans` should have the same dimensions of `X`, but instead of each column being in the range 0-1, each column will be scaled according to its importance (more important features will be scaled up, less important features will be scaled down). You should create a variable `feat_wt` which has a weight for every feature in `X`. Then, you'll multiply `X` by `feat_wt` to get `X_trans`.
-
-Some important notes:
-
-* The goal is to write code for feature weighting, not to find it by manual inspection! Don't hard-code any values, including feature names.
-* Although `X_trans` will include all rows of the data, you should not use the test data in the process of finding `feat_wt`! Feature selection and feature weighting are considered part of model fitting, and so only the training data may be used in this process.
-* You are free to use an `sklearn` function to compute feature scores, but make sure you understand what it does and are sure it is a good fit for the data and the model.
+* The function should return a single scalar IV value for a feature, computed using the rows of X and y for which the feature is *not* missing.
+* You may use `pandas` and `numpy` functions to compute the IV.
+* You may use a small `epsilon` value where needed to prevent log of zero and division by zero.
 
 :::
 
@@ -1988,13 +2010,44 @@ Some important notes:
 
 ::: {.cell .code}
 ```python
-# TODO - feature weighting
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
 
-# feat_wt = ... # array of scores per column for scoring function
+# TODO - compute IV for a feature
 
-# X_trans = X.multiply(feat_wt)
+def compute_feature_iv(X, y, feature, epsilon=1e-20):
+
+    # step 1: get the rows of X and y for which feature is not missing
+    
+    # step 2: compute the WoE for each value of feature
+
+    # step 3: compute the IV for the feature
+
+    # return the IV (instead of zero; the zero is just a placeholder)
+    return 0
 ```
 :::
+
+::: {.cell .markdown}
+
+Next, you will use your `compute_feature_iv` to fill in the array `feat_wt`. Make sure to *only* pass the training data (not test data!) to `compute_feature_iv`.
+
+To get your final weighted data set `X_trans`, you will simply multiply the data by `feat_wt`. (The $i$th column in the data is multiplied by the $i$th entry in `feat_wt`.)
+:::
+
+::: {.cell .code}
+```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
+# TODO - fill in feat_wt with IV of each feature in your data
+
+feat_wt = np.zeros(X.shape[1])
+# call compute_feature_iv to fill in feat_wt
+
+X_trans = X.multiply(feat_wt)
+```
+:::
+
+
 
 
 ::: {.cell .markdown}
@@ -2021,7 +2074,7 @@ X_trans.describe()
 
 ::: {.cell .markdown}
 
-Finally, you'll repeat the process of finding the best number of neighbors using K-fold CV, with 
+Finally, you'll repeat the process (illustrated earlier) of finding the best number of neighbors using K-fold CV, with 
 your "transformed" data (`X_trans`) and your new custom distance metric.
 
 Then, you'll evaluate the performance of your model on the *test* data, using that optimal number of neighbors.
@@ -2032,6 +2085,8 @@ Then, you'll evaluate the performance of your model on the *test* data, using th
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - evaluate - pre-compute distance matrix of training vs. training data
 
 distances_kfold = ...
@@ -2043,6 +2098,8 @@ distances_kfold = ...
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - evaluate - use K-fold CV, fill in acc_list 
 
 n_fold = 5
@@ -2051,7 +2108,7 @@ n_k = len(k_list)
 acc_list = np.zeros((n_k, n_fold))
 
 # use this random state so your results will match the auto-graders'
-kf = KFold(n_splits=5, shuffle=True, random_state=3)
+kf = KFold(n_splits=n_fold, shuffle=True, random_state=3)
 
 for isplit, idx_k in enumerate(kf.split(idx_tr)):
 
@@ -2089,6 +2146,8 @@ Find the best choice for k (number of neighbors) using the "highest validation a
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - evaluate - find best k
 best_k = ...
 ```
@@ -2102,6 +2161,8 @@ Finally, re-run our KNN algorithm using the entire training set and this `best_k
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - evaluate - find accuracy
 # compute distance matrix for test vs. training data
 # use KNN with best_k to find y_pred for test data
