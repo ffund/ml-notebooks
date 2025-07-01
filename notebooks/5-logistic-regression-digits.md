@@ -635,7 +635,7 @@ p = plt.title('Shape: ' + str(np.asarray(image_bw).shape))
 ::: {.cell .code }
 ```python
 # resize image 
-image_bw_resized = image_bw.resize((28,28), Image.ANTIALIAS)
+image_bw_resized = image_bw.resize((28,28), Image.LANCZOS)
 p = plt.imshow(np.asarray(image_bw_resized), cmap=plt.cm.gray,);
 p = plt.title('Shape: ' + str(np.asarray(image_bw_resized).shape))
 ```
