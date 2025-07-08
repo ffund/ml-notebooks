@@ -1901,6 +1901,9 @@ Use at least four features that are encoded using an categorical encoder. (You c
 Also:
 
 * Save the categorical-encoded columnns in a data frame called `df_enc_oh`.
+* As in the example given in the "Prepare data > Encode categorical features" section of this notebook, use the `get_dummies` function and specify that the data type should be `np.int32`. 
+* Use the name of the feature as the prefix for the new column, with the exception of the `qraceai` feature for which you should use the prefix `race` (like in the example).
+* Make sure to preserve NaNs - if a sample did not have a value for a particular feature, assign a NaN to all columns corresponding to that feature for that sample.
 * For some questions, there is also an "Omit" answer - if a respondent left that question blank on the questionnaire, the value for that question will be "Omit". We're going to treat these as missing values. Before encoding the values, you should drop the column corresponding to the "Omit" value from the data frame.
 
 :::
