@@ -57,7 +57,6 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.experimental import enable_hist_gradient_boosting
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier
 
