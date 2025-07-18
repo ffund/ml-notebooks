@@ -542,7 +542,7 @@ fig, axes = plt.subplots(1, nh+1, figsize=(nh*5, 4))
 
 # Plot for each hidden unit with grayscale colormap
 for i in range(activation.shape[2]):
-    axes[i].imshow(activation[:, :, i], cmap='gray', origin='lower', extent=[0,1,0,1])
+    axes[i].imshow(activation[:, :, i], cmap='gray_r', origin='lower', extent=[0,1,0,1])
     axes[i].set_title(f'Hidden Unit {i+1}')
     axes[i].axis('off')
 
