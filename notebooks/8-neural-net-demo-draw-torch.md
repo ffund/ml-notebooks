@@ -538,7 +538,7 @@ activation = activation.numpy().reshape((n_plot, n_plot, -1))
 output = output.numpy().reshape((n_plot, n_plot))
 
 # Visualization
-fig, axes = plt.subplots(1, nh, figsize=(nh*5, 4))
+fig, axes = plt.subplots(1, nh+1, figsize=(nh*5, 4))
 
 # Plot for each hidden unit with grayscale colormap
 for i in range(activation.shape[2]):
