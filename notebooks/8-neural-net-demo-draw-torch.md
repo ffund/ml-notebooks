@@ -60,6 +60,8 @@ canvas_html = """
 var canvas = document.querySelector('canvas')
 var ctx = canvas.getContext('2d')
 ctx.lineWidth = %d
+ctx.lineCap = 'round'
+ctx.lineJoin = 'round'
 var button = document.querySelector('button')
 var mouse = {x: 0, y: 0}
 
@@ -88,7 +90,7 @@ var data = new Promise(resolve=>{
 </script>
 """
 
-def draw(filename='drawing.png', w=256, h=256, line_width=10):
+def draw(filename='drawing.png', w=256, h=256, line_width=8):
   display(HTML(canvas_html % (w, h, line_width)))
   data = eval_js("data")
   binary = b64decode(data.split(',')[1])
@@ -512,6 +514,9 @@ these regions.
 
 model.eval()
 
+# Get output layer weights
+output_layer = model.output
+
 # Generate a grid of points
 n_plot = 256
 xx1, xx2 = np.meshgrid(np.linspace(0, 1, n_plot), np.linspace(0, 1, n_plot))
@@ -543,12 +548,12 @@ fig, axes = plt.subplots(1, nh+1, figsize=(nh*5, 4))
 # Plot for each hidden unit with grayscale colormap
 for i in range(activation.shape[2]):
     axes[i].imshow(activation[:, :, i], cmap='gray_r', origin='lower', extent=[0,1,0,1])
-    axes[i].set_title(f'Hidden Unit {i+1}')
+    axes[i].set_title(f'h{i+1}, w_h{i+1},o={output_layer.weight.data.numpy()[0,i]:.2f}')
     axes[i].axis('off')
 
 # Plot for output layer with grayscale colormap
-axes[-1].imshow(output, cmap='gray', origin='lower', extent=[0,1,0,1])
-axes[-1].set_title('Output Layer')
+axes[-1].imshow(output, cmap='gray_r', origin='lower', extent=[0,1,0,1])
+axes[-1].set_title(f"Output, w_hb,o={output_layer.bias.data.numpy()[0]:.2f}")
 axes[-1].axis('off')
 
 plt.show()
