@@ -2,7 +2,6 @@
 title: 'Learning the Slash dataset'
 author: 'Fraida Fund'
 jupyter:
-  accelerator: GPU
   colab:
     toc_visible: true
   kernelspec:
@@ -272,11 +271,11 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 ::: {.cell .markdown }
 
-We're going to prefer to train this model on a GPU. So before we start, we will 
+We'll also make it possible to train this model on CPU, or on a GPU which can perform certain linear algebra operations much faster than a general-purpose CPU. So before we start, we will 
 
 * check if a GPU is available (a "cuda" device) with `torch.cuda.is_available()`
 * if a GPU is available, set `device` to the GPU device; otherwise set it to the CPU device
-* create an instance of the fully connected model, and *move it to the device*
+* create an instance of the fully connected model, and *move it to the device* (whether CPU or GPU)
 
 :::
 
@@ -317,7 +316,7 @@ model_fc
 
 We will train it for 100 epochs. 
 
-Within each epoch, we will iterate over the training `DataLoader`, passing a batch of data at a time to the model.  We will *move the data to the `device`* - since the model is moved to GPU (if one is avaliable), the data also must be moved to GPU.
+Within each epoch, we will iterate over the training `DataLoader`, passing a batch of data at a time to the model.  We will *move the data to the `device`* - since the model is moved to GPU (if one is avaliable), the data also must be moved to the same device.
 
 Then, we do our forward pass and backwards pass, and update the model parameters.
 
@@ -503,7 +502,7 @@ test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 ::: {.cell .markdown }
 
-As before, we'll put the model on GPU if available:
+As before, we'll put the model on whatever device is available:
 
 :::
 
