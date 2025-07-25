@@ -2,13 +2,12 @@
 title: 'Learning the Slash dataset'
 author: 'Fraida Fund'
 jupyter:
+  accelerator: GPU
   colab:
     toc_visible: true
   kernelspec:
     display_name: Python 3
     name: python3
-  language_info:
-    name: python
   nbformat: 4
   nbformat_minor: 0
 ---
@@ -43,9 +42,9 @@ from sklearn.model_selection import train_test_split
 from sklearn import ensemble, neighbors, linear_model, svm
 
 
-from ipywidgets import interactive, Layout
+from ipywidgets import interactive, Layout, interact, IntSlider
 import ipywidgets as widgets
-
+from IPython.display import display
 ```
 :::
 
@@ -450,23 +449,29 @@ Now, we'll try a convolutional neural network:
 class ConvNet(nn.Module):
     def __init__(self, in_channels=1, filters=8):
         super(ConvNet, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, filters, kernel_size=3, padding=1, bias=False)  # [B, in_channels, H, W] -> [B, filters, H, W]
-        self.pool = nn.MaxPool2d(kernel_size=2)  # [B, filters, H, W] -> [B, filters, H/2, W/2]
-        self.bn = nn.BatchNorm2d(filters)  # [B, filters, H/2, W/2] -> [B, filters, H/2, W/2]
-        self.conv2 = nn.Conv2d(filters, filters, kernel_size=3, padding=1, bias=False)  # [B, filters, H/2, W/2] -> [B, filters, H/2, W/2]
-        self.global_avg_pool = nn.AdaptiveAvgPool2d(1)  # [B, filters, H/2, W/2] -> [B, filters, 1, 1]
-        self.fc = nn.Linear(filters, 1)  # [B, filters] -> [B, 1]
+        self.conv1 = nn.Conv2d(in_channels, filters, kernel_size=3, padding=1, bias=False)  # [B, 1, H, W] -> [B, 8, H, W]
+        self.relu1 = nn.ReLU() 
+        
+        self.pool = nn.MaxPool2d(kernel_size=2)  # [B, 8, H, W] -> [B, 8, H/2, W/2]
+        self.bn = nn.BatchNorm2d(filters)
+
+        self.conv2 = nn.Conv2d(filters, filters, kernel_size=3, padding=1, bias=False)  # [B, 8, H/2, W/2]
+        self.relu2 = nn.ReLU()
+
+        self.global_avg_pool = nn.AdaptiveAvgPool2d(1)  # [B, 8, H/2, W/2] -> [B, 8, 1, 1]
+        self.fc = nn.Linear(filters, 1)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = self.pool(x)
-        x = self.bn(x)
-        x = F.relu(self.conv2(x))
-        x = self.global_avg_pool(x)  # shape: [B, filters, 1, 1]
-        x = x.view(x.size(0), -1)    # flatten to [B, filters]
-        x = torch.sigmoid(self.fc(x))
+        x = self.conv1(x)         # [B, 8, H, W]
+        x = self.relu1(x)         # [B, 8, H, W]
+        x = self.pool(x)          # [B, 8, H/2, W/2]
+        x = self.bn(x)            # [B, 8, H/2, W/2]
+        x = self.conv2(x)         # [B, 8, H/2, W/2]
+        x = self.relu2(x)         # [B, 8, H/2, W/2]
+        x = self.global_avg_pool(x)  # [B, 8, 1, 1]
+        x = x.view(x.size(0), -1)    # [B, 8]
+        x = torch.sigmoid(self.fc(x))  # [B, 1]
         return x
-
 ```
 :::
 
@@ -620,6 +625,29 @@ sns.barplot(x=results_df.sort_values('test_score')['model'], y=results_df.sort_v
 plt.ylim(0,1);
 ```
 :::
+
+
+
+::: {.cell .markdown}
+
+Not only does the convolutional neural network do much better than the fully connected neural network at recognizing the orientation of a "slash", it also has only a tiny fraction of its size:
+:::
+
+
+::: {.cell .code }
+```python
+total_params = sum(
+	param.numel() for param in model_conv.parameters()
+)
+trainable_params = sum(
+	p.numel() for p in model_conv.parameters() if p.requires_grad
+)
+
+print(f"Total parameters: {total_params}")
+print(f"Trainable parameters: {trainable_params}")
+```
+:::
+
 
 ::: {.cell .markdown }
 ## Using the same model on different slashes
@@ -787,5 +815,92 @@ with torch.no_grad():
     new_test_score = correct / total
 
 print(f"New test accuracy: {new_test_score:.4f}")
+```
+:::
+
+::: {.cell .markdown }
+## Visualize what the network learns
+:::
+
+
+::: {.cell .code cellView="form" }
+```python
+#@title ### Visualization magic
+import torch
+import torch.nn as nn
+import matplotlib.pyplot as plt
+import numpy as np
+from ipywidgets import interact, IntSlider
+from IPython.display import display
+
+activations = {}
+
+def get_activation(name):
+    def hook(model, input, output):
+        activations[name] = output.detach().cpu()
+    return hook
+
+layer_names = []
+for name, layer in model_conv.named_modules():
+    if isinstance(layer, nn.Conv2d):
+        # Register pre-activation (conv output)
+        pre_name = f"{name}_pre"
+        layer.register_forward_hook(get_activation(pre_name))
+        layer_names.append(pre_name)
+
+    if isinstance(layer, (nn.ReLU, nn.MaxPool2d, nn.AdaptiveAvgPool2d)):
+        # Register after activations
+        layer.register_forward_hook(get_activation(name))
+        layer_names.append(name)
+
+# Visualize function
+def visualize_layer(test_idx=0, layer_idx=0):
+    model_conv.eval()
+    x_img = x_test[test_idx]  # shape: [H, W]
+    x_tensor = torch.tensor(x_img[np.newaxis, np.newaxis], dtype=torch.float32).to(device)
+    
+    with torch.no_grad():
+        _ = model_conv(x_tensor)  # triggers hooks
+
+    name = layer_names[layer_idx]
+    fmap = activations[name].squeeze(0)  # remove batch dim
+
+    n_channels = fmap.shape[0]
+    
+    if fmap.ndim == 1 or (fmap.shape[1:] == torch.Size([1, 1])):
+        fmap_flat = fmap.view(-1).numpy()
+        plt.figure(figsize=(len(fmap_flat) * 0.5, 0.5))
+        plt.imshow(fmap_flat[np.newaxis, :], cmap='gray', aspect='auto')
+        plt.title(f"{name} (Global Avg Pool Output)")
+        plt.yticks([])
+        plt.xticks(range(len(fmap_flat)))
+        plt.show()
+        return
+
+    n_cols = int(np.ceil(np.sqrt(n_channels)))
+    n_rows = int(np.ceil(n_channels / n_cols))
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 2, n_rows * 2))
+    fig.suptitle(name)
+    
+    for i in range(n_channels):
+        ax = axes.flat[i]
+        ax.imshow(fmap[i], cmap='gray')
+        ax.set_title(f"{i}", fontsize=8)
+        ax.axis('off')
+
+    # hide unused axes
+    for i in range(n_channels, len(axes.flat)):
+        axes.flat[i].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+# Sliders to choose image and layer
+widget = interact(
+    visualize_layer,
+    test_idx=IntSlider(0, 0, len(x_test)-1, step=1, description='Test Index'),
+    layer_idx=IntSlider(0, 0, len(layer_names)-1, step=1, description='Layer Index')
+)
 ```
 :::
