@@ -36,18 +36,17 @@ this notebook on a GPU.
 
 ::: {.cell .code }
 ```python
-import tensorflow as tf
-import tensorflow_datasets as tfds
-import matplotlib.pyplot as plt
 import numpy as np
-import platform
-import datetime
-import os
-import math
-import random
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-print('Python version:', platform.python_version())
-print('Tensorflow version:', tf.__version__)
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.utils.data import DataLoader, random_split
+from torchvision import datasets, transforms, models
+
 ```
 :::
 
@@ -56,408 +55,136 @@ print('Tensorflow version:', tf.__version__)
 :::
 
 ::: {.cell .markdown }
-The "rock paper scissors" dataset is available directly from the
-`tensorflow_datasets` package. In the cells that follow, we'll get the data, plot
-a few examples, and also prepare a preprocessing function (which we won't apply yet).
+In the cells that follow, we'll get the "rock paper scissors" data, plot
+a few examples, and also prepare a preprocessing function (which we won't apply yet). The preprocessing transforms will:
+
+* resize each sample to 224x224 (this is a typical input size for pretrained models trained on ImageNet)
+* and normalize input using the mean and standard deviation of ImageNet
+
 :::
 
 ::: {.cell .code }
 ```python
-import tensorflow_datasets as tfds
+import os, urllib.request, zipfile
+
+urls = {
+    'train': "https://storage.googleapis.com/download.tensorflow.org/data/rps.zip",
+    'test':  "https://storage.googleapis.com/download.tensorflow.org/data/rps-test-set.zip"
+}
+data_dir = "./data/rps"
+
+os.makedirs(data_dir, exist_ok=True)
+
+for split, url in urls.items():
+    zip_path = os.path.join(data_dir, f"{split}.zip")
+    if not os.path.exists(zip_path):
+        print(f"Downloading {split} set...")
+        urllib.request.urlretrieve(url, zip_path)
+        with zipfile.ZipFile(zip_path, 'r') as z:
+            z.extractall(os.path.join(data_dir, split))
+        print(f"{split} set extracted.")
 ```
 :::
 
 ::: {.cell .code }
 ```python
-(ds_train, ds_test), ds_info = tfds.load(
-    'rock_paper_scissors',
-    split=['train', 'test'],
-    shuffle_files=True,
-    as_supervised=True,  # ensures output is (image, label)
-    with_info=True
-)
+imagenet_mean = [0.485, 0.456, 0.406]
+imagenet_std  = [0.229, 0.224, 0.225]
+
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=imagenet_mean, std=imagenet_std)
+])
+
 ```
 :::
 
 ::: {.cell .code }
 ```python
-fig = tfds.show_examples(ds_train, ds_info)
+train_root = os.path.join(data_dir, 'train', 'rps')
+test_root  = os.path.join(data_dir, 'test', 'rps-test-set')
+
+train_dataset = datasets.ImageFolder(root=train_root, transform=transform)
+test_dataset  = datasets.ImageFolder(root=test_root, transform=transform)
+class_names = train_dataset.classes
+
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+test_loader  = DataLoader(test_dataset, batch_size=32)
 ```
 :::
 
 ::: {.cell .code }
 ```python
-classes = np.array(['rock', 'paper', 'scissors'])
+n = 5
+mean = torch.tensor(imagenet_mean).view(3, 1, 1)
+std = torch.tensor(imagenet_std).view(3, 1, 1)
+
+idxs = np.random.choice(len(train_dataset), n, replace=False)
+
+plt.figure(figsize=(n * 2, 2))
+for i, idx in enumerate(idxs):
+    img, label = train_dataset[idx]
+    img = img * std + mean  # de-normalize
+    img = img.permute(1, 2, 0).clamp(0, 1).numpy()
+    plt.subplot(1, n, i + 1)
+    plt.imshow(img)
+    plt.title(class_names[label])
+    plt.axis('off')
+plt.tight_layout()
+plt.show()
 ```
+:::
+
+
+::: {.cell .markdown }
+## Classify with a ResNet
 :::
 
 ::: {.cell .markdown }
-## Pre-process dataset
+
+[torchvision models](https://docs.pytorch.org/vision/0.9/models.html) image models that have been 
+pre-trained on ImageNet. You can download their saved weights, and use in your own code.
+
+We are going to use a pre-trained ResNet model
+
 :::
 
-::: {.cell .markdown }
 
-Each of the base models that comes in Keras has its own `preprocess_input` function. We're going to use a [MobileNetV2](https://keras.io/api/applications/mobilenet/#mobilenetv2-function) model (which expects image data to have values in the -1 to 1 range), so we will use its specific preprocessing function.
-
-:::
 
 ::: {.cell .code }
 ```python
-INPUT_IMG_SIZE = 224
-INPUT_IMG_SHAPE = (224, 224, 3)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 ```
 :::
 
 ::: {.cell .code }
 ```python
-def preprocess_image(image, label):
-    image = tf.cast(image, tf.float32)
-    image = tf.image.resize(image, (INPUT_IMG_SIZE, INPUT_IMG_SIZE))
-    # Preprocessing for MobileNetV2 - scales to whatever range MobileNetV2 expects
-    image = tf.keras.applications.mobilenet_v2.preprocess_input(image)  
-    return image, label
+base_model = models.resnet18(weights='ResNet18_Weights.DEFAULT').to(device)
+
 ```
 :::
 
-::: {.cell .markdown }
-
-We won't apply this preprocessing to our dataset yet, but we will get this function ready so that we can apply it to a test sample very soon.
-
-:::
-
-
-::: {.cell .markdown }
-## Upload custom test sample
-
-This code expects a PNG image.
-:::
 
 ::: {.cell .code }
 ```python
-from google.colab import files
-
-uploaded = files.upload()
-
-for fn in uploaded.keys():
-  print('User uploaded file "{name}" with length {length} bytes'.format(
-      name=fn, length=len(uploaded[fn])))
+base_model
 ```
 :::
+
 
 ::: {.cell .code }
 ```python
-from PIL import Image
- 
-# Edit the filename here as needed
-filename = 'scissors.png'
- 
-# pre-process image
-image = Image.open(filename).convert('RGB')
-image_resized = image.resize((INPUT_IMG_SIZE, INPUT_IMG_SIZE), Image.BICUBIC)
-test_sample = np.array(image_resized)
-test_sample = test_sample.reshape(1, INPUT_IMG_SIZE, INPUT_IMG_SIZE, 3)
-```
-:::
+# Get class labels
+labels_url = 'https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt'
+labels_path = 'imagenet_classes.txt'
+if not os.path.exists(labels_path):
+    urllib.request.urlretrieve(labels_url, labels_path)
 
-::: {.cell .code }
-```python
-import seaborn as sns
+with open(labels_path) as f:
+    class_labels = [line.strip() for line in f]
 
-plt.figure(figsize=(4,4));
-plt.imshow(test_sample.reshape(INPUT_IMG_SIZE, INPUT_IMG_SIZE, 3));
-```
-:::
-
-::: {.cell .markdown }
-## Classify with MobileNetV2
-:::
-
-::: {.cell .markdown }
-[Keras Applications](https://keras.io/api/applications/) are pre-trained
-models with saved weights, that you can download and use without any
-additional training.
-:::
-
-::: {.cell .markdown }
-Here is a table of the models available as Keras Applications.
-
-In this table, the top-1 and top-5 accuracy refer to the model\'s
-performance on the ImageNet validation dataset, and depth is the depth
-of the network including activation layers, batch normalization layers,
-etc.
-:::
-
-::: {.cell .markdown }
-```{=html}
-<table>
-<thead>
-<tr>
-<th>Model</th>
-<th align="right">Size</th>
-<th align="right">Top-1 Accuracy</th>
-<th align="right">Top-5 Accuracy</th>
-<th align="right">Parameters</th>
-<th align="right">Depth</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Xception</td>
-<td align="right">88 MB</td>
-<td align="right">0.790</td>
-<td align="right">0.945</td>
-<td align="right">22,910,480</td>
-<td align="right">126</td>
-</tr>
-<tr>
-<td>VGG16</td>
-<td align="right">528 MB</td>
-<td align="right">0.713</td>
-<td align="right">0.901</td>
-<td align="right">138,357,544</td>
-<td align="right">23</td>
-</tr>
-<tr>
-<td>VGG19</td>
-<td align="right">549 MB</td>
-<td align="right">0.713</td>
-<td align="right">0.900</td>
-<td align="right">143,667,240</td>
-<td align="right">26</td>
-</tr>
-<tr>
-<td>ResNet50</td>
-<td align="right">98 MB</td>
-<td align="right">0.749</td>
-<td align="right">0.921</td>
-<td align="right">25,636,712</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>ResNet101</td>
-<td align="right">171 MB</td>
-<td align="right">0.764</td>
-<td align="right">0.928</td>
-<td align="right">44,707,176</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>ResNet152</td>
-<td align="right">232 MB</td>
-<td align="right">0.766</td>
-<td align="right">0.931</td>
-<td align="right">60,419,944</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>ResNet50V2</td>
-<td align="right">98 MB</td>
-<td align="right">0.760</td>
-<td align="right">0.930</td>
-<td align="right">25,613,800</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>ResNet101V2</td>
-<td align="right">171 MB</td>
-<td align="right">0.772</td>
-<td align="right">0.938</td>
-<td align="right">44,675,560</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>ResNet152V2</td>
-<td align="right">232 MB</td>
-<td align="right">0.780</td>
-<td align="right">0.942</td>
-<td align="right">60,380,648</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>InceptionV3</td>
-<td align="right">92 MB</td>
-<td align="right">0.779</td>
-<td align="right">0.937</td>
-<td align="right">23,851,784</td>
-<td align="right">159</td>
-</tr>
-<tr>
-<td>InceptionResNetV2</td>
-<td align="right">215 MB</td>
-<td align="right">0.803</td>
-<td align="right">0.953</td>
-<td align="right">55,873,736</td>
-<td align="right">572</td>
-</tr>
-<tr>
-<td>MobileNet</td>
-<td align="right">16 MB</td>
-<td align="right">0.704</td>
-<td align="right">0.895</td>
-<td align="right">4,253,864</td>
-<td align="right">88</td>
-</tr>
-<tr>
-<td>MobileNetV2</td>
-<td align="right">14 MB</td>
-<td align="right">0.713</td>
-<td align="right">0.901</td>
-<td align="right">3,538,984</td>
-<td align="right">88</td>
-</tr>
-<tr>
-<td>DenseNet121</td>
-<td align="right">33 MB</td>
-<td align="right">0.750</td>
-<td align="right">0.923</td>
-<td align="right">8,062,504</td>
-<td align="right">121</td>
-</tr>
-<tr>
-<td>DenseNet169</td>
-<td align="right">57 MB</td>
-<td align="right">0.762</td>
-<td align="right">0.932</td>
-<td align="right">14,307,880</td>
-<td align="right">169</td>
-</tr>
-<tr>
-<td>DenseNet201</td>
-<td align="right">80 MB</td>
-<td align="right">0.773</td>
-<td align="right">0.936</td>
-<td align="right">20,242,984</td>
-<td align="right">201</td>
-</tr>
-<tr>
-<td>NASNetMobile</td>
-<td align="right">23 MB</td>
-<td align="right">0.744</td>
-<td align="right">0.919</td>
-<td align="right">5,326,716</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>NASNetLarge</td>
-<td align="right">343 MB</td>
-<td align="right">0.825</td>
-<td align="right">0.960</td>
-<td align="right">88,949,818</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB0</td>
-<td align="right">29 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">5,330,571</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB1</td>
-<td align="right">31 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">7,856,239</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB2></td>
-<td align="right">36 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">9,177,569</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB3</td>
-<td align="right">48 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">12,320,535</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB4</td>
-<td align="right">75 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">19,466,823</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB5</td>
-<td align="right">118 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">30,562,527</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB6</td>
-<td align="right">166 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">43,265,143</td>
-<td align="right">-</td>
-</tr>
-<tr>
-<td>EfficientNetB7</td>
-<td align="right">256 MB</td>
-<td align="right">-</td>
-<td align="right">-</td>
-<td align="right">66,658,687</td>
-<td align="right">-</td>
-</tr>
-</tbody>
-</table>
-```
-:::
-
-::: {.cell .markdown }
-(A variety of other models is available from other sources - for
-example, the [Tensorflow Hub](https://tfhub.dev/).)
-:::
-
-::: {.cell .markdown }
-I\'m going to use MobileNetV2, which is designed specifically to be
-small and fast (so it can run on mobile devices!)
-
-MobileNets come in various sizes controlled by a multiplier for the
-depth (number of features), and trained for various sizes of input
-images. We will use the 224x224 input image size.
-:::
-
-::: {.cell .code }
-```python
-base_model = tf.keras.applications.MobileNetV2(
-  input_shape=INPUT_IMG_SHAPE
-)
-```
-:::
-
-::: {.cell .code }
-```python
-base_model.summary()
-```
-:::
-
-::: {.cell .code }
-```python
-# preprocess test sample before using it
-test_sample_pre, _ = preprocess_image(test_sample, label=2)
-base_probs = base_model.predict(test_sample_pre)
-base_probs.shape
-```
-:::
-
-::: {.cell .code }
-```python
-url = tf.keras.utils.get_file(
-    'ImageNetLabels.txt',
-    'https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
-imagenet_classes = np.array(open(url).read().splitlines())[1:]
-imagenet_classes.shape
 ```
 :::
 
@@ -467,26 +194,31 @@ Let's see what the top 5 predicted classes are for my test image:
 
 ::: {.cell .code }
 ```python
-most_likely_classes = np.argsort(base_probs.squeeze())[-5:]
+base_model.eval()
+with torch.no_grad():
+    output = base_model(test_tensor.to(device))              # [1, 1000]
+    probs = F.softmax(output, dim=1)
+    top_prob, top_idx = probs[0].topk(5)
 ```
 :::
 
 ::: {.cell .code }
 ```python
-plt.figure(figsize=(10,4));
+top_classes = [class_labels[i] for i in top_idx.tolist()]
+top_probs = top_prob.cpu().numpy()
 
-plt.subplot(1,2,1)
-plt.imshow(test_sample.reshape(INPUT_IMG_SIZE, INPUT_IMG_SIZE, 3));
-
-plt.subplot(1,2,2)
-p = sns.barplot(x=imagenet_classes[most_likely_classes],y=base_probs.squeeze()[most_likely_classes]);
-plt.ylabel("Probability");
-p.set_xticklabels(p.get_xticklabels(), rotation=45);
+plt.figure(figsize=(6, 4))
+ax = sns.barplot(x=top_classes, y=top_probs)
+ax.set_ylabel("Probability")
+ax.set_title("Top-5 Predictions")
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+plt.tight_layout()
+plt.show()
 ```
 :::
 
 ::: {.cell .markdown }
-MobileNetV2 is trained on a specific task: classifying the images in the
+The base model is trained on a specific task: classifying the images in the
 ImageNet dataset by selecting the most appropriate of 1000 class labels.
 
 It is not trained for our specific task: classifying an image of a hand
@@ -545,95 +277,58 @@ The general process is:
 :::
 
 ::: {.cell .markdown }
-This time, we will get the MobileNetV2 model *without* the fully
-connected layer at the top of the network.
+
+This time, we will 
+
+* get the base model, 
+* freeze the weights in the feature extraction part, 
+* and put a brand-new, totally untrained classification head on top.
+
 :::
 
 
 ::: {.cell .code }
 ```python
-base_model = tf.keras.applications.MobileNetV2(
-  input_shape=INPUT_IMG_SHAPE,
-  include_top=False, 
-  pooling='avg'
+transfer_model = models.resnet18(weights='ResNet18_Weights.DEFAULT')
+
+# Freeze all parameters
+for param in transfer_model.parameters():
+    param.requires_grad = False
+
+# Replace the classification head at the end
+num_ftrs = transfer_model.fc.in_features
+transfer_model.fc = nn.Sequential(
+    nn.Dropout(0.2),
+    nn.Linear(num_ftrs, 3)  # 3 classes: rock, paper, scissors
 )
 ```
 :::
 
 ::: {.cell .code }
 ```python
-base_model.summary()
-```
-:::
+transfer_model = transfer_model.to(device)
 
-::: {.cell .markdown }
-Then, we will *freeze* the model. We\'re not going to train the
-MobileNetV2 part of the model, we\'re just going to use it to extract
-features from the images.
-:::
-
-::: {.cell .code }
-```python
-base_model.trainable = False
-```
-:::
-
-::: {.cell .markdown }
-We'l make a *new* model out of the "headless" already-fitted
-MobileNetV2, with a brand-new, totally untrained classification head on
-top:
-:::
-
-::: {.cell .code }
-```python
-model = tf.keras.models.Sequential()
-
-model.add(base_model)
-model.add(tf.keras.layers.Dropout(0.2))
-model.add(tf.keras.layers.Dense(
-    units=3,
-    activation=tf.keras.activations.softmax
-))
 ```
 :::
 
 ::: {.cell .code }
 ```python
-model.summary()
+transfer_model
 ```
 :::
 
-::: {.cell .markdown }
-We'l compile the model:
-:::
 
 ::: {.cell .code }
 ```python
-opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
-
-model.compile(
-    optimizer=opt,
-    loss=tf.keras.losses.sparse_categorical_crossentropy,
-    metrics=['accuracy']
+total_params = sum(
+	param.numel() for param in transfer_model.parameters()
 )
-```
-:::
+trainable_params = sum(
+	p.numel() for p in transfer_model.parameters() if p.requires_grad
+)
 
-::: {.cell .markdown }
-Also, we'll use data augmentation:
-:::
-
-::: {.cell .code }
-```python
-def augment_image(image, label):
-    image = tf.image.random_flip_left_right(image)
-    image = tf.image.random_brightness(image, max_delta=0.05)
-    image = tf.image.random_contrast(image, lower=0.95, upper=1.05)
-    image = tf.image.random_crop(
-    image, size=(image.shape[0] - 2, image.shape[1] - 2, image.shape[2])
-    )
-    image = tf.image.resize(image, (INPUT_IMG_SIZE, INPUT_IMG_SIZE))
-    return image, label
+print(f"Total parameters: {total_params}")
+print(f"Trainable parameters: {trainable_params}")
 ```
 :::
 
@@ -644,13 +339,31 @@ Here, we apply data augmentation and preprocessing to the training data; and jus
 
 ::: {.cell .code }
 ```python
-BATCH_SIZE=64
-ds_train = ds_train.map(preprocess_image)
-ds_train = ds_train.map(augment_image)
-ds_train = ds_train.shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+# data augmentation for training set
+aug_transform = transforms.Compose([
+    transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomRotation(15),
+    transforms.ColorJitter(brightness=0.1, contrast=0.1),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=imagenet_mean, std=imagenet_std)
+])
 
-ds_test  = ds_test.map(preprocess_image)
-ds_test  = ds_test.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+# no augmentation for test set
+basic_transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=imagenet_mean, std=imagenet_std)
+])
+
+train_dataset = datasets.ImageFolder(root=train_root, transform=aug_transform)
+test_dataset  = datasets.ImageFolder(root=test_root,  transform=basic_transform)
+class_names   = train_dataset.classes
+
+
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+test_loader  = DataLoader(test_dataset, batch_size=64)
+
 ```
 :::
 
@@ -658,49 +371,85 @@ ds_test  = ds_test.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 Now we can start training our model. Remember, we are *only* updating
 the weights in the classification head.
 
-Also note that we are not doing early stopping or otherwise "using" 
-the data passed as `validation_data`, so it's OK to use the test data
-in this instance. 
+Also note that we are reporting loss on the test data in each epoch, but we are
+not doing early stopping or otherwise "using" this. If we were using this loss
+to make decisions about the training process, we would have to split out a separate 
+validation set to avoid data leakage.
+
 :::
 
 ::: {.cell .code }
 ```python
-n_epochs = 20
-
-hist = model.fit(
-    ds_train,
-    epochs = n_epochs, 
-    validation_data = ds_test
-)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(transfer_model.parameters(), lr=1e-4)
 ```
 :::
 
 ::: {.cell .code }
 ```python
-loss = hist.history['loss']
-val_loss = hist.history['val_loss']
+num_epochs = 20
+train_losses = []
+test_losses = []
+train_accuracies = []
+test_accuracies = []
 
-accuracy = hist.history['accuracy']
-val_accuracy = hist.history['val_accuracy']
 
-plt.figure(figsize=(14, 4))
+for epoch in range(num_epochs):
+    # Train on training set
+    transfer_model.train()
+    total_loss, correct, total = 0.0, 0, 0
 
-plt.subplot(1, 2, 1)
-plt.title('Loss')
+    for images, labels in train_loader:
+        images, labels = images.to(device), labels.to(device)
+
+        optimizer.zero_grad()
+        outputs = transfer_model(images)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item() * images.size(0)
+        correct += (outputs.argmax(1) == labels).sum().item()
+        total += labels.size(0)
+
+    train_losses.append(total_loss / total)
+    train_accuracies.append(correct / total)
+
+    # Evaluate on test set
+    transfer_model.eval()
+    test_loss, test_correct, test_total = 0.0, 0, 0
+
+    with torch.no_grad():
+        for images, labels in test_loader:
+            images, labels = images.to(device), labels.to(device)
+            outputs = transfer_model(images)
+            loss = criterion(outputs, labels)
+
+            test_loss += loss.item() * images.size(0)
+            test_correct += (outputs.argmax(1) == labels).sum().item()
+            test_total += labels.size(0)
+
+    test_losses.append(test_loss / test_total)
+    test_accuracies.append(test_correct / test_total)
+
+    print(f"Epoch {epoch+1}/{num_epochs} | "
+          f"Train Loss: {train_losses[-1]:.4f}, Acc: {train_accuracies[-1]*100:.2f}% | "
+          f"Test Loss: {test_losses[-1]:.4f}, Acc: {test_accuracies[-1]*100:.2f}%")
+
+```
+:::
+
+::: {.cell .code }
+```python
+plt.figure(figsize=(5, 4))
+plt.plot(train_losses, marker='o', label='Train Loss')
+plt.plot(test_losses, marker='s', label='Test Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
-plt.plot(loss, label='Training set')
-plt.plot(val_loss, label='Test set', linestyle='--')
+plt.title('Training and Test Loss Over Epochs')
 plt.legend()
-
-plt.subplot(1, 2, 2)
-plt.title('Accuracy')
-plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
-plt.plot(accuracy, label='Training set')
-plt.plot(val_accuracy, label='Test set', linestyle='--')
-plt.legend()
-
+plt.grid(True)
+plt.tight_layout()
 plt.show()
 ```
 :::
@@ -720,82 +469,112 @@ better suited for our specific classification task.
 
 ::: {.cell .code }
 ```python
-base_model.trainable = True
+# Unfreeze the last n_unfreeze layers of the feature extractor
+# Unfreeze last residual block (layer4)
+for param in transfer_model.layer4.parameters():
+    param.requires_grad = True
+
+transfer_model = transfer_model.to(device)
 ```
 :::
 
+
 ::: {.cell .code }
 ```python
-len(base_model.layers)
+total_params = sum(
+	param.numel() for param in transfer_model.parameters()
+)
+trainable_params = sum(
+	p.numel() for p in transfer_model.parameters() if p.requires_grad
+)
+
+print(f"Total parameters: {total_params}")
+print(f"Trainable parameters: {trainable_params}")
 ```
 :::
 
 ::: {.cell .markdown }
-Note that we are *not* creating a new model. We\'re just going to
+
+We will fine-tune these additional parameters using a smaller learning rate:
+
+:::
+
+::: {.cell .code}
+```python
+optimizer = optim.Adam(transfer_model.parameters(), lr=1e-7)
+```
+:::
+
+::: {.cell .markdown }
+Note that we are *not* creating a new model. We're just going to
 continue training the model we already started training.
+
 :::
+
 
 ::: {.cell .code }
 ```python
-fine_tune_at = 149
+num_epochs_fine = 20
 
-# freeze first layers
-for layer in base_model.layers[:fine_tune_at]:
-    layer.trainable =  False
-    
-# use a smaller training rate for fine-tuning
-opt = tf.keras.optimizers.Adam(learning_rate=1e-6)
-model.compile(
-    optimizer = opt,
-    loss=tf.keras.losses.sparse_categorical_crossentropy,
-    metrics=['accuracy']
-)
+for epoch in range(num_epochs + 1, num_epochs + num_epochs_fine + 1):
+    # Train on training set
+    transfer_model.train()
+    total_loss, correct, total = 0.0, 0, 0
 
-model.summary()
+    for images, labels in train_loader:
+        images, labels = images.to(device), labels.to(device)
+
+        optimizer.zero_grad()
+        outputs = transfer_model(images)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item() * images.size(0)
+        correct += (outputs.argmax(1) == labels).sum().item()
+        total += labels.size(0)
+
+    train_losses.append(total_loss / total)
+    train_accuracies.append(correct / total)
+
+    # Evaluate on test set
+    transfer_model.eval()
+    test_loss, test_correct, test_total = 0.0, 0, 0
+
+    with torch.no_grad():
+        for images, labels in test_loader:
+            images, labels = images.to(device), labels.to(device)
+            outputs = transfer_model(images)
+            loss = criterion(outputs, labels)
+
+            test_loss += loss.item() * images.size(0)
+            test_correct += (outputs.argmax(1) == labels).sum().item()
+            test_total += labels.size(0)
+
+    test_losses.append(test_loss / test_total)
+    test_accuracies.append(test_correct / test_total)
+
+    print(f"Epoch {epoch}/{num_epochs + num_epochs_fine} | "
+          f"Train Loss: {train_losses[-1]:.4f}, Acc: {train_accuracies[-1]*100:.2f}% | "
+          f"Test Loss: {test_losses[-1]:.4f}, Acc: {test_accuracies[-1]*100:.2f}%")
 ```
 :::
 
 ::: {.cell .code }
 ```python
-n_epochs_fine = 20
+plt.figure(figsize=(8, 5))
+plt.plot(train_losses, marker='o', label='Train Loss')
+plt.plot(test_losses, marker='s', label='Test Loss')
 
-hist_fine = model.fit(
-    ds_train,
-    epochs=n_epochs + n_epochs_fine,
-    initial_epoch=n_epochs,  
-    validation_data = ds_test
-)
-```
-:::
+# vertical dashed line to mark fine-tuning start
+plt.axvline(x=num_epochs - 1, color='gray', linestyle='--', label='Fine-tuning start')
 
-::: {.cell .code }
-```python
-loss = hist.history['loss'] + hist_fine.history['loss']
-val_loss = hist.history['val_loss'] + hist_fine.history['val_loss']
-
-accuracy = hist.history['accuracy'] + hist_fine.history['accuracy']
-val_accuracy = hist.history['val_accuracy'] + hist_fine.history['val_accuracy']
-
-plt.figure(figsize=(14, 4))
-
-plt.subplot(1, 2, 1)
-plt.title('Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
-plt.plot(loss, label='Training set')
-plt.plot(val_loss, label='Test set', linestyle='--')
-plt.plot([n_epochs, n_epochs], plt.ylim(),label='Fine Tuning',linestyle='dotted')
+plt.title('Training and Test Loss')
 plt.legend()
-
-plt.subplot(1, 2, 2)
-plt.title('Accuracy')
-plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
-plt.plot(accuracy, label='Training set')
-plt.plot(val_accuracy, label='Test set', linestyle='dotted')
-plt.plot([n_epochs, n_epochs], plt.ylim(), label='Fine Tuning', linestyle='--')
-plt.legend()
-
+plt.grid(True)
+plt.tight_layout()
 plt.show()
 ```
 :::
@@ -804,57 +583,67 @@ plt.show()
 ## Classify custom test sample
 :::
 
+::: {.cell .markdown }
+ 
+Let us also upload a personal example, in PNG format.
+
+:::
+
 ::: {.cell .code }
 ```python
-test_probs = model.predict(test_sample_pre)
+from google.colab import files
+
+uploaded = files.upload()
+
+for fn in uploaded.keys():
+  print('User uploaded file "{name}" with length {length} bytes'.format(
+      name=fn, length=len(uploaded[fn])))
 ```
 :::
 
 ::: {.cell .code }
 ```python
-plt.figure(figsize=(10,4));
+from PIL import Image
+ 
+# Edit the filename here as needed
+filename = 'scissors.png'
+ 
+# pre-process image
+image = Image.open(filename).convert('RGB')
+test_tensor = transform(image).unsqueeze(0)  # shape: [1, 3, 224, 224]
+```
+:::
 
-plt.subplot(1,2,1)
-plt.imshow(test_sample.reshape(INPUT_IMG_SIZE, INPUT_IMG_SIZE, 3));
+::: {.cell .code }
+```python
+transfer_model.eval()
+with torch.no_grad():
+    output = transfer_model(test_tensor.to(device))         # [1, 3]
+    pred_label = output.argmax(dim=1).item()                # integer label
 
-plt.subplot(1,2,2)
-p = sns.barplot(x=classes,y=test_probs.squeeze());
-plt.ylabel("Probability");
+# Map class index to class name
+pred_class = class_names[pred_label]  # e.g., "rock", "paper", "scissors"
+
+# De-normalize and plot
+mean = torch.tensor(imagenet_mean).view(3, 1, 1)
+std = torch.tensor(imagenet_std).view(3, 1, 1)
+
+img = test_tensor.squeeze(0).cpu() * std + mean
+img_np = img.permute(1, 2, 0).clamp(0, 1).numpy()
+
+plt.figure(figsize=(4, 4))
+plt.imshow(img_np)
+plt.title(f"Prediction: {pred_class}")
+plt.axis('off')
+plt.show()
 ```
 :::
 
 ::: {.cell .markdown }
-## Some comments
-:::
 
-::: {.cell .markdown }
 In practice, for most machine learning problems, you wouldn't design or
 train a convolutional neural network from scratch - you would use an
 existing model that suits your needs (does well on ImageNet, size is
 right) and fine-tune it on your own data.
-:::
 
-::: {.cell .markdown }
-Transfer learning isn't only for image classification.
-
-There are many problems that can be solved by taking a VERY LARGE
-task-generic "feature detection" model trained on a LOT of data, and
-fine-tuning it on a small custom dataset.
-:::
-
-::: {.cell .markdown }
-For example, consider [AI Dungeon](https://play.aidungeon.io/), a game
-in the style of classic text-based adventure games.
-
-It was trained by fine-tuning a version of GPT-2. GPT-2 is a language
-model with 1.5 billion parameters, trained on a dataset of 8 million web
-pages, with the objective of predicting the next word in a sequence.
-
-The creator of AI Dungeon fine-tuned GTP-2 using story-games scraped
-from [ChooseYourStory.com](https://chooseyourstory.com/Stories/).
-
-With so much data, the model doesn't only learn about language and
-language features - it learns about the world described by all that
-text! Since the game is based on a fine-tuned version of that model, it
-also knows a lot about the world.
 :::
