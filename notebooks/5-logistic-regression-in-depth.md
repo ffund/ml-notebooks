@@ -84,7 +84,7 @@ plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1);
 The logistic regression learns the coefficient vector $w$ to minimize
 the loss function
 
-$$L(w) = \sum_{i=1}^n - \left( y_i \log \frac{1}{1 + e^{- \langle w, x_i \rangle}} + (1 - y_i) \log \frac{e^{- \langle w, x_i \rangle}}{1 + e^{- \langle w, x_i \rangle}} \right) $$
+$$L(w) = \frac{1}{n} \sum_{i=1}^n - \left( y_i \log \frac{1}{1 + e^{- \langle w, x_i \rangle}} + (1 - y_i) \log \frac{e^{- \langle w, x_i \rangle}}{1 + e^{- \langle w, x_i \rangle}} \right) $$
 
 (Assume that the data matrix has a column of 1s at the beginning, so
 that the intercept can be learned the same way as the other
@@ -95,7 +95,7 @@ coefficients).
 We can use gradient descent to learn the intercept and coefficient
 vector, using the gradient update rule
 
-$$w_{k+1} = w_k + \alpha \sum_{i=1}^n (y_i - \frac{1}{1 + e^{-\langle w,x_i \rangle}}) x_i ,$$
+$$w_{k+1} = w_k + \alpha \frac{1}{n} \sum_{i=1}^n (y_i - \frac{1}{1 + e^{-\langle w,x_i \rangle}}) x_i ,$$
 :::
 
 ::: {.cell .code }
@@ -117,7 +117,7 @@ def cross_entropy_loss(w, X, y):
   p_pred = sigmoid(np.dot(X,w))
   loss_pos = y*np.log(p_pred)
   loss_neg = (1-y)*np.log(1-p_pred)
-  return np.sum(-1*(loss_pos + loss_neg))
+  return np.sum(-1*(loss_pos + loss_neg))/X.shape[0]
 ```
 :::
 
@@ -126,7 +126,7 @@ def cross_entropy_loss(w, X, y):
 def gd_step(w, X, y, lr):
   p_pred = sigmoid(np.dot(X,w)) 
   gradient = np.dot(X.T, y - p_pred)
-  w = w + lr * gradient
+  w = w + lr/X.shape[0] * gradient
   l = cross_entropy_loss(w,X,y)
   return w, l, gradient
 ```
@@ -135,7 +135,7 @@ def gd_step(w, X, y, lr):
 ::: {.cell .code }
 ```python
 itr = 20000
-lr = 0.005
+lr = 0.5
 tol = 0.01
 w_init = np.random.randn(3)
 print(w_init)
