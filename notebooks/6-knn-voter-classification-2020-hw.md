@@ -2005,8 +2005,10 @@ Note that you will compute these values *excluding the samples where the value o
 In the following cell, implement the `compute_feature_iv` function using the template that is provided. 
 
 * The function should return a single scalar IV value for a feature, computed using the rows of X and y for which the feature is *not* missing.
-* You may use `pandas` and `numpy` functions to compute the IV.
-* You may use a small `epsilon` value where needed to prevent log of zero and division by zero.
+* Use `pandas` and `numpy` functions to compute the IV.
+* Use a small `epsilon` constant (`1e-15`) to prevent taking log of zero or dividing by zero. Specifically,
+ - When computing $P(X = x_j \mid y = 0)$ and $P(X = x_j \mid y = 1)$, add `epsilon` to the denominator (to avoid division by zero).
+ - When computing $\text{WoE}_j = \ln \left( \frac{P(X = x_j \mid y = 0)}{P(X = x_j \mid y = 1)} \right)$, add `epsilon` to the denominator (to avoid division by zero) and also to the numerator (to avoid taking the log of zero).
 
 :::
 
@@ -2018,7 +2020,7 @@ In the following cell, implement the `compute_feature_iv` function using the tem
 
 # TODO - compute IV for a feature
 
-def compute_feature_iv(X, y, feature, epsilon=1e-20):
+def compute_feature_iv(X, y, feature, epsilon=1e-15):
 
     # step 1: get the rows of X and y for which feature is not missing
     
