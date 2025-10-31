@@ -448,33 +448,68 @@ and then we will specify the total number of points to sample - 10, in this exam
 
 ::: {.cell .code}
 ```python
-clf = RandomizedSearchCV(SVC(), param_grid, cv=3, refit=True, verbose=100, n_jobs=-1, return_train_score=True,  n_iter = 10)
-%time clf.fit(X_train, y_train)
+clf_rnd = RandomizedSearchCV(SVC(), param_grid, cv=3, refit=True, verbose=100, n_jobs=-1, return_train_score=True,  n_iter = 10)
+%time clf_rnd.fit(X_train, y_train)
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-pd.DataFrame(clf.cv_results_)
+pd.DataFrame(clf_rnd.cv_results_)
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-print(clf.best_params_)
+print(clf_rnd.best_params_)
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-y_pred = clf.predict(X_test)
+y_pred = clf_rnd.predict(X_test)
 accuracy_score(y_pred, y_test)
 ```
 :::
 
+::: {.cell .markdown}
+
+To see how this works, we will re-run the random search with more iterations than we really need, just so that we can visualize how it searches the hyperparameter space.
+:::
+
+::: {.cell .code}
+```python
+clf_rnd = RandomizedSearchCV(SVC(), param_grid, cv=3, refit=True, verbose=100, n_jobs=-1, return_train_score=True,  n_iter = 50)
+%time clf_rnd.fit(X_train, y_train)
+```
+:::
+
+::: {.cell .code}
+```python
+pvt = pd.pivot_table(df_cv, values="mean_test_score",
+                     index="param_C", columns="param_gamma")
+
+ax = sns.heatmap(pvt, annot=False, cbar=False, cmap="PiYG", vmin=0, vmax=1)
+ax.set_title("Validation scores + RandomSearch")
+
+df_rnd = pd.DataFrame(clf_rnd.cv_results_)
+df_rnd = df_rnd[df_rnd["param_kernel"] == "rbf"]
+
+ax2 = ax.twiny().twinx()
+ax2.set_xscale("log");  ax2.set_yscale("log")
+
+# hardcoded padded limits
+ax2.set_xlim(3.1623e-12, 3.1623e-04)
+ax2.set_ylim(3.1623e+06, 3.1623e-01)
+
+for i, (g, c) in enumerate(zip(df_rnd["param_gamma"], df_rnd["param_C"])):
+    ax2.scatter(g, c, s=200, facecolors="none", edgecolors="black")
+    ax2.text(g, c, i, ha="center", va="center", fontsize=8)
+```
+:::
 
 ::: {.cell .markdown}
 
@@ -511,7 +546,6 @@ We will install the `scikit-optimize` package, which provides `BayesSearchCV`.
 ::: {.cell .code}
 ```python
 from skopt import BayesSearchCV
-from skopt.plots import plot_evaluations
 ```
 :::
 
@@ -538,29 +572,29 @@ As before, we will specify the total number of points to sample - 5, in this exa
 
 ::: {.cell .code}
 ```python
-clf = BayesSearchCV(SVC(), param_grid, cv=3, refit=True, verbose=100, n_jobs=-1, return_train_score=True,  n_iter = 5)
-%time clf.fit(X_train, y_train)
+clf_bys = BayesSearchCV(SVC(), param_grid, cv=3, refit=True, verbose=100, n_jobs=-1, return_train_score=True,  n_iter = 5)
+%time clf_bys.fit(X_train, y_train)
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-pd.DataFrame(clf.cv_results_)
+pd.DataFrame(clf_bys.cv_results_)
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-print(clf.best_params_)
+print(clf_bys.best_params_)
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-y_pred = clf.predict(X_test)
+y_pred = clf_bys.predict(X_test)
 accuracy_score(y_pred, y_test)
 ```
 :::
@@ -575,35 +609,39 @@ To see how this works, we will re-run the Bayes search with more iterations than
 
 ::: {.cell .code}
 ```python
-clf = BayesSearchCV(SVC(), param_grid, cv=3, refit=False, verbose=100, n_jobs=-1, n_iter = 50)
-clf.fit(X_train, y_train)
+clf_bys = BayesSearchCV(SVC(), param_grid, cv=3, refit=False, verbose=100, n_jobs=-1, n_iter = 50)
+clf_bys.fit(X_train, y_train)
 ```
 :::
 
 
 ::: {.cell .code}
 ```python
-plot_evaluations(clf.optimizer_results_[0])
+pd.DataFrame(clf_bys.cv_results_)
 ```
 :::
-
-
-
-::: {.cell .markdown}
-
-This creates a grid of plots as follows:
-
-* the diagonal plots are histograms, that show the distribution of samples for each hyperparameter.
-* the scatter plot shows the samples in the hyperparameter space that were "visited", and the order in which they were "visited" is encoded i the point's color. A red star shows the best hyperparameters that we found.
-
-
-:::
-
 
 ::: {.cell .code}
 ```python
-pd.DataFrame(clf.cv_results_)
+pvt = pd.pivot_table(df_cv, values="mean_test_score",
+                     index="param_C", columns="param_gamma")
+
+ax = sns.heatmap(pvt, annot=False, cbar=False, cmap="PiYG", vmin=0, vmax=1)
+ax.set_title("Validation scores + BayesSearch")
+
+df_bys = pd.DataFrame(clf_bys.cv_results_)
+df_bys = df_bys[df_bys["param_kernel"] == "rbf"]
+
+ax2 = ax.twiny().twinx()
+ax2.set_xscale("log");  ax2.set_yscale("log")
+
+# hardcoded half-decade padded limits
+ax2.set_xlim(3.1623e-12, 3.1623e-04)
+ax2.set_ylim(3.1623e+06, 3.1623e-01)
+
+# scatter + labels
+for i, (g, c) in enumerate(zip(df_bys["param_gamma"], df_rnd["param_C"])):
+    ax2.scatter(g, c, s=200, facecolors="none", edgecolors="black")
+    ax2.text(g, c, i, ha="center", va="center", fontsize=8)
 ```
 :::
-
-
