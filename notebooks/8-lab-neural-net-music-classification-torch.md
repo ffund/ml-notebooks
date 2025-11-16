@@ -549,6 +549,8 @@ for lr in rates:
 
 Plot the *training* loss vs. the epoch number for all of the learning
 rates on one graph (use `semilogy` again), using a different color for each learning rate. 
+Do *not* include the test loss in this plot.
+
 You should see that the lower learning rates are more stable, but converge slower, while with a
 learning rate that is too high, the gradient descent may fail to move
 towards weights that decrease the loss function.
