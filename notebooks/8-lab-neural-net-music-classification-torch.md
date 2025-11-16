@@ -678,7 +678,7 @@ Use a batch size of 128 and shuffle the training data.
 
 Now, we can train to a specified accuracy!
 
-* In the following cell, we define a `train_to_accuracy` function, which will accept the following arguments: a `max_epochs` value, a `threshold`, and a `patience` value. (In addition to passing: `model`, `criterion`, `optimizer`, `device`, `train_loader`, `val_loader`, `test_loader`.)
+* In the following cell, we define a `train_to_accuracy` function, which will accept the following arguments: a `max_epochs` value, a `threshold`, and a `patience` value. (In addition to passing: `model`, `criterion`, `optimizer`, `device`, `train_loader`, `val_loader`, `test_loader`, `train_model`, and `eval_model`.)
 * Inside the function, you will call `train_model` to train a model for up to `max_epochs`. At the end of each epoch, you will use `eval_model` to evaluate the model on the *validation* data (not the *test* data!)
 * If the model's validation accuracy is higher than the `threshold` for `patience` epochs in a row, stop training  even if the `max_epochs` is not reached. 
 * At the end of training, use `eval_model` to evaluate the model on the test data.
@@ -693,10 +693,12 @@ Fill in the implementation below. You only need to return the final test data st
 #grade (write your code in this cell and DO NOT DELETE THIS LINE)
 
 # TODO - define the train_to_accuracy function
+
 def train_to_accuracy(
-    model, criterion, optimizer, device,
-    train_loader, val_loader, test_loader,
-    max_epochs=100, threshold=0.9, patience=3
+    max_epochs=100, threshold=0.9, patience=3,
+    model=None, criterion=None, optimizer=None, device=None,
+    train_loader=None, val_loader=None, test_loader=None,
+    train_model=None, eval_model=None
 ):
     # fill in details here
     return test_acc, test_loss, epochs
@@ -718,7 +720,10 @@ but also, check your implementation thoroughly and make sure it behaves as expec
 
 ::: {.cell .code}
 ```python
-
+# train_to_accuracy(max_epochs=20, threshold=0.95, patience=5,
+#    model=model, criterion=criterion, optimizer=optimizer, device=device,
+#    train_loader=train_loader, val_loader=val_loader, test_loader=test_loader,
+#    train_model=train_model, eval_model=eval_model)
 ```
 :::
 
