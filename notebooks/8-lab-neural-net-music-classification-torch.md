@@ -30,7 +30,7 @@ _Fraida Fund_
 
 ::: {.cell .markdown }
 
-⚠️ **Note**: This experiment is designed to run on a Google Colab **GPU** runtime. You should use a GPU runtime on Colab to work on this assignment. You should not run it outside of Google Colab. However, if you have been using Colab GPU runtimes a lot, you may be alerted that you have exhausted the "free" compute units allocated to you by Google Colab. We will have some limited availability of GPU time during the last week before the deadline, for students who have no compute units available.
+⚠️ **Note**: This experiment is designed to run on a Google Colab **GPU** runtime. You should use a GPU runtime on Colab to work on this assignment. You should not run it outside of Google Colab, and you should not run it in a CPU runtime. However, if you have been using Colab GPU runtimes a lot, you may be alerted that you have exhausted the "free" compute units allocated to you by Google Colab. We will have some limited availability of GPU time during the last week before the deadline, for students who have no compute units available.
 
 :::
 
@@ -230,6 +230,8 @@ Write some code to find these values and print them.
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO -  get basic details of the data
 # compute these values from the data, don't hard-code them
 n_tr    = ...
@@ -288,6 +290,8 @@ descend.`</small>`{=html}
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - Standardize the training and test data
 Xtr_scale = ...
 Xts_scale = ...
@@ -333,11 +337,15 @@ a neural network in Pytorch with:
 
 as a class named `InstrumentNet`.
 
+Then create `model` as an instance of this class.
+
 :::
 
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - define the InstrumentNet
 class InstrumentNet(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
@@ -347,13 +355,14 @@ class InstrumentNet(nn.Module):
     def forward(self, x):
         # fill in details here!
 
+# create model as an instance of InstrumentNet
 # model = ...
 ```
 :::
 
 ::: {.cell .markdown}
 
-Then create `model` as an instance of this class, and move `model` to the GPU device.
+Then, move `model` to the GPU device.
 
 :::
 
@@ -361,7 +370,7 @@ Then create `model` as an instance of this class, and move `model` to the GPU de
 ```python
 # TODO - create the model and move to device
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# model = ...
+# now move model to the device
 ```
 :::
 
@@ -396,6 +405,8 @@ training accuracy and training loss as estimated during training.
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - Training function
 def train_model(model, criterion, optimizer, device, train_loader):
 
@@ -417,6 +428,8 @@ training accuracy and training loss as estimated during training.
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - Evaluation function
 def eval_model(model, criterion, device, eval_loader):
 
@@ -665,7 +678,7 @@ Use a batch size of 128 and shuffle the training data.
 
 Now, we can train to a specified accuracy!
 
-* In the following cell, we define a `train_to_accuracy` function, which will accept the following arguments: a `max_epochs` value, a `threshold`, and a `patience` value.
+* In the following cell, we define a `train_to_accuracy` function, which will accept the following arguments: a `max_epochs` value, a `threshold`, and a `patience` value. (In addition to passing: `model`, `criterion`, `optimizer`, `device`, `train_loader`, `val_loader`, `test_loader`.)
 * Inside the function, you will call `train_model` to train a model for up to `max_epochs`. At the end of each epoch, you will use `eval_model` to evaluate the model on the *validation* data (not the *test* data!)
 * If the model's validation accuracy is higher than the `threshold` for `patience` epochs in a row, stop training  even if the `max_epochs` is not reached. 
 * At the end of training, use `eval_model` to evaluate the model on the test data.
@@ -677,8 +690,14 @@ Fill in the implementation below. You only need to return the final test data st
 
 ::: {.cell .code}
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - define the train_to_accuracy function
-def train_to_accuracy(max_epochs = 100, threshold = 0.9, patience = 3)
+def train_to_accuracy(
+    model, criterion, optimizer, device,
+    train_loader, val_loader, test_loader,
+    max_epochs=100, threshold=0.9, patience=3
+):
     # fill in details here
     return test_acc, test_loss, epochs
 
@@ -776,7 +795,7 @@ Look at the output and make sure it is reasonable:
 
 ::: {.cell .code}
 ```python
-metrics_vs_lr
+print(metrics_vs_lr)
 ```
 :::
 
@@ -872,7 +891,7 @@ Look at the output and make sure it is reasonable:
 
 ::: {.cell .code}
 ```python
-metrics_vs_bs
+print(metrics_vs_bs)
 ```
 :::
 
