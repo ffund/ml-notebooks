@@ -387,6 +387,8 @@ learning rate of 0.001
 
 ::: {.cell .code }
 ```python
+#grade (write your code in this cell and DO NOT DELETE THIS LINE)
+
 # TODO - create criterion and optimizer
 # criterion = ...
 # optimizer = ...
