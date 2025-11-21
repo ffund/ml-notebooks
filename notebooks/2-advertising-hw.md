@@ -863,23 +863,23 @@ plt.figure(figsize=(6,6))
 plt.subplot(2,2,1)
 sns.regplot(x=train['TV'], y=xhat_news_x);
 plt.xlabel('TV ad $')
-plt.ylabel('$\hat{x_j}$');
+plt.ylabel('$\\hat{x_j}$');
 
 
 plt.subplot(2,2,2)
 sns.regplot(x=train['radio'], y=xhat_news_x);
 plt.xlabel('Radio ad $')
-plt.ylabel('$\hat{x_j}$');
+plt.ylabel('$\\hat{x_j}$');
 
 plt.subplot(2,2,3)
 sns.regplot(x=train['TV'], y=residual_news_x);
 plt.xlabel('TV ad $')
-plt.ylabel('$\epsilon^{x_j}$');
+plt.ylabel('$\\epsilon^{x_j}$');
 
 plt.subplot(2,2,4)
 sns.regplot(x=train['radio'], y=residual_news_x);
 plt.xlabel('Radio ad $')
-plt.ylabel('$\epsilon^{x_j}$');
+plt.ylabel('$\\epsilon^{x_j}$');
 
 plt.tight_layout();
 ```
@@ -927,23 +927,23 @@ plt.figure(figsize=(6,6))
 plt.subplot(2,2,1)
 sns.regplot(x=train['TV'], y=yhat_news_y);
 plt.xlabel('TV ad $')
-plt.ylabel('$\hat{y}$');
+plt.ylabel('$\\hat{y}$');
 
 
 plt.subplot(2,2,2)
 sns.regplot(x=train['radio'], y=yhat_news_y);
 plt.xlabel('Radio ad $')
-plt.ylabel('$\hat{y}$');
+plt.ylabel('$\\hat{y}$');
 
 plt.subplot(2,2,3)
 sns.regplot(x=train['TV'], y=residual_news_y);
 plt.xlabel('TV ad $')
-plt.ylabel('$\epsilon^{y}$');
+plt.ylabel('$\\epsilon^{y}$');
 
 plt.subplot(2,2,4)
 sns.regplot(x=train['radio'], y=residual_news_y);
 plt.xlabel('Radio ad $')
-plt.ylabel('$\epsilon^{y}$');
+plt.ylabel('$\\epsilon^{y}$');
 
 plt.tight_layout();
 ```
