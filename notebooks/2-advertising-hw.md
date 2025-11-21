@@ -730,7 +730,7 @@ The FWL theorem tells us that we can get $w_j$, the association between $x_j$ an
 
 First, we will split the feature $x_j$ into (1) the information that is already present in other features, and (2) the information that is not already in other features.
 
-How do you split the feature $x_j$ into parts that are correlated and uncorrelated with other features? With another regression model! We will train a model using all features *expect* $x_j$ to *predict* $x_j$, like this:
+How do you split the feature $x_j$ into parts that are correlated and uncorrelated with other features? With another regression model! We will train a model using all features *except* $x_j$ to *predict* $x_j$, like this:
 
 $$\hat{x_j} = w_0^{x_j} + \sum_{k \neq j} w^{x_{j}}_{k}x_{k}$$
 
