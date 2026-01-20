@@ -1262,7 +1262,7 @@ This plot validates the relationship between `temperature` and `hour`, and betwe
 
 Finally, since our goal is to train a machine learning model, we want to identify:
 
-* an appropriate target variable - something on which to train our model. (Either a direct target variable, or a proxy.)
+* an appropriate target variable - something we will train our model to predict. (Either a direct target variable, or a proxy.)
 * features that are predictive - if there is any noticeable relationship between the target variable and any other variable, this is likely to be a useful feature.
 * features that are correlated with one another - if two features are highly correlated, this presents some difficulty to certain types of models, so we'll want to know about it.
 
