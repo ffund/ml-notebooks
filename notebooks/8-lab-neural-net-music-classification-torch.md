@@ -88,7 +88,8 @@ Colab by prefixing them with a `!` or `%`.)
 
 ::: {.cell .code }
 ```python
-!wget "http://theremin.music.uiowa.edu/sound files/MIS/Woodwinds/sopranosaxophone/SopSax.Vib.pp.C6Eb6.aiff"
+#!wget "http://theremin.music.uiowa.edu/sound files/MIS/Woodwinds/sopranosaxophone/SopSax.Vib.pp.C6Eb6.aiff"
+!wget "https://web.archive.org/web/20240421064317/http://theremin.music.uiowa.edu/sound%20files/MIS/Woodwinds/sopranosaxophone/SopSax.Vib.pp.C6Eb6.aiff"
 ```
 :::
 
