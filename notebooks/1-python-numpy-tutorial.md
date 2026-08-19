@@ -56,14 +56,6 @@ As you work through this tutorial, look at the code in each cell, and try to pre
 
 :::
 
-::: {.cell .markdown }
-
-## A Brief Note on Python Versions
-
-
-As of Janurary 1, 2020, Python has [officially dropped support](https://www.python.org/doc/sunset-python-2/) for `python2`. We'll be using Python 3 for this course.
-
-:::
 
 ::: {.cell .markdown}
 ## Basics of Python
