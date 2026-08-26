@@ -545,13 +545,9 @@ Once you are connected to a runtime, you will see a bar graph in this space that
 
 ::: {.cell .markdown}
 
-As mentioned above, despite the resource limits, Colab will be sufficient for all of the demos and homework assignments we will use in this course. 
+As mentioned above, despite the resource limits, Colab will be sufficient for virtually all of your needs in this course. 
 
-For extra GPU runtime, as a student, you can subscribe to "Colab Pro" for free at this link:
-
-https://colab.research.google.com/signup
-
-and click on "No cost for students and educators" under "Colab Pro". You will be prompted to verify your student eligibility. This will give you some additional GPU time on Colab.
+When we need extra GPU runtime toward the end of the semester, additional resources will be made available then.
 
 
 :::
