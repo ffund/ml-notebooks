@@ -110,7 +110,7 @@ In each iteration, we:
     stump for the training data.
 -   Compute weighted error:
 
-$$err_m = \frac{\sum_{i=1}^N w_i 1(y_i \neq \hat{f}^m(x_i))}{\sum_{i=1}^N w_i}$$
+$$err_m = \frac{\sum_{i=1}^N w_i^{(m)} 1(y_i \neq \hat{f}^m(x_i))}{\sum_{i=1}^N w_i^{(m)}}$$
 
 -   Compute coefficient;
 
@@ -118,7 +118,10 @@ $$\alpha_m = \log \left( \frac{1-err_m}{err_m} \right)$$
 
 -   Update weights:
 
-$$w_{i+1} \leftarrow w_i e^{\alpha_m 1(y_i \neq \hat{f}^m(x_i))}$$
+$$w_i^{(m+1)} \leftarrow w_i^{(m)} e^{\alpha_m 1(y_i \neq \hat{f}^m(x_i))}$$
+
+Here $w_i^{(m)}$ is the weight of training sample $i$ at the start of
+iteration $m$.
 :::
 
 ::: {.cell .code }
