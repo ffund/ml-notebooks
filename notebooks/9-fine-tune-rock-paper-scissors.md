@@ -371,6 +371,14 @@ test_loader  = DataLoader(test_dataset, batch_size=64)
 Now we can start training our model. Remember, we are *only* updating
 the weights in the classification head.
 
+Note that during training, we put the model in eval mode with `transfer_model.eval()`,
+and then put only the new classification head in training mode with
+`transfer_model.fc.train()`. The base model has batch normalization layers, and in
+training mode, they would update their running mean and standard deviation using
+our data, even though their parameters are frozen. In eval mode, they keep the
+statistics from pre-training. (The dropout layer in the new classification head is
+still active, since the head is in training mode.)
+
 Also note that we are reporting loss on the test data in each epoch, but we are
 not doing early stopping or otherwise "using" this. If we were using this loss
 to make decisions about the training process, we would have to split out a separate 
@@ -396,7 +404,8 @@ test_accuracies = []
 
 for epoch in range(num_epochs):
     # Train on training set
-    transfer_model.train()
+    transfer_model.eval()       # frozen base model: batch norm uses the statistics from pre-training
+    transfer_model.fc.train()   # classification head: dropout is active
     total_loss, correct, total = 0.0, 0, 0
 
     for images, labels in train_loader:
@@ -509,6 +518,10 @@ optimizer = optim.Adam(transfer_model.parameters(), lr=1e-7)
 Note that we are *not* creating a new model. We're just going to
 continue training the model we already started training.
 
+As before, we keep the base model in eval mode during training, so the batch
+normalization layers keep their statistics from pre-training. But now, the
+weights in `layer4` will also be updated.
+
 :::
 
 
@@ -518,7 +531,8 @@ num_epochs_fine = 20
 
 for epoch in range(num_epochs + 1, num_epochs + num_epochs_fine + 1):
     # Train on training set
-    transfer_model.train()
+    transfer_model.eval()       # base model: batch norm uses the statistics from pre-training
+    transfer_model.fc.train()   # classification head: dropout is active
     total_loss, correct, total = 0.0, 0, 0
 
     for images, labels in train_loader:
